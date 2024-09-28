@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Drinking Board Game</title>
+    <script src="https://unpkg.com/peerjs@1.4.7/dist/peerjs.min.js"></script> <!-- PeerJS CDN -->
+</head>
+<body>
+    <h1>Drinking Board Game</h1>
+
+    <!-- Home Page with Host and Join buttons -->
+    <div id="homePage">
+        <button id="hostButton">Host Game</button>
+        <button id="joinButton">Join Game</button>
+    </div>
+    
+    <!-- Host Game Page -->
+    <div id="hostPage" style="display: none;">
+        <h2>Host Game</h2>
+        <div class="input-group">
+            <label for="hostNameInput">Enter Your Name:</label>
+            <input id="hostNameInput" type="text" placeholder="Your Name">
+        </div>
+        <button id="startHostButton">Start Game</button>  <!-- Button added below the input -->
+    </div>
+
+    <!-- Join Game Page -->
+    <div id="joinPage" style="display: none;">
+        <h2>Join Game</h2>
+        <div class="input-group">
+            <label for="joinNameInput">Enter Your Name:</label>
+            <input id="joinNameInput" type="text" placeholder="Your Name">
+            <label for="joinCodeInput">Enter Game Code:</label>
+            <input id="joinCodeInput" type="text" placeholder="Game Code">
+        </div>
+        <button id="startJoinButton">Join Game</button>
+    </div>
+
+    <!-- Lobby Page -->
+    <div id="lobbyPage" style="display: none;">
+        <h2>Lobby</h2>
+    
+        <!-- Invite Code and Copy Button -->
+        <p class="invite-container">
+            <span class="invite-label">Invite Code:</span> 
+            <span id="inviteCode"></span>
+            <button id="copyInviteCodeButton" class="clipboard-icon">&#x1F4CB;</button> <!-- Clipboard icon -->
+            <span id="copyMessage" class="toast-message" style="display: none;">Copied!</span> <!-- Toast message -->
+        </p>
+    
+        <p>Connected Players:</p>
+        <ul id="playerList"></ul>
+    
+        <!-- Host: Start Game Button (Visible to Host Only) -->
+        <button id="startGameButton" style="display: none;">Start Game</button>
+    
+        <!-- Host's "Close Game" button (only shown for host) -->
+        <button id="closeGameButton" class="red-button" style="display: none;">Close Game</button>
+
+        <!-- Player's "Leave Game" button (only shown for players) -->
+        <button id="leaveGameButton" class="red-button" style="display: none;">Leave Game</button>
+        
+           <!-- Board Preview Section -->
+        <div id="boardPreviewSection" style="margin-top: 30px;">
+            <h3>Board Preview</h3>
+            <canvas id="boardCanvas" width="800" height="600" style="border: 1px solid #ccc;"></canvas>
+        </div>
+    </div>
+</body>
+</html>

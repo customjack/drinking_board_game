@@ -1,0 +1,109 @@
+{
+    "spaces": [
+      {
+        "id": 1,
+        "name": "Start",
+        "type": "start",
+        "actions": [],
+        "visualDetails": {
+          "x": 100,
+          "y": 100,
+          "size": 60,
+          "color": "#ffcccc",
+          "textColor": "#000000",
+          "font": "12px Arial",
+          "textAlign": "center",
+          "textBaseline": "middle"
+        },
+        "connections": [
+          {
+            "targetId": 2,
+            "condition": null
+          }
+        ]
+      },
+      {
+        "id": 2,
+        "name": "Take a Drink",
+        "type": "action",
+        "actions": ["takeDrink"],
+        "visualDetails": {
+          "x": 300,
+          "y": 100,
+          "size": 60,
+          "color": "#ccffcc",
+          "textColor": "#000000",
+          "font": "12px Arial",
+          "textAlign": "center",
+          "textBaseline": "middle"
+        },
+        "connections": [
+          {
+            "targetId": 3,
+            "condition": null
+          }
+        ]
+      },
+      {
+        "id": 3,
+        "name": "Move Forward 2",
+        "type": "action",
+        "actions": ["moveForward2"],
+        "visualDetails": {
+          "x": 500,
+          "y": 100,
+          "size": 60,
+          "color": "#ccccff",
+          "textColor": "#000000",
+          "font": "12px Arial",
+          "textAlign": "center",
+          "textBaseline": "middle"
+        },
+        "connections": [
+          {
+            "targetId": 4,
+            "condition": null
+          },
+          {
+            "targetId": 5,
+            "condition": null
+          }
+        ]
+      },
+      {
+        "id": 4,
+        "name": "Take Another Drink",
+        "type": "action",
+        "actions": ["takeDrink"],
+        "visualDetails": {
+          "x": 700,
+          "y": 100,
+          "size": 60,
+          "color": "#ffcccc",
+          "textColor": "#000000",
+          "font": "12px Arial",
+          "textAlign": "center",
+          "textBaseline": "middle"
+        },
+        "connections": []
+      },
+      {
+        "id": 5,
+        "name": "Finish",
+        "type": "finish",
+        "actions": [],
+        "visualDetails": {
+          "x": 700,
+          "y": 300,
+          "size": 60,
+          "color": "#ccccff",
+          "textColor": "#000000",
+          "font": "12px Arial",
+          "textAlign": "center",
+          "textBaseline": "middle"
+        },
+        "connections": []
+      }
+    ]
+  }
+  
