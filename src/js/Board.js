@@ -10,9 +10,9 @@ export default class Board {
         this.spaces.push(space);
     }
 
-    // Get a space by its position or id
-    getSpace(position) {
-        return this.spaces.find(space => space.position === position);
+    // Get a space by its id (this is the correct approach)
+    getSpace(id) {
+        return this.spaces.find(space => space.id === id);
     }
 
     // Serialize the board to JSON

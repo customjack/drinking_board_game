@@ -9,10 +9,11 @@ export default class Space {
     }
 
     // Add connection to another space
-    addConnection(targetSpace, condition = null) {
+    addConnection(targetSpace, condition = null, drawConnection = true) {
         this.connections.push({
             target: targetSpace,
-            condition: condition
+            condition: condition,
+            drawConnection: drawConnection
         });
     }
 
@@ -25,9 +26,10 @@ export default class Space {
             actions: this.actions,
             connections: this.connections.map(conn => ({
                 targetId: conn.target.id,
-                condition: conn.condition
+                condition: conn.condition,
+                drawConnection: conn.drawConnection // Ensure drawConnection is included in serialization
             })),
-            visualDetails: this.visualDetails // Use visualDetails
+            visualDetails: this.visualDetails
         };
     }
 
@@ -38,8 +40,12 @@ export default class Space {
             json.name,
             json.type,
             json.actions,
-            json.visualDetails, // Use visualDetails
-            [] // Connections will be set in a second pass
+            json.visualDetails,
+            json.connections.map(conn => ({
+                targetId: conn.targetId,   // Temporarily store the targetId, will resolve later
+                condition: conn.condition,
+                drawConnection: conn.drawConnection !== undefined ? conn.drawConnection : true // Default drawConnection to true if undefined
+            }))
         );
     }
 
@@ -50,7 +56,8 @@ export default class Space {
                 .find(s => s.id === space.id)
                 .connections.map(conn => ({
                     target: spaces.find(targetSpace => targetSpace.id === conn.targetId),
-                    condition: conn.condition
+                    condition: conn.condition,
+                    drawConnection: conn.drawConnection !== undefined ? conn.drawConnection : true // Carry over drawConnection in resolution
                 }));
         });
     }

@@ -3,20 +3,20 @@ export default class Player {
         this.peerId = peerId;
         this.nickname = nickname;
         this.isHost = isHost;
-        this.scores = {}; // No default score, add as needed
+        this.stats = {}; // Replacing scores with stats
     }
 
-    // Dynamically update or add score
-    updateScore(scoreName, delta) {
-        if (!this.scores[scoreName]) {
-            this.scores[scoreName] = 0;
+    // Dynamically update or add stat
+    updateStat(statName, delta) {
+        if (!this.stats[statName]) {
+            this.stats[statName] = 0;
         }
-        this.scores[scoreName] += delta;
+        this.stats[statName] += delta;
     }
 
-    // Retrieve player's score
-    getScore(scoreName) {
-        return this.scores[scoreName] || 0;
+    // Retrieve player's stat
+    getStat(statName) {
+        return this.stats[statName] || 0;
     }
 
     // Serialize player data
@@ -25,14 +25,14 @@ export default class Player {
             peerId: this.peerId,
             nickname: this.nickname,
             isHost: this.isHost,
-            scores: this.scores
+            stats: this.stats
         };
     }
 
     // Deserialize player data
     static fromJSON(json) {
         const player = new Player(json.peerId, json.nickname, json.isHost);
-        player.scores = json.scores;
+        player.stats = json.stats;
         return player;
     }
 }

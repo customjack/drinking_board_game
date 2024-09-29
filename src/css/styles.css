@@ -289,3 +289,29 @@ button:hover {
     background-color: #0056b3;
 }
 
+/* Container for the board */
+#boardContainer {
+    position: relative;
+    width: 800px;  /* Or dynamically set based on your board's size */
+    height: 600px;
+    background-color: #f4f4f4;
+    border: 1px solid #ccc;
+    margin: 0 auto; /* Center the board on the page */
+}
+
+/* Styling for the board spaces */
+.board-space {
+    position: absolute;
+    border: 2px solid black;  /* Border for the spaces */
+    border-radius: 50%;       /* Makes the space a circle */
+    text-align: center;
+    font-size: 14px;
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+/* Highlighted state for spaces */
+.board-space.highlight {
+    transform: scale(1.1);         /* Slightly enlarge the space */
+    box-shadow: 0 0 10px yellow;   /* Add a glowing effect */
+}
+
