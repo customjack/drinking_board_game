@@ -17,7 +17,9 @@ export default class Board {
 
     // Serialize the board to JSON
     toJSON() {
-        return this.spaces.map(space => space.toJSON());
+        return {
+            spaces: this.spaces.map(space => space.toJSON())  // Ensure 'spaces' key is included
+        };
     }
 
     // First pass: Deserialize the board without connections
@@ -28,22 +30,5 @@ export default class Board {
         Space.resolveConnections(spaces, json.spaces);
 
         return new Board(spaces);
-    }
-
-    // Method to draw the board and its connections
-    draw(ctx) {
-        // First, draw all connections between spaces
-        this.spaces.forEach(space => {
-            space.connections.forEach(conn => {
-                ctx.beginPath();
-                ctx.moveTo(space.x, space.y);
-                ctx.lineTo(conn.target.x, conn.target.y);
-                ctx.strokeStyle = '#000';
-                ctx.stroke();
-            });
-        });
-
-        // Then, draw all the spaces
-        this.spaces.forEach(space => space.draw(ctx));
     }
 }

@@ -1,5 +1,7 @@
 import Peer from 'peerjs';
 import Player from './Player';
+import BoardManager from './BoardManager';
+import Board from './Board'; // Adjust the path if necessary
 
 export default class Host {
     constructor(hostName) {
@@ -7,22 +9,27 @@ export default class Host {
         this.players = [];
         this.connections = [];
         this.hostName = hostName;
+        this.boardManager = new BoardManager(); // Initialize BoardManager for the host
     }
 
-    init() {
+    async init() {
         this.peer = new Peer();
-
-        this.peer.on('open', (id) => {
+    
+        this.peer.on('open', async (id) => { // Mark this handler as async
             console.log('Host ID:', id);
             this.hostId = id;
             this.setupUI();
             this.addPlayer(new Player(id, this.hostName, true)); // Add host to player list
-
+            
+            // Now we can await the loading of the board
+            await this.boardManager.loadDefaultBoard();
+    
             this.peer.on('connection', (conn) => this.handleConnection(conn));
         });
-
+    
         this.peer.on('error', (err) => console.error('Peer error:', err));
     }
+    
 
     setupUI() {
         const inviteCodeEl = document.getElementById('inviteCode');
@@ -32,6 +39,40 @@ export default class Host {
         document.getElementById('hostPage').style.display = 'none';
         document.getElementById('lobbyPage').style.display = 'block';
         document.getElementById('startGameButton').style.display = 'inline';
+        document.getElementById('uploadBoardButton').style.display = 'inline'; // Show the upload button for the host
+
+        // Add event listener for upload board button
+        const uploadButton = document.getElementById('uploadBoardButton');
+        const fileInput = document.getElementById('boardFileInput');
+        uploadButton.addEventListener('click', () => fileInput.click());
+
+        // Handle the file input change event
+        fileInput.addEventListener('change', async (event) => {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = async (e) => {
+                    try {
+                        const content = e.target.result;
+                        console.log('Raw file content:', content);  // Add this log
+        
+                        const boardData = JSON.parse(content);  // Parse the JSON
+                        console.log('Board JSON uploaded:', boardData);
+        
+                        // Update the board for the host and render it
+                        this.boardManager.board = Board.fromJSON(boardData);
+                        this.boardManager.drawBoard();
+        
+                        // Broadcast the updated board to all clients
+                        this.broadcastBoard();
+                    } catch (err) {
+                        console.error('Invalid board JSON:', err);  // Add better error handling
+                        alert('Invalid board file.');
+                    }
+                };
+                reader.readAsText(file);
+            }
+        });
     }
 
     addPlayer(player) {
@@ -99,9 +140,6 @@ export default class Host {
     
         this.addKickAndEditListeners();
     }
-    
-    
-    
 
     addKickAndEditListeners() {
         document.querySelectorAll('.kick-button').forEach(button => {
@@ -167,6 +205,7 @@ export default class Host {
             const newPlayer = new Player(conn.peer, data.nickname);
             this.addPlayer(newPlayer);
             this.broadcastPlayerList();
+            this.broadcastBoard();
         } else if (data.type === 'nameChange') {
             this.handleNameChange(data.peerId, data.newName);
         }
@@ -191,6 +230,14 @@ export default class Host {
         this.connections.forEach(conn => {
             conn.send({ type: 'playerList', players: playersData });
         });
+    }
+
+    broadcastBoard() {
+        const serializedBoard = this.boardManager.board.toJSON(); // Serialize the board
+        this.connections.forEach((conn) => {
+            conn.send({ type: 'boardData', board: serializedBoard }); // Send the serialized board
+        });
+        console.log('Board broadcasted to all players:', serializedBoard);
     }
 
     handleDisconnection(peerId) {

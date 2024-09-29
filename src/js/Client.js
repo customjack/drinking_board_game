@@ -1,15 +1,18 @@
 import Peer from 'peerjs';
 import Player from './Player';
+import BoardManager from './BoardManager';
+import Board from './Board';
 
 export default class Client {
     constructor(playerName, hostId) {
         this.peer = null;
         this.conn = null;
         this.player = null;
+        this.boardManager = new BoardManager(); // BoardManager to handle the board
         this.playerName = playerName;
         this.hostId = hostId;
     }
-
+    
     init() {
         this.peer = new Peer();
 
@@ -20,7 +23,6 @@ export default class Client {
             this.conn = this.peer.connect(this.hostId);
 
             this.conn.on('open', () => this.handleOpenConnection());
-            this.conn.on('error', (err) => this.handleConnectionError(err));
             this.conn.on('data', (data) => this.handleData(data));
             this.conn.on('close', () => this.handleDisconnection());
         });
@@ -59,7 +61,15 @@ export default class Client {
             this.updatePlayerList(data.players);
         } else if (data.type === 'kick') {
             this.handleKick(); // Handle being kicked by the host
+        } else if (data.type === 'boardData') {
+            this.handleBoardData(data.board); // Handle board data sent by the host
         }
+    }
+
+    handleBoardData(boardData) {
+        console.log('Received board data from host:', boardData);
+        this.boardManager.board = Board.fromJSON(boardData); // Reconstruct the board from JSON
+        this.boardManager.drawBoard(); // Render the board on the canvas
     }
 
     handleKick() {

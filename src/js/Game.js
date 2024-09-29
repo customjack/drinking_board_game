@@ -63,11 +63,6 @@ export default class Game {
         this.host = new Host(hostName);
         this.host.init();
         this.displayLobbyForHost();
-
-        // Load the default board and draw it
-        this.boardManager.loadDefaultBoard().then(() => {
-            this.boardManager.drawBoard(); // Draw the board when it's loaded
-        });
     }
 
     startJoinGame() {
@@ -81,11 +76,6 @@ export default class Game {
         this.client = new Client(playerName, gameCode);
         this.client.init();
         this.displayLobbyForPlayer();
-
-        // Load the board when joining a game (if necessary)
-        this.boardManager.loadDefaultBoard().then(() => {
-            this.boardManager.drawBoard();
-        });
     }
 
     displayLobbyForHost() {

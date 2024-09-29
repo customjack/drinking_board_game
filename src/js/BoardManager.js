@@ -16,7 +16,7 @@ export default class BoardManager {
             // Create the Board object from JSON
             this.board = Board.fromJSON(boardData);
             console.log("Board object created:", this.board);
-    
+            
             this.drawBoard();
         } catch (error) {
             console.error("Error loading the default board:", error);

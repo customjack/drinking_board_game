@@ -63,6 +63,9 @@
            <!-- Board Preview Section -->
         <div id="boardPreviewSection" style="margin-top: 30px;">
             <h3>Board Preview</h3>
+            <!-- Host: Upload Board Button (only visible to the host) -->
+            <button id="uploadBoardButton" style="display: none;">Upload Board</button>
+            <input type="file" id="boardFileInput" accept=".json" style="display: none;" /> <!-- Hidden file input -->
             <canvas id="boardCanvas" width="800" height="600" style="border: 1px solid #ccc;"></canvas>
         </div>
     </div>
