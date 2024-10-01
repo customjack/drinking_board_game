@@ -36,20 +36,29 @@
         <button id="startJoinButton">Join Game</button>
     </div>
 
+    <!-- Loading Page -->
+    <div id="loadingPage" style="display: none;">
+        <div class="spinner"></div>
+        <p>Setting up the game... Please wait.</p>
+    </div>
+
+
     <!-- Lobby Page -->
     <div id="lobbyPage" style="display: none;">
         <h2>Lobby</h2>
     
         <!-- Invite Code and Copy Button -->
-        <p class="invite-container">
-            <span class="invite-label">Invite Code:</span> 
-            <span id="inviteCode"></span>
-            <button id="copyInviteCodeButton" class="clipboard-icon">&#x1F4CB;</button> <!-- Clipboard icon -->
-            <span id="copyMessage" class="toast-message" style="display: none;">Copied!</span> <!-- Toast message -->
-        </p>
-    
+        <div class="invite-code-container">
+            <div class="invite-code-box">
+                <span id="inviteCode">ABCD-1234</span>
+                <button id="copyInviteCodeButton" class="copy-button" title="Copy Invite Code">
+                    Copy Invite Code
+                </button>
+            </div>
+            <span id="copyMessage" class="toast-message" style="display: none;">Copied!</span>
+        </div>
         <p>Connected Players:</p>
-        <ul id="playerList"></ul>
+        <ul id="lobbyPlayerList"></ul>
     
         <!-- Host: Start Game Button (Visible to Host Only) -->
         <button id="startGameButton" style="display: none;">Start Game</button>
@@ -66,9 +75,20 @@
             <!-- Host: Upload Board Button (only visible to the host) -->
             <button id="uploadBoardButton" style="display: none;">Upload Board</button>
             <input type="file" id="boardFileInput" accept=".json" style="display: none;" /> <!-- Hidden file input -->
-            <!-- <canvas id="boardCanvas" width="800" height="600" style="border: 1px solid #ccc;"></canvas> -->
-            <div id="boardContainer"></div>
+            <div id="lobbyBoardContainer"></div>
         </div>
     </div>
+
+    <!-- Game Page -->
+    <div id="gamePage" style="display: none;">
+        <div id="gameContainer" class="game-container">
+            <div id="gameSidebar" class="game-sidebar">
+                <ul id="gamePlayerList"></ul> <!-- Sidebar for player list -->
+            </div>
+            <div id="gameBoardContainer"></div>
+        </div>
+    </div>
+
+</div>
 </body>
 </html>

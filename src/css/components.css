@@ -1,0 +1,244 @@
+/* components.css */
+
+/* Center the buttons as well */
+button {
+    width: 80%;              /* Make the buttons responsive and centered */
+    max-width: 300px;         /* Set a maximum width */
+    padding: 10px;
+    margin: 10px 0;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+/* Style for Host badge */
+.host-badge {
+    background-color: #007bff;
+    color: white;
+    padding: 2px 6px;
+    border-radius: 12px;
+    font-size: 12px;
+    margin-left: 8px;
+    display: inline-block;
+    font-weight: bold;
+}
+
+/* Style for You badge */
+.you-badge {
+    background-color: #28a745;
+    color: white;
+    padding: 2px 6px;
+    border-radius: 12px;
+    font-size: 12px;
+    margin-left: 8px;
+    display: inline-block;
+    font-weight: bold;
+}
+
+/* Toast message style */
+.toast-message {
+    font-size: 14px;
+    color: green;
+    margin-left: 5px;
+    font-weight: bold;
+    vertical-align: middle;
+}
+
+/* Player List Styling */
+#playerList {
+    list-style-type: none;
+    padding: 0;
+}
+
+#playerList li {
+    margin: 10px 0;
+    padding: 10px;
+    background-color: #f1f1f1;
+    border-radius: 5px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    font-size: 16px;
+    color: #555;
+}
+
+/* Red buttons */
+.red-button {
+    background-color: #ff4d4d;  /* Red background */
+    color: white;               /* White text */
+    border: none;               /* No border */
+    padding: 10px 20px;         /* Padding for button size */
+    border-radius: 5px;         /* Rounded corners */
+    cursor: pointer;            /* Pointer cursor on hover */
+    transition: background-color 0.3s ease;  /* Smooth transition for hover effect */
+}
+
+.red-button:hover {
+    background-color: #e60000;  /* Darker red on hover */
+}
+
+.red-button:disabled {
+    background-color: #ffcccc;  /* Lighter red when disabled */
+    cursor: not-allowed;        /* Disabled cursor */
+}
+
+/* Player container */
+.player-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    padding: 10px;
+    background-color: #f1f1f1;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Edit and Kick Buttons */
+.edit-button,
+.kick-button {
+    background: none;
+    border: none;
+    font-size: 16px; /* Adjusted size to fit emoji */
+    cursor: pointer;
+    padding: 0;
+    margin: 0;
+    width: 24px; /* Match button size to emoji size */
+    height: 24px; /* Match button size to emoji size */
+    color: #007bff;
+    transition: color 0.3s ease;
+}
+
+.edit-button:hover {
+    color: #007bff;
+}
+
+.kick-button:hover {
+    color: #ff4d4d;
+}
+
+/* Flex container for player name and badges */
+.player-name-badges {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center; /* Center align the name and badges */
+    gap: 8px;
+    flex-grow: 1; /* Ensure it takes up available space */
+    text-align: center;
+}
+
+/* Ensure the container aligns buttons on the left */
+.player-buttons {
+    display: flex;
+    gap: 5px;
+    align-items: center;
+}
+
+/* Style for the "Invite Code" label */
+.invite-label {
+    font-weight: bold;
+    font-size: 22px;
+    background: linear-gradient(90deg, #ff416c, #ff4b2b);
+    -webkit-background-clip: text;
+    color: transparent;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
+    margin-right: 10px;
+    letter-spacing: 0.5px;
+}
+
+/* Invite code box styling */
+.invite-code-box {
+    display: inline-flex;
+    align-items: center;
+    background: linear-gradient(135deg, #ff416c, #ff4b2b);
+    padding: 10px 20px;
+    border-radius: 12px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    gap: 10px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    position: relative; /* Ensure the clipboard icon stays within bounds */
+}
+
+/* On hover, slightly enlarge the box and add a glow */
+.invite-code-box:hover {
+    transform: scale(1.05);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
+}
+
+/* Invite Code Text */
+#inviteCode {
+    font-size: 22px;
+    font-weight: bold;
+    color: white;
+    letter-spacing: 2px;
+    font-family: 'Courier New', Courier, monospace;
+    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+}
+
+/* Style for the clipboard icon button */
+.clipboard-icon {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 22px;
+    line-height: 1;
+    padding: 5px;
+    margin: 0;
+    color: #007bff;
+    transition: color 0.3s ease;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.clipboard-icon:hover {
+    color: #0056b3;
+    background-color: rgba(0, 0, 0, 0.1); /* Adds a subtle hover effect */
+}
+
+/* Invite code container */
+.invite-container {
+    display: inline-flex;
+    align-items: center;
+    white-space: nowrap;
+    gap: 5px;
+    position: relative;
+}
+
+
+/* Style for choice buttons */
+.choices-ui {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.choice-button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.choice-button:hover {
+    background-color: #0056b3;
+}
+
+@keyframes fade-in-out {
+    0% { opacity: 0; }
+    20% { opacity: 1; }
+    80% { opacity: 1; }
+    100% { opacity: 0; }
+}

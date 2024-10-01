@@ -1,10 +1,11 @@
+// BoardManager.js
+
 import Board from './Board.js';
 
 export default class BoardManager {
     constructor() {
         this.board = null;
-        this.boardContainer = document.getElementById('boardContainer'); // Assuming a container div for the board
-        this.svgLayer = null;  // We'll create the SVG layer for the connections
+        this.boardContainer = document.getElementById('lobbyBoardContainer'); // Assuming a container div for the board
     }
 
     // Load the default board
@@ -14,40 +15,24 @@ export default class BoardManager {
             const response = await fetch('/assets/maps/defaultBoard.json');
             const boardData = await response.json();
             console.log("Default board data loaded:", boardData);
-    
+
             // Create the Board object from JSON
             this.board = Board.fromJSON(boardData);
             console.log("Board object created:", this.board);
-            
+
             this.drawBoard();
         } catch (error) {
+            console.log(this.boardContainer);
             console.error("Error loading the default board:", error);
         }
     }
 
-    // Function to draw the board as HTML elements and SVG connections
+    // Function to draw the board as HTML elements
     drawBoard() {
         // Clear the previous board
         this.boardContainer.innerHTML = '';
 
-        // Set board container dimensions (ensure the container is properly sized)
-        const containerWidth = this.boardContainer.offsetWidth || 800;
-        const containerHeight = this.boardContainer.offsetHeight || 600;
-
-        // Add an SVG element to draw lines
-        this.svgLayer = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-        this.svgLayer.setAttribute("width", containerWidth);
-        this.svgLayer.setAttribute("height", containerHeight);
-        this.svgLayer.style.position = "absolute";
-        this.svgLayer.style.top = "0";
-        this.svgLayer.style.left = "0";
-        this.svgLayer.style.zIndex = "0";  // Keep the lines behind the spaces
-        this.svgLayer.style.pointerEvents = "none";  // Prevent interaction with SVG lines
-
-        // Append the SVG layer to the board container
-        this.boardContainer.appendChild(this.svgLayer);
-
-        // Draw lines and arrows between connected spaces
+        // Draw connections between spaces using HTML elements
         this.drawConnections();
 
         // Create HTML elements for each space
@@ -70,7 +55,7 @@ export default class BoardManager {
             spaceElement.style.justifyContent = 'center';
             spaceElement.style.color = textColor;
             spaceElement.style.cursor = 'pointer';
-            spaceElement.style.zIndex = "1";  // Make sure spaces are above the lines
+            spaceElement.style.zIndex = "2";  // Make sure spaces are above the connections
             spaceElement.innerText = space.name;
 
             // Add a click listener for interaction
@@ -81,89 +66,113 @@ export default class BoardManager {
         });
     }
 
-    // Draw lines and arrows between connected spaces using SVG
+    // Draw connections between spaces using HTML elements
     drawConnections() {
-        const arrowLength = 10; // Length of the arrowhead
-        const arrowOffset = arrowLength*1.25; // Offset for bidirectional arrows
+        // Keep track of drawn connections to avoid duplicates
+        const drawnConnections = new Set();
 
         this.board.spaces.forEach(space => {
             space.connections.forEach(connection => {
                 const targetSpace = connection.target;
 
                 if (targetSpace && (connection.drawConnection === undefined || connection.drawConnection === true)) {
-                    const { x: startX, y: startY } = space.visualDetails;
-                    const { x: endX, y: endY } = targetSpace.visualDetails;
+                    const connectionKey = `${Math.min(space.id, targetSpace.id)}-${Math.max(space.id, targetSpace.id)}`;
 
-                    // Log the coordinates for debugging
-                    console.log(`Drawing line from (${startX}, ${startY}) to (${endX}, ${endY})`);
+                    if (!drawnConnections.has(connectionKey)) {
+                        const { x: startX, y: startY } = space.visualDetails;
+                        const { x: endX, y: endY } = targetSpace.visualDetails;
 
-                    // Create an SVG line element
-                    const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
-                    line.setAttribute("x1", startX);
-                    line.setAttribute("y1", startY);
-                    line.setAttribute("x2", endX);
-                    line.setAttribute("y2", endY);
-                    line.setAttribute("stroke", "black");
-                    line.setAttribute("stroke-width", "2");
+                        // Check for bidirectional connection
+                        const reverseConnection = targetSpace.connections.find(conn => conn.target.id === space.id);
+                        const isBidirectional = !!reverseConnection;
 
-                    // Append the line to the SVG layer
-                    this.svgLayer.appendChild(line);
+                        if (isBidirectional) {
+                            // Draw single line with two arrows
+                            this.drawBidirectionalConnection(startX, startY, endX, endY);
+                        } else {
+                            // Draw a single directional connection
+                            this.drawConnectionWithArrow(startX, startY, endX, endY);
+                        }
 
-                    // Check for bidirectional connection
-                    const reverseConnection = targetSpace.connections.find(conn => conn.target.id === space.id);
-                    const isBidirectional = !!reverseConnection;
-
-                    if (isBidirectional) {
-                        // Draw bidirectional arrows with an offset
-                        this.drawBidirectionalArrows(startX, startY, endX, endY, arrowLength, arrowOffset);
-                    } else {
-                        // Draw a single arrow pointing towards the target
-                        const midX = (startX + endX) / 2;
-                        const midY = (startY + endY) / 2;
-                        const angle = Math.atan2(endY - startY, endX - startX);
-
-                        // Draw the arrowhead at the midpoint
-                        this.drawArrow(midX, midY, angle, arrowLength);
+                        drawnConnections.add(connectionKey);
                     }
                 }
             });
         });
     }
 
-    // Helper function to draw an arrow at a given position and angle
-    drawArrow(x, y, angle, length) {
-        const headAngle = Math.PI / 6; // Angle for the arrowhead
-        const x1 = x - length * Math.cos(angle - headAngle);
-        const y1 = y - length * Math.sin(angle - headAngle);
-        const x2 = x - length * Math.cos(angle + headAngle);
-        const y2 = y - length * Math.sin(angle + headAngle);
+    // Helper function to draw a single directional connection with an arrow
+    drawConnectionWithArrow(x1, y1, x2, y2) {
+        // Draw the line
+        this.drawLine(x1, y1, x2, y2);
 
-        // Create an SVG path element for the arrowhead
-        const arrow = document.createElementNS("http://www.w3.org/2000/svg", "path");
-        const d = `M ${x},${y} L ${x1},${y1} L ${x2},${y2} Z`; // Path data for the triangle
-        arrow.setAttribute("d", d);
-        arrow.setAttribute("fill", "black");
-
-        // Append the arrow to the SVG layer
-        this.svgLayer.appendChild(arrow);
+        // Draw the arrowhead at 2/3 along the line towards the target
+        const arrowPos = this.getPointAlongLine(x1, y1, x2, y2, 0.5);
+        this.drawArrowhead(arrowPos.x, arrowPos.y, x1, y1, x2, y2);
     }
 
-    // Helper function to draw two arrows for bidirectional connections
-    drawBidirectionalArrows(startX, startY, endX, endY, length, offset) {
-        const angleForward = Math.atan2(endY - startY, endX - startX);   // Angle for forward arrow
-        const angleBackward = Math.atan2(startY - endY, startX - endX); // Angle for reverse arrow
+    // Helper function to draw a bidirectional connection with two arrows
+    drawBidirectionalConnection(x1, y1, x2, y2) {
+        // Draw the line
+        this.drawLine(x1, y1, x2, y2);
 
-        // Calculate midpoints with slight offset for bidirectional arrows
-        const midXForward = (startX + endX) / 2 + offset * Math.cos(angleForward);
-        const midYForward = (startY + endY) / 2 - offset * Math.sin(angleForward);
-        const midXBackward = (startX + endX) / 2 - offset * Math.cos(angleForward);
-        const midYBackward = (startY + endY) / 2 + offset * Math.sin(angleForward);
+        // Draw the first arrowhead at 2/3 along the line towards the target
+        const arrowPos1 = this.getPointAlongLine(x1, y1, x2, y2, 0.55);
+        this.drawArrowhead(arrowPos1.x, arrowPos1.y, x1, y1, x2, y2);
 
-        // Draw forward arrow
-        this.drawArrow(midXForward, midYForward, angleForward, length);
+        // Draw the second arrowhead at 2/3 along the line towards the start
+        const arrowPos2 = this.getPointAlongLine(x2, y2, x1, y1, 0.55);
+        this.drawArrowhead(arrowPos2.x, arrowPos2.y, x2, y2, x1, y1);
+    }
 
-        // Draw backward arrow
-        this.drawArrow(midXBackward, midYBackward, angleBackward, length);
+    // Function to draw a line between two points using an HTML element
+    drawLine(x1, y1, x2, y2) {
+        const length = Math.hypot(x2 - x1, y2 - y1);
+        const angle = Math.atan2(y2 - y1, x2 - x1) * (180 / Math.PI);
+
+        const line = document.createElement('div');
+        line.classList.add('connection-line');
+        line.style.position = 'absolute';
+        line.style.left = `${x1}px`;
+        line.style.top = `${y1}px`;
+        line.style.width = `${length}px`;
+        line.style.height = '2px'; // Line thickness
+        line.style.backgroundColor = 'black';
+        line.style.transformOrigin = '0 0';
+        line.style.transform = `rotate(${angle}deg)`;
+        line.style.zIndex = "1"; // Ensure lines are behind spaces
+
+        this.boardContainer.appendChild(line);
+    }
+
+    // Function to draw an arrowhead at a given position
+    drawArrowhead(x, y, x1, y1, x2, y2) {
+        const angle = Math.atan2(y2 - y1, x2 - x1) - Math.PI/2;
+
+        const arrowSize = 10; // Size of the arrowhead
+
+        const arrow = document.createElement('div');
+        arrow.classList.add('arrowhead');
+        arrow.style.position = 'absolute';
+        arrow.style.left = `${x - arrowSize / 2}px`;
+        arrow.style.top = `${y - arrowSize / 2}px`;
+        arrow.style.width = '0';
+        arrow.style.height = '0';
+        arrow.style.borderLeft = `${arrowSize / 2}px solid transparent`;
+        arrow.style.borderRight = `${arrowSize / 2}px solid transparent`;
+        arrow.style.borderTop = `${arrowSize}px solid black`;
+        arrow.style.transform = `rotate(${angle}rad)`;
+        arrow.style.transformOrigin = 'center center';
+        arrow.style.zIndex = "1"; // Ensure arrows are behind spaces
+
+        this.boardContainer.appendChild(arrow);
+    }
+
+    // Helper function to get a point along a line at a given percentage
+    getPointAlongLine(x1, y1, x2, y2, percentage) {
+        const x = x1 + (x2 - x1) * percentage;
+        const y = y1 + (y2 - y1) * percentage;
+        return { x, y };
     }
 
     // Handle space click interactions
@@ -176,7 +185,9 @@ export default class BoardManager {
     highlightSpaces(spaces) {
         spaces.forEach(space => {
             const spaceElement = document.getElementById(`space-${space.id}`);
-            spaceElement.classList.add('highlight');
+            if (spaceElement) {
+                spaceElement.classList.add('highlight');
+            }
         });
     }
 

@@ -1,26 +1,35 @@
 import Peer from 'peerjs';
 import Player from './Player';
-import BoardManager from './BoardManager';
+import GameState from './GameState';
 import Board from './Board';
+import BoardManager from './BoardManager';
 
 export default class Client {
-    constructor(playerName, hostId) {
+    constructor(playerName, hostId, clientEventHandler) {
         this.peer = null;
         this.conn = null;
         this.player = null;
-        this.boardManager = new BoardManager(); // BoardManager to handle the board
         this.playerName = playerName;
         this.hostId = hostId;
+        this.eventHandler = clientEventHandler;
+        this.players = [];  // List of players, including the client itself
+        this.gameState = null;  // The local copy of the GameState
     }
-    
-    init() {
+
+    async init() {
         this.peer = new Peer();
 
-        this.peer.on('open', (id) => {
+        this.peer.on('open', async (id) => {
             console.log('My ID:', id);
             this.player = new Player(id, this.playerName);
+            this.players.push(this.player);  // Add the client itself to the list of players
 
             this.conn = this.peer.connect(this.hostId);
+
+            this.eventHandler.updatePlayerList(); // Ensure the player list is updated after the player is initialized
+
+            // Create the initial GameState
+            await this.initializeGameState();
 
             this.conn.on('open', () => this.handleOpenConnection());
             this.conn.on('data', (data) => this.handleData(data));
@@ -30,130 +39,94 @@ export default class Client {
         this.peer.on('error', (err) => this.handleConnectionError(err));
     }
 
+    async initializeGameState() {
+        const boardManager = new BoardManager();
+        await boardManager.loadDefaultBoard();  // Load the board (returns a Promise)
+
+        // Create the GameState with the board and initial players list (including the client itself)
+        this.gameState = new GameState(boardManager.board, this.players);
+
+        console.log("GameState initialized with board:", this.gameState.board);
+    }
+
     handleOpenConnection() {
         console.log('Connected to host');
-        
-        // Send the join request to the host
-        this.conn.send({ type: 'join', peerId: this.player.peerId, nickname: this.player.nickname });
-    
-        // Update the invite code on the client's UI
+
+        this.conn.send({
+            type: 'join',
+            peerId: this.player.peerId,
+            nickname: this.player.nickname,
+        });
+
         const inviteCodeEl = document.getElementById('inviteCode');
         if (inviteCodeEl) {
-            inviteCodeEl.textContent = this.hostId; // Set the invite code to host ID
+            inviteCodeEl.textContent = this.hostId;
         }
-    
-        this.showLobby();
-    }
-    
 
-    handleConnectionError() {
+        this.eventHandler.displayLobbyForPlayer();
+    }
+
+    handleConnectionError(err) {
         alert('The lobby does not exist or the connection failed. Please try again.');
-        location.reload(); // Redirect back to the home page
+        location.reload();
     }
 
     handleDisconnection() {
         alert('Disconnected from the host.');
-        location.reload(); // Redirect to home on disconnection
+        location.reload();
     }
 
+    // Handle incoming data from the host or other clients
     handleData(data) {
         if (data.type === 'playerList') {
-            this.updatePlayerList(data.players);
+            this.updatePlayersList(data.players);  // Update the local list of players
         } else if (data.type === 'kick') {
-            this.handleKick(); // Handle being kicked by the host
+            this.handleKick();
         } else if (data.type === 'boardData') {
-            this.handleBoardData(data.board); // Handle board data sent by the host
+            this.handleBoardData(data.board);
+        } else if (data.type === 'gameState') {
+            this.handleGameStateUpdate(data.gameState);
+        } else if (data.type === 'startGame') {
+            // Signal received to start the game
+            this.eventHandler.startGame();  // Switch the client to the game page
         }
+    }
+
+    updatePlayersList(playersData) {
+        // Update the local list of players with the new data
+        this.players = playersData.map(playerData => Player.fromJSON(playerData));
+        this.eventHandler.updatePlayerList();
+        console.log("Players list updated:", this.players);
     }
 
     handleBoardData(boardData) {
         console.log('Received board data from host:', boardData);
-        this.boardManager.board = Board.fromJSON(boardData); // Reconstruct the board from JSON
-        this.boardManager.drawBoard(); // Render the board on the canvas
+        this.gameState.board = Board.fromJSON(boardData);  // Directly update the GameState's board
+        this.eventHandler.updateGameBoard();  // Redraw the board using the GameState
+    }
+
+    handleGameStateUpdate(gameStateData) {
+        this.gameState = GameState.fromJSON(gameStateData);  // Sync local game state with the host's state
+        console.log('Game state updated:', this.gameState);
+        this.players = this.gameState.players;  // Sync players list with the game state
+        this.eventHandler.updateGameBoard();  // Update the board and UI based on the new state
+        this.eventHandler.updatePlayerList();  // Update the players list in the UI
+    }
+
+    // Send the full GameState to the host
+    sendGameState() {
+        if (this.conn && this.gameState) {
+            const gameStateJSON = this.gameState.toJSON();  // Serialize the entire GameState to JSON
+            this.conn.send({
+                type: 'gameStateUpdate',
+                peerId: this.player.peerId,
+                gameState: gameStateJSON  // Send the full GameState
+            });
+        }
     }
 
     handleKick() {
         alert('You have been kicked from the game.');
-        location.reload(); // Redirect the client to the home page
-    }
-
-    updatePlayerList(playersData) {
-        const playerList = document.getElementById('playerList');
-        if (!playerList) return;
-    
-        playerList.innerHTML = '';  // Clear the current list
-    
-        playersData.forEach(playerData => {
-            const li = document.createElement('li');
-            li.className = 'player-container';
-    
-            // Create a div to hold player name and badges
-            const playerNameBadges = document.createElement('div');
-            playerNameBadges.className = 'player-name-badges';
-    
-            // Add player name
-            let nameHtml = `<span>${playerData.nickname}</span>`;
-    
-            // Add badges for "Host" and "You"
-            if (playerData.isHost) {
-                nameHtml += `<span class="host-badge">Host</span>`;
-            }
-            if (playerData.peerId === this.player.peerId) {
-                nameHtml += `<span class="you-badge">You</span>`;
-            }
-    
-            playerNameBadges.innerHTML = nameHtml;
-    
-            // Create a div for buttons (edit button only for "You")
-            const playerButtons = document.createElement('div');
-            playerButtons.className = 'player-buttons';
-    
-            // Show edit button only if the player is "You"
-            if (playerData.peerId === this.player.peerId) {
-                const editButton = document.createElement('button');
-                editButton.className = 'edit-button';
-                editButton.textContent = '✏️';
-                editButton.setAttribute('data-peerid', playerData.peerId);
-                playerButtons.appendChild(editButton);
-            }
-    
-            // Append name and badges to the player container
-            li.appendChild(playerNameBadges);
-    
-            // Append buttons to the player container
-            li.appendChild(playerButtons);
-    
-            playerList.appendChild(li);
-        });
-    
-        this.addEditListeners();
-    }
-    
-    
-    
-    
-
-    addEditListeners() {
-        document.querySelectorAll('.edit-button').forEach(button => {
-            button.addEventListener('click', (e) => {
-                const peerId = e.target.getAttribute('data-peerid');
-                this.editPlayerName(peerId);
-            });
-        });
-    }
-
-    editPlayerName(peerId) {
-        if (peerId === this.player.peerId) {
-            const newName = prompt('Enter your new name:', this.player.nickname);
-            if (newName) {
-                this.player.nickname = newName;
-                this.conn.send({ type: 'nameChange', peerId: this.player.peerId, newName });
-            }
-        }
-    }
-
-    showLobby() {
-        document.getElementById('joinPage').style.display = 'none';
-        document.getElementById('lobbyPage').style.display = 'block';
+        location.reload();
     }
 }

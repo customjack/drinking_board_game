@@ -1,0 +1,48 @@
+/* layout.css */
+
+/* Main Section Styling */
+#main {
+    margin-bottom: 30px;
+    padding: 20px;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    display: inline-block;
+    width: 300px;
+}
+
+/* Center host and join forms */
+#hostPage, #joinPage {
+    display: flex;
+    flex-direction: column;    /* Stack elements vertically */
+    align-items: center;       /* Center elements horizontally */
+    text-align: center;        /* Ensure text within labels and inputs is centered */
+    margin-top: 20px;
+}
+
+/* Grouping inputs on host and join pages to stack them properly */
+.input-group {
+    display: flex;
+    flex-direction: column;    /* Stack inputs vertically */
+    align-items: center;
+    width: 100%;               /* Make the container take full width */
+    margin-bottom: 20px;       /* Space between inputs and any buttons */
+}
+
+/* Game Page Layout */
+#gamePage {
+    display: flex;
+    height: 100vh;
+}
+
+#gameSidebar {
+    width: 250px;
+    background-color: #f1f1f1;
+    padding: 20px;
+    border-right: 1px solid #ccc;
+}
+
+#gameSidebar h2 {
+    font-size: 24px;
+    margin-bottom: 20px;
+}

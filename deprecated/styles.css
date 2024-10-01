@@ -1,0 +1,406 @@
+/* General Body Styles */
+body {
+    font-family: 'Arial', sans-serif;
+    text-align: center;
+    margin-top: 50px;
+    background-color: #f4f7f6;
+    color: #333;
+}
+
+/* Style for Headers */
+h1 {
+    font-size: 48px; /* Larger font for main title */
+    font-weight: bold;
+    background: linear-gradient(90deg, #ff416c, #ff4b2b); /* Cool gradient effect */
+    -webkit-background-clip: text;
+    color: transparent; /* Make the gradient apply to text */
+    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2); /* Subtle shadow for depth */
+    margin-bottom: 30px;
+    letter-spacing: 1px; /* Slightly spaced-out letters */
+}
+
+h2 {
+    font-size: 36px; /* Make the lobby header larger */
+    font-weight: bold;
+    background: linear-gradient(90deg, #00c6ff, #0072ff); /* Another gradient for variation */
+    -webkit-background-clip: text;
+    color: transparent;
+    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2); /* Subtle shadow for depth */
+    margin-bottom: 20px;
+}
+
+/* Style for Invite Code */
+#inviteCode {
+    font-weight: bold;
+    font-size: 22px; /* Increase the size of the invite code */
+    color: #ff416c;  /* Make it stand out with a bright color */
+    background-color: #ffe6e6; /* Light background for contrast */
+    padding: 5px 10px; /* Add padding around the invite code */
+    border-radius: 5px; /* Slightly rounded corners */
+    letter-spacing: 1px; /* Spacing for a modern look */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Small shadow for depth */
+}
+
+/* Main Section Styling */
+#main {
+    margin-bottom: 30px;
+    padding: 20px;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    display: inline-block;
+    width: 300px;
+}
+
+/* Center host and join forms */
+#hostPage, #joinPage {
+    display: flex;
+    flex-direction: column;    /* Stack elements vertically */
+    align-items: center;       /* Center elements horizontally */
+    text-align: center;        /* Ensure text within labels and inputs is centered */
+    margin-top: 20px;
+}
+
+/* Grouping inputs on host and join pages to stack them properly */
+.input-group {
+    display: flex;
+    flex-direction: column;    /* Stack inputs vertically */
+    align-items: center;
+    width: 100%;               /* Make the container take full width */
+    margin-bottom: 20px;       /* Space between inputs and any buttons */
+}
+
+/* Ensure the label and input fields are grouped and centered */
+#hostPage label, #joinPage label {
+    display: block;
+    width: 100%;
+    text-align: center;       /* Center the label text */
+    margin-bottom: 5px;       /* Space between label and input */
+}
+
+/* Style for input fields */
+input {
+    width: 80%;              /* Centered width for input fields */
+    max-width: 300px;         /* Set a maximum width */
+    padding: 10px;
+    margin: 10px 0;          /* Space between inputs */
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    font-size: 16px;
+    text-align: center;       /* Center the input text */
+}
+
+/* Center the buttons as well */
+button {
+    width: 80%;              /* Make the buttons responsive and centered */
+    max-width: 300px;         /* Set a maximum width */
+    padding: 10px;
+    margin: 10px 0;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+/* Style for Host badge */
+.host-badge {
+    background-color: #007bff;
+    color: white;
+    padding: 2px 6px;
+    border-radius: 12px;
+    font-size: 12px;
+    margin-left: 8px;
+    display: inline-block;
+    font-weight: bold;
+}
+
+/* Style for You badge */
+.you-badge {
+    background-color: #28a745;
+    color: white;
+    padding: 2px 6px;
+    border-radius: 12px;
+    font-size: 12px;
+    margin-left: 8px;
+    display: inline-block;
+    font-weight: bold;
+}
+
+/* Flexbox container for the invite code and the copy button */
+.invite-container {
+    display: inline-flex;
+    align-items: center;
+    white-space: nowrap;
+    gap: 5px;
+}
+
+/* Style for the clipboard icon button */
+.clipboard-icon {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 20px;
+    line-height: 1;
+    padding: 0;
+    margin: 0;
+    width: auto;
+    height: auto;
+    color: #007bff;
+    transition: color 0.3s ease;
+    vertical-align: middle;
+}
+
+.clipboard-icon:hover {
+    color: #0056b3;
+}
+
+/* Toast message style */
+.toast-message {
+    font-size: 14px;
+    color: green;
+    margin-left: 5px;
+    font-weight: bold;
+    vertical-align: middle;
+}
+
+/* Player List Styling */
+#playerList {
+    list-style-type: none;
+    padding: 0;
+}
+
+#playerList li {
+    margin: 10px 0;
+    padding: 10px;
+    background-color: #f1f1f1;
+    border-radius: 5px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    font-size: 16px;
+    color: #555;
+}
+
+.red-button {
+    background-color: #ff4d4d;  /* Red background */
+    color: white;               /* White text */
+    border: none;               /* No border */
+    padding: 10px 20px;         /* Padding for button size */
+    border-radius: 5px;         /* Rounded corners */
+    cursor: pointer;            /* Pointer cursor on hover */
+    transition: background-color 0.3s ease;  /* Smooth transition for hover effect */
+}
+
+.red-button:hover {
+    background-color: #e60000;  /* Darker red on hover */
+}
+
+.red-button:disabled {
+    background-color: #ffcccc;  /* Lighter red when disabled */
+    cursor: not-allowed;        /* Disabled cursor */
+}
+
+.player-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    padding: 10px;
+    background-color: #f1f1f1;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Edit and Kick Buttons */
+.edit-button,
+.kick-button {
+    background: none;
+    border: none;
+    font-size: 16px; /* Adjusted size to fit emoji */
+    cursor: pointer;
+    padding: 0;
+    margin: 0;
+    width: 24px; /* Match button size to emoji size */
+    height: 24px; /* Match button size to emoji size */
+    color: #007bff;
+    transition: color 0.3s ease;
+}
+
+.edit-button:hover {
+    color: #007bff;
+}
+
+.kick-button:hover {
+    color: #ff4d4d;
+}
+
+/* Flex container for player name and badges */
+.player-name-badges {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center; /* Center align the name and badges */
+    gap: 8px;
+    flex-grow: 1; /* Ensure it takes up available space */
+    text-align: center;
+}
+
+/* Ensure the container aligns buttons on the left */
+.player-buttons {
+    display: flex;
+    gap: 5px;
+    align-items: center;
+}
+
+/* Style for the "Invite Code" label */
+.invite-label {
+    font-weight: bold;
+    font-size: 22px; /* Increase the font size */
+    background: linear-gradient(90deg, #ff416c, #ff4b2b); /* Cool gradient for label */
+    -webkit-background-clip: text;
+    color: transparent; /* Apply the gradient to the text */
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2); /* Add a subtle shadow for depth */
+    margin-right: 10px; /* Add spacing between label and code */
+    letter-spacing: 0.5px; /* A little letter spacing for a modern look */
+}
+
+/* Style for choice buttons */
+.choices-ui {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.choice-button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.choice-button:hover {
+    background-color: #0056b3;
+}
+
+/* Container for the board */
+#boardContainer {
+    position: relative;
+    width: 800px;  /* Or dynamically set based on your board's size */
+    height: 600px;
+    background-color: #f4f4f4;
+    border: 1px solid #ccc;
+    margin: 0 auto; /* Center the board on the page */
+}
+
+/* Styling for the board spaces */
+.board-space {
+    position: absolute;
+    border: 2px solid black;  /* Border for the spaces */
+    border-radius: 50%;       /* Makes the space a circle */
+    text-align: center;
+    font-size: 14px;
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+/* Highlighted state for spaces */
+.board-space.highlight {
+    transform: scale(1.1);         /* Slightly enlarge the space */
+    box-shadow: 0 0 10px yellow;   /* Add a glowing effect */
+}
+
+/* Game Page Layout */
+#gamePage {
+    display: flex;
+    height: 100vh;
+}
+
+#gameSidebar {
+    width: 250px;
+    background-color: #f1f1f1;
+    padding: 20px;
+    border-right: 1px solid #ccc;
+}
+
+#gameSidebar h2 {
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+
+#playerList {
+    list-style-type: none;
+    padding: 0;
+}
+
+#playerList li {
+    padding: 10px;
+    margin-bottom: 10px;
+    background-color: #f9f9f9;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+#gameBoardContainer {
+    flex-grow: 1;
+    position: relative;
+    background-color: #ffffff;
+}
+
+/* Player pieces */
+.player-piece {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: #ff4b2b;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+}
+
+.player-piece:hover {
+    transform: scale(1.2);
+}
+
+.piece {
+    position: absolute;
+    width: 30px;
+    height: 30px;
+    background-color: #007bff;
+    border-radius: 50%;
+    text-align: center;
+    color: #fff;
+    line-height: 30px;
+    z-index: 2;
+}
+
+/* Add this to your CSS file */
+
+.spinner {
+    margin: 100px auto 20px auto;
+    width: 50px;
+    height: 50px;
+    border: 6px solid #ccc;
+    border-top-color: #1a8cff;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+
+
