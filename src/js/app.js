@@ -1,8 +1,8 @@
 // app.js
 
 import '../css/styles.css';
-import HostEventHandler from './HostEventHandler';
-import ClientEventHandler from './ClientEventHandler';
+import HostEventHandler from './eventHandlers/HostEventHandler';
+import ClientEventHandler from './eventHandlers/ClientEventHandler';
 
 document.addEventListener('DOMContentLoaded', () => {
     // DOM Elements

@@ -1,6 +1,6 @@
 // BoardManager.js
 
-import Board from './Board.js';
+import Board from '../models/Board.js';
 
 export default class BoardManager {
     constructor() {
@@ -16,6 +16,14 @@ export default class BoardManager {
         // Use the Board's toJSON and fromJSON for deep copying
         const boardCopy = Board.fromJSON(newBoard.toJSON());
         this.board = boardCopy;
+    }
+
+    /**
+     * Set the board container to a new DOM element.
+     * @param {HTMLElement} containerElement - The new container element.
+     */
+    setBoardContainer(containerElement) {
+        this.boardContainer = containerElement;
     }
 
     // Load the default board

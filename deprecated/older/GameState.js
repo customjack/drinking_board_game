@@ -1,5 +1,5 @@
-import Player from './Player';
-import Board from './Board';
+import Player from '../../src/js/models/Player';
+import Board from '../../src/js/models/Board';
 
 export default class GameState {
     constructor(board, players = []) {

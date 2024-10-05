@@ -18,10 +18,11 @@ export default class Client extends BasePeer {
         const id = await this.initPeer();  // Get the id from initPeer()
         console.log("Peer connection open with ID:", id);
 
+        await this.initializeGameState();
+
         const player = new Player(id, this.originalName);
         this.addPlayer(player);
 
-        await this.initializeGameState();
         this.connectToHost();
     }
 
@@ -32,6 +33,20 @@ export default class Client extends BasePeer {
         this.conn.on('data', (data) => this.handleData(data));
         this.conn.on('close', () => this.handleDisconnection());
         this.conn.on('error', (err) => this.handleConnectionError(err));
+    }
+
+    // Method to propose a new game state to the host
+    proposeGameState(proposedGameState) {
+        // Only propose if connected to host
+        if (this.conn && this.conn.open) {
+            this.conn.send({
+                type: 'proposeGameState',
+                gameState: proposedGameState.toJSON(),
+            });
+        } else {
+            console.error('Cannot propose game state, not connected to host.');
+        }
+        console.log("Proposed game state: ", proposedGameState);
     }
 
     handleOpenConnection() {

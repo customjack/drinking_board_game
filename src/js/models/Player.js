@@ -1,5 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
-import ColorAssigner from './utils/ColorAssigner';  // Import the ColorAssigner class
+import ColorAssigner from '../utils/ColorAssigner';  // Import the ColorAssigner class
+import RollEngine from '../utils/RollEngine';        // Import the RollEngine class
 
 export default class Player {
     /**
@@ -19,8 +20,15 @@ export default class Player {
         // Default to space 1 at the start
         this.currentSpaceId = 1;  // The space the player is currently on
 
+        // Initialize player and peer colors
         this.playerColor = (new ColorAssigner()).assignColor(this.playerId);  // Assign a unique color using ColorAssigner based on playerId
         this.peerColor   = (new ColorAssigner()).assignColor(this.peerId);    // Assign a unique color using ColorAssigner based on peerId
+
+        // Initialize RollEngine with a seed based on the player's unique ID
+        this.rollEngine = new RollEngine(this.generateSeedFromId(this.playerId));
+
+        // Track the number of turns the player has taken
+        this.turnsTaken = 0;  // New attribute for tracking turns taken
     }
 
     /**
@@ -32,6 +40,41 @@ export default class Player {
         console.log("Generated new Player with ID: ", id);
         console.log("Player attached to client: ", this.peerId);
         return id; // Generates a UUID v4
+    }
+
+    /**
+     * Generate a seed from the playerId to ensure consistent rolls across sessions.
+     * @param {string} playerId - The player's unique ID.
+     * @returns {number} A number derived from the playerId for seeding the RNG.
+     */
+    generateSeedFromId(playerId) {
+        return playerId.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+    }
+
+    /**
+     * Rolls the dice for the player using their roll engine.
+     * @param {number} min - The minimum roll value (inclusive).
+     * @param {number} max - The maximum roll value (inclusive).
+     * @param {Function} [distributionFn] - Optional custom distribution function.
+     * @returns {number} The result of the roll.
+     */
+    rollDice(min = 1, max = 6, distributionFn = null) {
+        return this.rollEngine.roll(min, max, distributionFn);
+    }
+
+    /**
+     * Resets the player's roll engine to the original seed.
+     */
+    resetRollEngine() {
+        this.rollEngine.resetSeed();
+    }
+
+    /**
+     * Sets a new seed in the roll engine, useful for applying custom game effects.
+     * @param {number} newSeed - The new seed to apply.
+     */
+    setRollEngineSeed(newSeed) {
+        this.rollEngine.setSeed(newSeed);
     }
 
     /**
@@ -93,6 +136,21 @@ export default class Player {
     }
 
     /**
+     * Increment the number of turns taken by the player.
+     */
+    incrementTurnsTaken() {
+        this.turnsTaken += 1;
+    }
+
+    /**
+     * Sets the number of turns taken by the player. Takes a copy of the passed value.
+     * @param {number} turns - The number of turns to set.
+     */
+    setTurnsTaken(turns) {
+        this.turnsTaken = Number(turns); // Convert to number to ensure it's a copy, not a reference
+    }
+
+    /**
      * Serializes player data to JSON.
      * @returns {Object} The serialized player data.
      */
@@ -103,7 +161,9 @@ export default class Player {
             isHost: this.isHost,
             stats: this.stats,
             playerId: this.playerId,
-            currentSpaceId: this.currentSpaceId 
+            currentSpaceId: this.currentSpaceId,
+            rollEngine: this.rollEngine.toJSON(),  // Serialize the RollEngine
+            turnsTaken: this.turnsTaken            // Serialize the number of turns taken
         };
     }
 
@@ -115,7 +175,9 @@ export default class Player {
     static fromJSON(json) {
         const player = new Player(json.peerId, json.nickname, json.isHost, json.playerId);
         player.stats = json.stats;
-        player.currentSpaceId = json.currentSpaceId; 
+        player.currentSpaceId = json.currentSpaceId;
+        player.rollEngine = RollEngine.fromJSON(json.rollEngine);  // Rebuild the RollEngine from JSON
+        player.turnsTaken = json.turnsTaken;  // Rebuild the turns taken
         return player;
     }
 }

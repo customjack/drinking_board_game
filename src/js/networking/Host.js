@@ -3,6 +3,7 @@
 import BasePeer from './BasePeer';
 import Player from '../models/Player';
 import Settings from '../models/Settings';
+import GameState from '../models/GameState'
 
 export default class Host extends BasePeer {
     constructor(originalName, eventHandler, playerLimitPerPeer = 1, playerLimit = 8) {
@@ -13,16 +14,15 @@ export default class Host extends BasePeer {
 
     async init() {
         const id = await this.initPeer();  // Get the id from initPeer()
-    
-        // Since the 'open' event has already been handled, you can proceed directly
+
         console.log('Host ID:', id);
         this.hostId = id;
         await this.initializeGameState();
         this.setupUI();
         const hostPlayer = new Player(id, this.originalName, true);
         this.addPlayer(hostPlayer);
-    
-        // Set up other event listeners as needed
+
+        // Set up event listeners
         this.peer.on('connection', (conn) => this.handleConnection(conn));
     }
 
@@ -53,9 +53,18 @@ export default class Host extends BasePeer {
         conn.send({ type: 'settings', settings: settingsData });
     }
 
+    updateAndBroadcastGameState(newGameState) {
+        this.gameState = newGameState;
+        this.broadcastGameState();
+        this.eventHandler.updateGameState();
+    }
+
     handleData(conn, data) {
         // Handle incoming data from clients
         switch (data.type) {
+            case 'proposeGameState':
+                this.handleProposedGameState(conn, data.gameState);
+                break;
             case 'join':
                 this.handleJoin(conn, data);
                 break;
@@ -74,10 +83,32 @@ export default class Host extends BasePeer {
         }
     }
 
+    handleProposedGameState(conn, proposedGameStateData) {
+        const proposedGameState = GameState.fromJSON(proposedGameStateData);
+
+        // Validate the proposed game state
+        if (this.validateProposedGameState(conn.peer, proposedGameState)) {
+            // Update the game state and broadcast
+            this.gameState = proposedGameState;
+            this.eventHandler.updateGameState();
+            this.broadcastGameState();
+        } else {
+            console.error('Invalid game state proposed by peer:', conn.peer);
+            // Optionally send an error back to the client
+        }
+    }
+
+    validateProposedGameState(peerId, proposedGameState) {
+        // Additional validation logic can be added here
+        // For simplicity, we'll assume the proposed game state is valid
+
+        return true;
+    }
+
     handleJoin(conn, data) {
         const players = data.players;
 
-        const totalPlayersCount = this.allPlayers.length;
+        const totalPlayersCount = this.gameState.players.length;
         const playersToAddCount = players.length;
 
         if (totalPlayersCount + playersToAddCount > this.settings.playerLimit) {
@@ -90,7 +121,7 @@ export default class Host extends BasePeer {
         }
 
         players.forEach(playerData => {
-            const newPlayer = new Player(conn.peer, playerData.nickname, playerData.isHost, playerData.playerId);
+            const newPlayer = new Player.fromJSON(playerData);
             this.addPlayer(newPlayer);
         });
 
@@ -98,22 +129,22 @@ export default class Host extends BasePeer {
     }
 
     handleNameChange(playerId, newName) {
-        const player = this.allPlayers.find((p) => p.playerId === playerId);
+        const player = this.gameState.players.find((p) => p.playerId === playerId);
         if (player) {
             player.nickname = newName;
-            this.broadcastPlayerList();
+            this.broadcastGameState();
         }
     }
 
     handleClientRemovePlayer(playerId) {
         this.removePlayer(playerId);
-        this.broadcastPlayerList();
+        this.broadcastGameState();
     }
 
     handleClientAddPlayer(conn, newPlayerData) {
         const peerId = conn.peer;
-        const clientPlayersCount = this.allPlayers.filter(player => player.peerId === peerId).length;
-        const totalPlayersCount = this.allPlayers.length;
+        const clientPlayersCount = this.gameState.players.filter(player => player.peerId === peerId).length;
+        const totalPlayersCount = this.gameState.players.length;
 
         if (clientPlayersCount >= this.settings.playerLimitPerPeer) {
             conn.send({
@@ -144,11 +175,11 @@ export default class Host extends BasePeer {
     handleDisconnection(peerId) {
         console.log(`Connection closed with ${peerId}`);
         this.removePeer(peerId);
-        this.broadcastPlayerList();
+        this.broadcastGameState();
     }
 
     removePeer(peerId) {
-        const playersToRemove = this.allPlayers.filter(player => player.peerId === peerId);
+        const playersToRemove = this.gameState.players.filter(player => player.peerId === peerId);
         playersToRemove.forEach(player => this.removePlayer(player.playerId));
     }
 
@@ -161,13 +192,6 @@ export default class Host extends BasePeer {
         const gameStateData = this.gameState.toJSON();
         this.connections.forEach(conn => {
             conn.send({ type: 'gameState', gameState: gameStateData });
-        });
-    }
-
-    broadcastPlayerList() {
-        const playersData = this.allPlayers.map((player) => player.toJSON());
-        this.connections.forEach((conn) => {
-            conn.send({ type: 'playerList', players: playersData });
         });
     }
 
@@ -194,12 +218,12 @@ export default class Host extends BasePeer {
             connection.send({ type: 'kick' });
             connection.close();
             this.removePeer(peerId);
-            this.broadcastPlayerList();
+            this.broadcastGameState();
         }
     }
 
     addNewOwnedPlayer(playerName) {
-        const totalPlayers = this.allPlayers.length;
+        const totalPlayers = this.gameState.players.length;
         if (totalPlayers >= this.settings.playerLimit) {
             alert(`Cannot add more players. The maximum limit of ${this.settings.playerLimit} players has been reached.`);
             return;

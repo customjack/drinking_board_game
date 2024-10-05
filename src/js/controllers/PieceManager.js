@@ -1,4 +1,4 @@
-import Piece from './Piece';
+import Piece from '../models/Piece';
 
 export default class PieceManager {
     constructor() {
@@ -16,11 +16,53 @@ export default class PieceManager {
         // Step 2: Add new pieces for players in the game state
         this.addPieces(gameState);
 
-        // Step 3: Determine how many players are on each space
+        // Step 3: Update pieces player
+        this.updatePiecePlayers(gameState);
+
+        // Step 4: Determine how many players are on each space
         const playersPerSpace = this.getPlayersPerSpace(gameState);
 
-        // Step 4: Render each piece based on the game state
+        // Step 5: Render each piece based on the game state
         this.renderAllPieces(playersPerSpace);
+    }
+
+        /**
+     * Determines if the pieces need to be updated based on the game state.
+     * @param {Array} gameStatePlayers - The array of players from the game state.
+     * @returns {Boolean} - Returns true if pieces should be updated, false otherwise.
+     */
+    shouldUpdatePieces(gameStatePlayers) {
+        // Get the current players from the piece manager
+        const currentPlayers = this.getPlayers();
+
+        // If the number of players has changed, we need to update
+        if (currentPlayers.length !== gameStatePlayers.length) {
+            return true;
+        }
+
+        // Create a map for quick lookup of current players by playerId
+        const currentPlayersMap = new Map();
+        currentPlayers.forEach(player => {
+            currentPlayersMap.set(player.playerId, player);
+        });
+
+        // Compare each player in the game state with the current players
+        for (let gameStatePlayer of gameStatePlayers) {
+            const currentPlayer = currentPlayersMap.get(gameStatePlayer.playerId);
+
+            // If the player doesn't exist in current players, we need to update
+            if (!currentPlayer) {
+                return true;
+            }
+
+            // If the player's position has changed, we need to update
+            if (currentPlayer.currentSpaceId !== gameStatePlayer.currentSpaceId) {
+                return true;
+            }
+        }
+
+        // No changes detected, no need to update
+        return false;
     }
 
     /**
@@ -29,6 +71,23 @@ export default class PieceManager {
      */
     getPlayers() {
         return this.pieces.map(piece => piece.player);
+    }
+
+    /**
+     * Update each piece's player object based on the latest game state.
+     * @param {GameState} gameState - The current game state.
+     */
+    updatePiecePlayers(gameState) {
+        // Iterate through every player in the game state
+        gameState.players.forEach(gameStatePlayer => {
+            // Find the matching piece by playerId
+            const matchingPiece = this.pieces.find(piece => piece.player.playerId === gameStatePlayer.playerId);
+
+            // If a matching piece is found, update the piece's player object
+            if (matchingPiece) {
+                matchingPiece.player = gameStatePlayer;
+            }
+        });
     }
 
     /**

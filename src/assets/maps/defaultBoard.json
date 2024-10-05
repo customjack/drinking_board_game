@@ -45,10 +45,6 @@
         {
           "targetId": 3,
           "drawConnection": true
-        },
-        {
-          "targetId": 1,
-          "drawConnection": true
         }
       ]
     },
@@ -75,10 +71,6 @@
         {
           "targetId": 4,
           "drawConnection": true
-        },
-        {
-          "targetId": 5,
-          "drawConnection": false
         }
       ]
     },
@@ -103,10 +95,6 @@
       },
       "connections": [
         {
-          "targetId": 3,
-          "drawConnection": true
-        },
-        {
           "targetId": 5,
           "drawConnection": true
         }
@@ -114,6 +102,188 @@
     },
     {
       "id": 5,
+      "name": "Lose a Turn",
+      "type": "action",
+      "actions": [
+        {
+          "code": "console.log(`${player.nickname} loses a turn!`); player.updateStat('turnsLost', 1);"
+        }
+      ],
+      "visualDetails": {
+        "x": 900,
+        "y": 200,
+        "size": 60,
+        "color": "#ffdddd",
+        "textColor": "#000000",
+        "font": "12px Arial",
+        "textAlign": "center",
+        "textBaseline": "middle"
+      },
+      "connections": [
+        {
+          "targetId": 6,
+          "drawConnection": true
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "name": "Move Back 1",
+      "type": "action",
+      "actions": [
+        {
+          "code": "player.setCurrentSpaceId(player.getCurrentSpaceId() - 1); console.log(`${player.nickname} moves back 1 space!`);"
+        }
+      ],
+      "visualDetails": {
+        "x": 1100,
+        "y": 100,
+        "size": 60,
+        "color": "#ccccff",
+        "textColor": "#000000",
+        "font": "12px Arial",
+        "textAlign": "center",
+        "textBaseline": "middle"
+      },
+      "connections": [
+        {
+          "targetId": 7,
+          "drawConnection": true
+        }
+      ]
+    },
+    {
+      "id": 7,
+      "name": "Skip a Drink",
+      "type": "action",
+      "actions": [
+        {
+          "code": "console.log(`${player.nickname} skips taking a drink this round.`);"
+        }
+      ],
+      "visualDetails": {
+        "x": 1300,
+        "y": 200,
+        "size": 60,
+        "color": "#ddffdd",
+        "textColor": "#000000",
+        "font": "12px Arial",
+        "textAlign": "center",
+        "textBaseline": "middle"
+      },
+      "connections": [
+        {
+          "targetId": 8,
+          "drawConnection": true
+        }
+      ]
+    },
+    {
+      "id": 8,
+      "name": "Move Forward 3",
+      "type": "action",
+      "actions": [
+        {
+          "code": "if (player.getStat('moves') >= 3) { gameEngine.movePlayer(player, 3); console.log(`${player.nickname} moves forward 3 spaces!`); player.updateStat('moves', -3); } else { console.log(`${player.nickname} doesn't have enough moves!`); }"
+        }
+      ],
+      "visualDetails": {
+        "x": 1500,
+        "y": 100,
+        "size": 60,
+        "color": "#ccffcc",
+        "textColor": "#000000",
+        "font": "12px Arial",
+        "textAlign": "center",
+        "textBaseline": "middle"
+      },
+      "connections": [
+        {
+          "targetId": 9,
+          "drawConnection": true
+        }
+      ]
+    },
+    {
+      "id": 9,
+      "name": "Double Drinks",
+      "type": "action",
+      "actions": [
+        {
+          "code": "let drinks = player.getStat('drinks'); player.updateStat('drinks', drinks); console.log(`${player.nickname} drinks double!`);"
+        }
+      ],
+      "visualDetails": {
+        "x": 1700,
+        "y": 200,
+        "size": 60,
+        "color": "#ffcccc",
+        "textColor": "#000000",
+        "font": "12px Arial",
+        "textAlign": "center",
+        "textBaseline": "middle"
+      },
+      "connections": [
+        {
+          "targetId": 10,
+          "drawConnection": true
+        }
+      ]
+    },
+    {
+      "id": 10,
+      "name": "Move Back 2",
+      "type": "action",
+      "actions": [
+        {
+          "code": "player.setCurrentSpaceId(player.getCurrentSpaceId() - 2); console.log(`${player.nickname} moves back 2 spaces!`);"
+        }
+      ],
+      "visualDetails": {
+        "x": 1900,
+        "y": 100,
+        "size": 60,
+        "color": "#ccccff",
+        "textColor": "#000000",
+        "font": "12px Arial",
+        "textAlign": "center",
+        "textBaseline": "middle"
+      },
+      "connections": [
+        {
+          "targetId": 11,
+          "drawConnection": true
+        }
+      ]
+    },
+    {
+      "id": 11,
+      "name": "Finish Your Drink",
+      "type": "action",
+      "actions": [
+        {
+          "code": "console.log(`${player.nickname} must finish their drink!`); player.updateStat('drinks', -player.getStat('drinks'));"
+        }
+      ],
+      "visualDetails": {
+        "x": 2100,
+        "y": 200,
+        "size": 60,
+        "color": "#ddffdd",
+        "textColor": "#000000",
+        "font": "12px Arial",
+        "textAlign": "center",
+        "textBaseline": "middle"
+      },
+      "connections": [
+        {
+          "targetId": 12,
+          "drawConnection": true
+        }
+      ]
+    },
+    {
+      "id": 12,
       "name": "Finish",
       "type": "finish",
       "actions": [
@@ -122,8 +292,8 @@
         }
       ],
       "visualDetails": {
-        "x": 700,
-        "y": 300,
+        "x": 2300,
+        "y": 100,
         "size": 60,
         "color": "#ccccff",
         "textColor": "#000000",
