@@ -7,6 +7,17 @@ export default class GameState {
         this.players = players; // List of players
         this.currentPlayerIndex = 0; // Index of the current player's turn
         this.remainingMoves = 0; // Remaining moves for the current player
+        this.turnNumber = 0; // Start at turn 0
+    }
+
+    // Start the game (Set turn number to 1 to begin the game)
+    startGame() {
+        this.turnNumber = 1;
+    }
+
+    // Check if the game has started
+    isGameStarted() {
+        return this.turnNumber > 0;
     }
 
     // Add a player to the game
@@ -15,7 +26,12 @@ export default class GameState {
     }
 
     // Remove a player from the game
-    removePlayer(peerId) {
+    removePlayer(playerId) {
+        this.players = this.players.filter(player => player.playerId !== playerId);
+    }
+
+    // Remove a player from the game
+    removeClient(peerId) {
         this.players = this.players.filter(player => player.peerId !== peerId);
     }
 
@@ -44,6 +60,11 @@ export default class GameState {
     // Move to the next player's turn
     nextPlayerTurn() {
         this.currentPlayerIndex = (this.currentPlayerIndex + 1) % this.players.length;
+
+        // Increment the turn number when the player index cycles back to 0
+        if (this.currentPlayerIndex === 0) {
+            this.turnNumber++;
+        }
     }
 
     // Set remaining moves for the current player
@@ -67,7 +88,8 @@ export default class GameState {
             board: this.board.toJSON(),
             players: this.players.map(player => player.toJSON()),
             currentPlayerIndex: this.currentPlayerIndex,
-            remainingMoves: this.remainingMoves
+            remainingMoves: this.remainingMoves,
+            turnNumber: this.turnNumber // Include the turn number
         };
     }
 
@@ -78,6 +100,7 @@ export default class GameState {
         const gameState = new GameState(board, players);
         gameState.currentPlayerIndex = json.currentPlayerIndex;
         gameState.remainingMoves = json.remainingMoves;
+        gameState.turnNumber = json.turnNumber;
         return gameState;
     }
 }

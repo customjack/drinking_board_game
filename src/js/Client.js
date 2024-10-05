@@ -3,17 +3,19 @@ import Player from './Player';
 import GameState from './GameState';
 import Board from './Board';
 import BoardManager from './BoardManager';
+import Settings from './Settings';
 
 export default class Client {
-    constructor(playerName, hostId, clientEventHandler) {
+    constructor(originalName, hostId, clientEventHandler) {
         this.peer = null;
         this.conn = null;
-        this.player = null;
-        this.playerName = playerName;
+        this.ownedPlayers = [];
+        this.originalName = originalName;
         this.hostId = hostId;
         this.eventHandler = clientEventHandler;
-        this.players = [];  // List of players, including the client itself
+        this.allPlayers = [];  // List of players, including the client itself
         this.gameState = null;  // The local copy of the GameState
+        this.settings = null;
     }
 
     async init() {
@@ -21,8 +23,8 @@ export default class Client {
 
         this.peer.on('open', async (id) => {
             console.log('My ID:', id);
-            this.player = new Player(id, this.playerName);
-            this.players.push(this.player);  // Add the client itself to the list of players
+            this.ownedPlayers = [new Player(id, this.originalName)];
+            this.allPlayers.push(this.ownedPlayers[0]);  // Add the client itself to the list of players
 
             this.conn = this.peer.connect(this.hostId);
 
@@ -44,7 +46,7 @@ export default class Client {
         await boardManager.loadDefaultBoard();  // Load the board (returns a Promise)
 
         // Create the GameState with the board and initial players list (including the client itself)
-        this.gameState = new GameState(boardManager.board, this.players);
+        this.gameState = new GameState(boardManager.board, this.allPlayers);
 
         console.log("GameState initialized with board:", this.gameState.board);
     }
@@ -52,10 +54,12 @@ export default class Client {
     handleOpenConnection() {
         console.log('Connected to host');
 
+        const playersJSON = this.ownedPlayers.map(player => player.toJSON());
+
         this.conn.send({
             type: 'join',
-            peerId: this.player.peerId,
-            nickname: this.player.nickname,
+            peerId: this.peer.id,
+            players: playersJSON,
         });
 
         const inviteCodeEl = document.getElementById('inviteCode');
@@ -63,7 +67,6 @@ export default class Client {
             inviteCodeEl.textContent = this.hostId;
         }
 
-        this.eventHandler.displayLobbyForPlayer();
     }
 
     handleConnectionError(err) {
@@ -79,7 +82,7 @@ export default class Client {
     // Handle incoming data from the host or other clients
     handleData(data) {
         if (data.type === 'playerList') {
-            this.updatePlayersList(data.players);  // Update the local list of players
+            this.handlePlayerLists(data.players);  // Update the local list of players
         } else if (data.type === 'kick') {
             this.handleKick();
         } else if (data.type === 'boardData') {
@@ -88,29 +91,61 @@ export default class Client {
             this.handleGameStateUpdate(data.gameState);
         } else if (data.type === 'startGame') {
             // Signal received to start the game
-            this.eventHandler.startGame();  // Switch the client to the game page
+            this.handleStartGame();  // Switch the client to the game page
+        } else if (data.type === 'settings') { // Handling player limit
+            this.handleSettings(data.settings);
+        } else if (data.type === 'addPlayerRejected') {
+            // The rejected player data is sent back, so remove it from ownedPlayers
+            this.handleAddPlayerRejected(data.player);
+        } else if (data.type === 'joinRejected') {
+            // Handle the join rejection message
+            this.handleJoinRejected(data.reason);
         }
     }
 
-    updatePlayersList(playersData) {
-        // Update the local list of players with the new data
-        this.players = playersData.map(playerData => Player.fromJSON(playerData));
-        this.eventHandler.updatePlayerList();
-        console.log("Players list updated:", this.players);
+    handleJoinRejected(reason) {
+        alert(`Join request rejected: ${reason}`);
+        location.reload();  // Reload the page to reset the client
+    }
+
+    handleStartGame() {
+        this.eventHandler.showGamePage();  // Switch the client to the game page
+    }
+
+    handleAddPlayerRejected(rejectedPlayer) {
+        const rejectedPlayerId = rejectedPlayer.playerId;
+        this.ownedPlayers = this.ownedPlayers.filter(player => player.playerId !== rejectedPlayerId);
+        alert(`Player addition rejected: ${data.reason}`);
+    }
+
+    handleSettings(settingsData) {
+        this.settings = Settings.fromJSON(settingsData); // Convert JSON data to Settings instance
+        console.log('Settings received:', this.settings);
+        if (this.settings) {
+            console.log(`Player limit per peer: ${this.settings.playerLimitPerPeer}`);
+            console.log(`Total player limit: ${this.settings.playerLimit}`);
+
+            // Update the displayed settings on the client UI
+            this.eventHandler.updateDisplayedSettings();
+        }
     }
 
     handleBoardData(boardData) {
         console.log('Received board data from host:', boardData);
         this.gameState.board = Board.fromJSON(boardData);  // Directly update the GameState's board
-        this.eventHandler.updateGameBoard();  // Redraw the board using the GameState
+        this.eventHandler.updateGameState();  // Redraw the board using the GameState
     }
 
     handleGameStateUpdate(gameStateData) {
         this.gameState = GameState.fromJSON(gameStateData);  // Sync local game state with the host's state
         console.log('Game state updated:', this.gameState);
-        this.players = this.gameState.players;  // Sync players list with the game state
-        this.eventHandler.updateGameBoard();  // Update the board and UI based on the new state
-        this.eventHandler.updatePlayerList();  // Update the players list in the UI
+        if(this.gameState.isGameStarted()) {
+            this.eventHandler.showGamePage();
+        } else {
+            this.eventHandler.showLobbyPage();
+        }
+        this.allPlayers = this.gameState.players;  // Sync players list with the game state
+        this.eventHandler.updateGameState(); 
     }
 
     // Send the full GameState to the host
@@ -119,7 +154,7 @@ export default class Client {
             const gameStateJSON = this.gameState.toJSON();  // Serialize the entire GameState to JSON
             this.conn.send({
                 type: 'gameStateUpdate',
-                peerId: this.player.peerId,
+                peerId: this.ownedPlayers.peerId,
                 gameState: gameStateJSON  // Send the full GameState
             });
         }
@@ -128,5 +163,27 @@ export default class Client {
     handleKick() {
         alert('You have been kicked from the game.');
         location.reload();
+    }
+
+    handlePlayerLists(playersData) {
+        // Update the local list of players with the new data
+        this.allPlayers = playersData.map(playerData => Player.fromJSON(playerData));
+        this.eventHandler.updateGameState();
+        console.log("Players list updated:", this.allPlayers);
+        this.eventHandler.updateAddPlayerButton();
+    }
+
+    addNewOwnedPlayer(playerName) {
+        const newPlayer = new Player(this.peer.id, playerName, false);  // Create a new player instance
+        this.ownedPlayers.push(newPlayer);  // Add the new player to the owned players array
+
+        // Send the new player info to the host
+        this.conn.send({
+            type: 'proposeAddPlayer',
+            player: newPlayer.toJSON(),  // Send the new player's data to the host
+        });
+
+        // Check if the Add Player button should be hidden after adding the player
+        this.eventHandler.updateAddPlayerButton();
     }
 }

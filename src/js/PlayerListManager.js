@@ -1,3 +1,5 @@
+import Player from './Player';
+
 export default class PlayerListManager {
     constructor(defaultListElement, isHost, currentPlayerPeerId, hostPeerId) {
         this.listElement = defaultListElement; // DOM element for the current player list
@@ -19,25 +21,31 @@ export default class PlayerListManager {
 
     // Add a player to the list
     addPlayer(player) {
-        this.players.push(player);
+        const playerCopy = Player.fromJSON(player.toJSON());  // Use the class methods to deep copy the player
+        this.players.push(playerCopy);
         this.updatePlayerListUI();
     }
 
-    // Set the entire players array at once (for syncing with server or game state)
     setPlayers(newPlayers) {
-        this.players = newPlayers;
+        const playersCopy = newPlayers.map(player => Player.fromJSON(player.toJSON()));  // Deep copy using the class methods
+        this.players = playersCopy;
         this.updatePlayerListUI();
     }
 
     // Remove a player from the list
-    removePlayer(peerId) {
+    removePeer(peerId) {
         this.players = this.players.filter(player => player.peerId !== peerId);
         this.updatePlayerListUI();
     }
 
+    removePlayer(playerId) {
+        this.players = this.players.filter(player => player.playerId !== playerId);
+        this.updatePlayerListUI();
+    }
+
     // Update player name
-    updatePlayerName(peerId, newName) {
-        const player = this.players.find(p => p.peerId === peerId);
+    updatePlayerName(playerId, newName) {
+        const player = this.players.find(p => p.playerId === playerId);
         if (player) {
             player.nickname = newName;
         }
@@ -64,8 +72,14 @@ export default class PlayerListManager {
         const playerNameBadges = document.createElement('div');
         playerNameBadges.className = 'player-name-badges';
 
-        // Add player name and badges (Host, You)
-        let nameHtml = `<span>${player.nickname}</span>`;
+        // Get the assigned color for this player's peerId
+        const playerColor = player.playerColor|| '#FFFFFF'; // Default to white if no color
+
+        // Assign the same border color to all players with the same peerId
+        const peerBorderColor = player.peerColor || '#FFFFFF'; // Default to white if no color
+
+        // Add player name and badges (Host, You) with bold style
+        let nameHtml = `<span style="color:${playerColor}; font-weight: bold;">${player.nickname}</span>`;
         if (player.peerId === this.hostPeerId) {
             nameHtml += `<span class="host-badge">Host</span>`;
         }
@@ -75,6 +89,9 @@ export default class PlayerListManager {
 
         playerNameBadges.innerHTML = nameHtml;
 
+        // Apply the shared border color based on peerId
+        li.style.border = `2px solid ${peerBorderColor}`;
+
         const playerButtons = document.createElement('div');
         playerButtons.className = 'player-buttons';
 
@@ -83,8 +100,17 @@ export default class PlayerListManager {
             const editButton = document.createElement('button');
             editButton.className = 'edit-button';
             editButton.textContent = '✏️';
-            editButton.setAttribute('data-peerid', player.peerId);
+            editButton.setAttribute('data-playerId', player.playerId);
             playerButtons.appendChild(editButton);
+        }
+
+        // Add remove player button for the current player (either host or client)
+        if (player.peerId === this.currentPlayerPeerId) {
+            const kickButton = document.createElement('button');
+            kickButton.className = 'remove-button';
+            kickButton.textContent = '❌';
+            kickButton.setAttribute('data-playerId', player.playerId);
+            playerButtons.appendChild(kickButton);
         }
 
         // If the current user is the host, add a kick button for other players
@@ -92,7 +118,7 @@ export default class PlayerListManager {
             const kickButton = document.createElement('button');
             kickButton.className = 'kick-button';
             kickButton.textContent = '❌';
-            kickButton.setAttribute('data-peerid', player.peerId);
+            kickButton.setAttribute('data-playerId', player.playerId);
             playerButtons.appendChild(kickButton);
         }
 
@@ -100,6 +126,7 @@ export default class PlayerListManager {
         li.appendChild(playerButtons);
         return li;
     }
+
 
     // Clear the player list UI
     clearPlayerListUI() {

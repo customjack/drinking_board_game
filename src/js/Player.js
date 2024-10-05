@@ -1,4 +1,5 @@
-// Player.js
+import { v4 as uuidv4 } from 'uuid';
+import ColorAssigner from './utils/ColorAssigner';  // Import the ColorAssigner class
 
 export default class Player {
     /**
@@ -6,24 +7,31 @@ export default class Player {
      * @param {string} peerId - The unique identifier for the client's connection.
      * @param {string} nickname - The display name of the player.
      * @param {boolean} [isHost=false] - Indicates if the player is the host.
-     * @param {string} [gameId] - Optional unique game ID. If not provided, it will be generated.
+     * @param {string} [playerId] - Optional unique player ID. If not provided, it will be generated.
      */
-    constructor(peerId, nickname, isHost = false, gameId = null) {
+    constructor(peerId, nickname, isHost = false, playerId = null) {
         this.peerId = peerId;
         this.nickname = nickname;
         this.isHost = isHost;
-        this.stats = {}; // Replacing scores with stats
-        this.gameId = gameId || this.generateGameId(); // Unique game ID
+        this.stats = {};
+        this.playerId = playerId || this.generatePlayerId(); // Unique player ID
+
+        // Default to space 1 at the start
+        this.currentSpaceId = 1;  // The space the player is currently on
+
+        this.playerColor = (new ColorAssigner()).assignColor(this.playerId);  // Assign a unique color using ColorAssigner based on playerId
+        this.peerColor   = (new ColorAssigner()).assignColor(this.peerId);    // Assign a unique color using ColorAssigner based on peerId
     }
 
     /**
-     * Generates a unique game ID.
-     * For simplicity, using current timestamp and a random number.
-     * In production, consider using a UUID library for better uniqueness.
-     * @returns {string} A unique game ID.
+     * Generates a unique player ID using UUID.
+     * @returns {string} A unique player ID.
      */
-    generateGameId() {
-        return `game-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+    generatePlayerId() {
+        const id = uuidv4();
+        console.log("Generated new Player with ID: ", id);
+        console.log("Player attached to client: ", this.peerId);
+        return id; // Generates a UUID v4
     }
 
     /**
@@ -39,12 +47,49 @@ export default class Player {
     }
 
     /**
+     * Sets a stat to a specific value.
+     * @param {string} statName - The name of the stat.
+     * @param {number} value - The value to set for the stat.
+     */
+    setStat(statName, value) {
+        this.stats[statName] = value;
+    }
+
+    /**
      * Retrieves a player's stat.
      * @param {string} statName - The name of the stat.
      * @returns {number} The value of the stat.
      */
     getStat(statName) {
         return this.stats[statName] || 0;
+    }
+
+    /**
+     * Removes a stat from the player’s stats.
+     * @param {string} statName - The name of the stat to remove.
+     */
+    removeStat(statName) {
+        if (this.stats[statName]) {
+            delete this.stats[statName];
+        } else {
+            console.error(`Stat "${statName}" does not exist.`);
+        }
+    }
+
+    /**
+     * Sets the player's current space ID.
+     * @param {number} spaceId - The ID of the space the player is moving to.
+     */
+    setCurrentSpaceId(spaceId) {
+        this.currentSpaceId = spaceId;
+    }
+
+    /**
+     * Retrieves the player's current space ID.
+     * @returns {number} The current space ID of the player.
+     */
+    getCurrentSpaceId() {
+        return this.currentSpaceId;
     }
 
     /**
@@ -57,7 +102,8 @@ export default class Player {
             nickname: this.nickname,
             isHost: this.isHost,
             stats: this.stats,
-            gameId: this.gameId
+            playerId: this.playerId,
+            currentSpaceId: this.currentSpaceId 
         };
     }
 
@@ -67,8 +113,9 @@ export default class Player {
      * @returns {Player} A new Player instance.
      */
     static fromJSON(json) {
-        const player = new Player(json.peerId, json.nickname, json.isHost, json.gameId);
+        const player = new Player(json.peerId, json.nickname, json.isHost, json.playerId);
         player.stats = json.stats;
+        player.currentSpaceId = json.currentSpaceId; 
         return player;
     }
 }

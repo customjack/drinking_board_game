@@ -8,6 +8,16 @@ export default class BoardManager {
         this.boardContainer = document.getElementById('lobbyBoardContainer'); // Assuming a container div for the board
     }
 
+    /**
+     * Set the board with a new board instance, and handle board-related updates.
+     * @param {Board} newBoard - The new board instance.
+     */
+    setBoard(newBoard) {
+        // Use the Board's toJSON and fromJSON for deep copying
+        const boardCopy = Board.fromJSON(newBoard.toJSON());
+        this.board = boardCopy;
+    }
+
     // Load the default board
     async loadDefaultBoard() {
         console.log("Attempting to load the default board...");
@@ -31,6 +41,15 @@ export default class BoardManager {
     drawBoard() {
         // Clear the previous board
         this.boardContainer.innerHTML = '';
+
+        // Remove any existing elements with the same IDs from the entire document
+        this.board.spaces.forEach(space => {
+            const spaceElementId = `space-${space.id}`;
+            const existingElement = document.getElementById(spaceElementId);
+            if (existingElement) {
+                existingElement.parentNode.removeChild(existingElement);
+            }
+        });
 
         // Draw connections between spaces using HTML elements
         this.drawConnections();
@@ -177,7 +196,7 @@ export default class BoardManager {
 
     // Handle space click interactions
     handleSpaceClick(space) {
-        console.log(`Space clicked: ${space.name}`);
+        console.log(`Space clicked: ${space.name}, id: ${space.id}`);
         // Add logic here for what happens when a space is clicked (e.g., move player, highlight, etc.)
     }
 

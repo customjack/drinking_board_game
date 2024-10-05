@@ -51,22 +51,6 @@ button:hover {
     vertical-align: middle;
 }
 
-/* Player List Styling */
-#playerList {
-    list-style-type: none;
-    padding: 0;
-}
-
-#playerList li {
-    margin: 10px 0;
-    padding: 10px;
-    background-color: #f1f1f1;
-    border-radius: 5px;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-    font-size: 16px;
-    color: #555;
-}
-
 /* Red buttons */
 .red-button {
     background-color: #ff4d4d;  /* Red background */
@@ -101,7 +85,8 @@ button:hover {
 
 /* Edit and Kick Buttons */
 .edit-button,
-.kick-button {
+.kick-button,
+.remove-button {
     background: none;
     border: none;
     font-size: 16px; /* Adjusted size to fit emoji */
@@ -118,7 +103,8 @@ button:hover {
     color: #007bff;
 }
 
-.kick-button:hover {
+.kick-button:hover,
+.remove-button:hover {
     color: #ff4d4d;
 }
 
@@ -242,3 +228,163 @@ button:hover {
     80% { opacity: 1; }
     100% { opacity: 0; }
 }
+
+
+/* Center the button horizontally in its container */
+.add-player-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px; /* Adjusts the space above the button */
+}
+
+/* Style the button */
+.add-player-button {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    padding: 12px 24px; /* Adjust padding for size */
+    background-color: #4CAF50; /* Soft green color */
+    border-radius: 25px; /* Rounded edges */
+    color: white; /* White text */
+    font-size: 16px; /* Button text size */
+    font-weight: bold; /* Make the text bold */
+    border: none; /* Remove default button borders */
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* Light shadow for depth */
+    cursor: pointer;
+    transition: background-color 0.3s, box-shadow 0.3s; /* Smooth transitions */
+}
+
+/* Hover effect to make it interactive */
+.add-player-button:hover {
+    background-color: #45a049; /* Darker green on hover */
+    box-shadow: 0px 6px 10px rgba(0, 0, 0, 0.2); /* Increase shadow on hover */
+}
+
+/* Active state for button click */
+.add-player-button:active {
+    background-color: #39843d; /* Even darker green when clicked */
+    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2); /* Reduce shadow on click */
+}
+
+
+
+
+/* Flexbox container with minimal padding */
+.lobby-container {
+    display: flex;
+    justify-content: center;
+    padding: 10px;
+    background-color: #f9f9f9; /* Light background */
+    border-radius: 10px;
+}
+
+/* Combined Section for Settings and Player List */
+/* Flexbox for settings rows */
+.settings-row {
+    display: flex;
+    align-items: center; /* Align vertically in the center */
+    margin-bottom: 10px; /* Spacing between rows */
+}
+
+/* Ensure the label is aligned to the left */
+.settings-label {
+    width: 200px; /* Fixed width for consistent alignment */
+    font-size: 0.9em;
+    text-align: left;
+    margin-right: 10px; /* Space between label and input */
+}
+
+/* Input styling */
+.settings-input {
+    width: 60px; /* Adjust input width */
+    padding: 5px;
+    font-size: 0.9em;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    text-align: right; /* Align text inside the input to the right */
+}
+
+.combined-section {
+    display: flex;
+    justify-content: space-between;
+    background-color: #ffffff;
+    border-radius: 10px;
+    padding: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    gap: 20px; /* Add gap between the settings and player list */
+}
+
+.compact-settings {
+    flex: 1;
+    padding: 10px 5px;
+    border-right: 3px solid #e0e0e0; /* Keeps the border subtle */
+    text-align: left;
+}
+
+
+/* Compact Player List Section */
+.compact-player-list {
+    flex: 2;
+    padding: 10px;
+}
+
+.compact-player-list h3 {
+    margin: 0 0 10px 0;
+    font-size: 1.2em;
+}
+
+/* Styling for the list of players */
+#lobbyPlayerList {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+#lobbyPlayerList li {
+    padding: 6px;
+    border-bottom: 1px solid #ddd;
+    font-size: 1em;
+    word-break: break-all;
+}
+
+/* Ensure inputs and buttons are compact */
+.compact-settings input, .compact-settings button {
+    font-size: 0.9em;
+    padding: 6px;
+}
+
+/* Seamless transition between settings and player list */
+.combined-section .lobby-sidebar {
+    padding: 10px;
+    background-color: #ffffff;
+    border-radius: 0;
+    margin: 0;
+}
+
+.combined-section div {
+    margin: 0;
+    padding: 0;
+    border-radius: 0;
+    box-shadow: none;
+}
+
+.settings-display {
+    display: inline-block;
+    padding: 5px 10px;
+    background-color: #f0f0f0;  /* Light grey background to simulate an input field */
+    border: 1px solid #ccc;     /* Border to give it the input field look */
+    border-radius: 4px;         /* Rounded corners */
+    min-width: 50px;            /* Minimum width to give enough space */
+    text-align: center;         /* Center the text */
+    font-size: 0.9em;
+    margin-left: 10px;          /* Space between label and value */
+}
+
+
+/* Hide border when only players are visible */
+#settingsSection[style*="display: none"] {
+    border-right: none;
+}
+

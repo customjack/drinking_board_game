@@ -46,7 +46,7 @@
     <!-- Lobby Page -->
     <div id="lobbyPage" style="display: none;">
         <h2>Lobby</h2>
-    
+
         <!-- Invite Code and Copy Button -->
         <div class="invite-code-container">
             <div class="invite-code-box">
@@ -57,19 +57,58 @@
             </div>
             <span id="copyMessage" class="toast-message" style="display: none;">Copied!</span>
         </div>
-        <p>Connected Players:</p>
-        <ul id="lobbyPlayerList"></ul>
+
+        <div id="lobbyContainer" class="lobby-container">
+            <!-- Combined Settings and Player List -->
+            <div id="settingsAndPlayersSection" class="combined-section">
+                <!-- Settings Section (Visible to Host Only) -->
+                <div id="settingsSectionHost" class="compact-settings" style="display: none;">
+                    <h3>Game Settings</h3>
+                    <div class="settings-row">
+                        <label class="settings-label" for="playerLimitPerPeerHost">Max Players per Peer:</label>
+                        <input class="settings-input" id="playerLimitPerPeerHost" type="number" value="1" min="1" max="10">
+                    </div>
+                    <div class="settings-row">
+                        <label class="settings-label" for="totalPlayerLimitHost">Total Player Limit:</label>
+                        <input class="settings-input" id="totalPlayerLimitHost" type="number" value="8" min="1" max="100">
+                    </div>
+                </div>
+                
+                <div id="settingsSectionClient" class="compact-settings" style="display: none;">
+                    <h3>Game Settings</h3>
+                    <div class="settings-row">
+                        <label class="settings-label" for="playerLimitPerPeerClient">Max Players per Peer:</label>
+                        <span class="settings-display" id="playerLimitPerPeerDisplayClient">1</span>
+                    </div>
+                    <div class="settings-row">
+                        <label class="settings-label" for="totalPlayerLimitClient">Total Player Limit:</label>
+                        <span class="settings-display" id="totalPlayerLimitDisplayClient">8</span>
+                    </div>
+                </div>
+        
+                <!-- Player List Section -->
+                <div id="lobbyPlayerListSection" class="compact-player-list">
+                    <h3>Connected Players</h3>
+                    <ul id="lobbyPlayerList"></ul>
+                    <!-- Green "+" button to add players -->
+                    <div class="add-player-container">
+                        <button id="addPlayerButton" class="add-player-button">Add Another Local Player</button>
+                    </div>
+                </div>
+            </div>
+        </div>
     
+        
         <!-- Host: Start Game Button (Visible to Host Only) -->
         <button id="startGameButton" style="display: none;">Start Game</button>
-    
+
         <!-- Host's "Close Game" button (only shown for host) -->
         <button id="closeGameButton" class="red-button" style="display: none;">Close Game</button>
 
         <!-- Player's "Leave Game" button (only shown for players) -->
         <button id="leaveGameButton" class="red-button" style="display: none;">Leave Game</button>
-        
-           <!-- Board Preview Section -->
+
+        <!-- Board Preview Section -->
         <div id="boardPreviewSection" style="margin-top: 30px;">
             <h3>Board Preview</h3>
             <!-- Host: Upload Board Button (only visible to the host) -->

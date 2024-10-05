@@ -1,86 +1,101 @@
-// PieceManager.js
-
-import Piece from './Piece.js';
+import Piece from './Piece';
 
 export default class PieceManager {
-    constructor(boardManager) {
-        this.boardManager = boardManager;
-        this.pieces = {}; // Map of gameId to Piece instances
-        this.gameIdCounter = 0; // To generate unique gameIds
+    constructor() {
+        this.pieces = [];  // Array of active pieces
     }
 
     /**
-     * Generates a unique gameId for each piece.
-     * @returns {string} Unique gameId
+     * Updates the pieces based on the latest game state.
+     * @param {GameState} gameState - The updated game state.
      */
-    generateGameId() {
-        return `gameId-${this.gameIdCounter++}`;
+    updatePieces(gameState) {
+        // Step 1: Remove any pieces that are no longer in the game state
+        this.removePieces(gameState);
+
+        // Step 2: Add new pieces for players in the game state
+        this.addPieces(gameState);
+
+        // Step 3: Determine how many players are on each space
+        const playersPerSpace = this.getPlayersPerSpace(gameState);
+
+        // Step 4: Render each piece based on the game state
+        this.renderAllPieces(playersPerSpace);
     }
 
     /**
-     * Adds a new piece for a player on the board.
-     * @param {Player} player - The player object
+     * Returns an array of players currently managed by pieces.
+     * @returns {Array} Array of player objects.
      */
-    addPiece(player) {
-        const startingSpace = this.boardManager.board.getSpace(player.position);
-        if (!startingSpace) {
-            console.error(`Starting space with ID ${player.position} not found for player ${player.id}`);
-            return;
-        }
+    getPlayers() {
+        return this.pieces.map(piece => piece.player);
+    }
 
-        const gameId = this.generateGameId();
-        const piece = new Piece(player, startingSpace, gameId);
-        piece.renderPiece(this.boardManager.boardContainer);
+    /**
+     * Removes pieces whose playerIds are no longer in the game state.
+     * @param {GameState} gameState - The current game state.
+     */
+    removePieces(gameState) {
+        const playerIds = gameState.players.map(player => player.playerId);
         
-        this.pieces[gameId] = piece;
-    }
-
-    /**
-     * Moves a player's piece to a new space.
-     * @param {string} gameId - The unique gameId of the piece
-     * @param {string} newSpaceId - The ID of the new space
-     */
-    movePiece(gameId, newSpaceId) {
-        const piece = this.pieces[gameId];
-        if (!piece) {
-            console.error(`Piece with gameId ${gameId} not found.`);
-            return;
-        }
-
-        const newSpace = this.boardManager.board.getSpace(newSpaceId);
-        if (!newSpace) {
-            console.error(`New space with ID ${newSpaceId} not found.`);
-            return;
-        }
-
-        piece.moveTo(newSpace);
-    }
-
-    /**
-     * Removes a player's piece from the board.
-     * @param {string} gameId - The unique gameId of the piece
-     */
-    removePiece(gameId) {
-        const piece = this.pieces[gameId];
-        if (piece) {
-            piece.remove();
-            delete this.pieces[gameId];
-        } else {
-            console.error(`Piece with gameId ${gameId} not found.`);
-        }
-    }
-
-    /**
-     * Retrieves a piece by player ID.
-     * @param {string} playerId - The ID of the player
-     * @returns {Piece|null} The corresponding piece or null if not found
-     */
-    getPieceByPlayerId(playerId) {
-        for (const gameId in this.pieces) {
-            if (this.pieces[gameId].player.id === playerId) {
-                return this.pieces[gameId];
+        this.pieces = this.pieces.filter(piece => {
+            if (!playerIds.includes(piece.player.playerId)) {
+                piece.remove();  // Remove piece from the board
+                return false;    // Filter it out of the array
             }
-        }
-        return null;
+            return true;
+        });
+    }
+
+    /**
+     * Adds pieces for players that don't already have one.
+     * @param {GameState} gameState - The current game state.
+     */
+    addPieces(gameState) {
+        gameState.players.forEach(player => {
+            const existingPiece = this.pieces.find(p => p.player.playerId === player.playerId);
+            if (!existingPiece) {
+                const newPiece = new Piece(player);
+                this.pieces.push(newPiece);
+            }
+        });
+    }
+
+    /**
+     * Determines how many players are on each space.
+     * @param {GameState} gameState - The current game state.
+     * @returns {Object} An object mapping spaceId to an array of playerIds on that space.
+     */
+    getPlayersPerSpace(gameState) {
+        const playersPerSpace = {};
+        gameState.players.forEach(player => {
+            const spaceId = player.currentSpaceId;
+            if (!playersPerSpace[spaceId]) {
+                playersPerSpace[spaceId] = [];
+            }
+            playersPerSpace[spaceId].push(player.playerId);
+        });
+        return playersPerSpace;
+    }
+
+    /**
+     * Renders all pieces based on the current players' positions.
+     * @param {Object} playersPerSpace - An object mapping spaceId to an array of playerIds on that space.
+     */
+    renderAllPieces(playersPerSpace) {
+        this.pieces.forEach(piece => {
+            const spaceId = piece.player.currentSpaceId;
+            const spaceElement = document.getElementById(`space-${spaceId}`);  // Get space element from the DOM
+
+            if (spaceElement) {
+                // Get the list of playerIds on this space
+                const playersOnSpace = playersPerSpace[spaceId];
+                const totalPiecesAtSpace = playersOnSpace.length;
+                const indexAtSpace = playersOnSpace.indexOf(piece.player.playerId);  // Get the index of this player at the space
+
+                // Call the piece's render function, passing the spaceElement and index information
+                piece.render(spaceElement, totalPiecesAtSpace, indexAtSpace);
+            }
+        });
     }
 }
