@@ -2,6 +2,7 @@
 
 import GameState from '../models/GameState';
 import TurnPhases from '../enums/TurnPhases'; // Import TurnPhases enum
+import ParticleAnimation from '../animations/ParticleAnimation';
 
 export default class GameEngine {
     /**
@@ -17,6 +18,7 @@ export default class GameEngine {
         this.proposeGameState = proposeGameState; // Function to send proposed game state to host
         this.isHost = isHost; // Whether this peer is the host
         this.rollButton = null; // Will hold the roll button for rolling dice
+        this.particleAnimation = new ParticleAnimation(); // Initialize the roll animation
     }
 
     // Initialize the GameEngine (e.g., add roll button)
@@ -69,21 +71,32 @@ export default class GameEngine {
         this.rollButton.style.display = 'block'; // Show the roll button
     }
 
-    // Roll the dice for the current player and update the game state
+    // Modify the rollDiceForCurrentPlayer method to call the correct method
     rollDiceForCurrentPlayer() {
         const currentPlayer = this.gameState.getCurrentPlayer();
         const rollResult = currentPlayer.rollDice(); // Roll using player's roll engine
         console.log(`${currentPlayer.nickname} rolled a ${rollResult}`);
 
+        // Hide the roll button after rolling
+        this.rollButton.style.display = 'none';
+
+        // Show the particle animation and proceed after it's done
+        this.particleAnimation.showRollResult(rollResult, () => {
+            this.handleAfterDiceRoll(rollResult); // Correct method call
+        });
+    }
+
+    /**
+     * Method to handle actions after the dice roll animation ends.
+     * @param {number} rollResult - The result of the dice roll.
+     */
+    handleAfterDiceRoll(rollResult) {
         // Update remaining moves and transition to the next phase
         this.gameState.setRemainingMoves(rollResult);
         this.gameState.setTurnPhase(TurnPhases.PROCESSING_MOVE);
 
-        // Hide the roll button after rolling
-        this.rollButton.style.display = 'none';
-
         // Propose the updated game state to the host
-        this.proposeGameState(this.gameState);
+        this.proposeGameStateWrapper();
     }
 
     // Process the player's moves one at a time (move player and decrement moves)
@@ -102,12 +115,7 @@ export default class GameEngine {
             this.gameState.decrementMoves();
 
             // Propose the updated game state to the host
-            this.proposeGameState(this.gameState);
-
-            // Process next move after a delay
-            setTimeout(() => {
-                this.updateGameState(this.gameState);
-            }, 10000); // Adjust delay as needed
+            this.proposeGameStateWrapper();
         } else {
             this.endTurn();
         }
@@ -127,6 +135,14 @@ export default class GameEngine {
         this.gameState.setTurnPhase(TurnPhases.BEGIN_TURN);
 
         // Propose the updated game state to the host
-        this.proposeGameState(this.gameState);
+        this.proposeGameStateWrapper();
+
     }
+
+    proposeGameStateWrapper() {
+        setTimeout(() => {
+            this.proposeGameState(this.gameState);
+        }, 1000); // Adjust delay as needed
+    }
+
 }

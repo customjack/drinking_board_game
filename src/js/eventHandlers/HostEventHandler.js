@@ -140,17 +140,25 @@ export default class HostEventHandler extends BaseEventHandler {
             this.host.broadcastStartGame();
         }
         this.showGamePage();
-        this.playerListManager.setListElement(document.getElementById('gamePlayerList'));
-        this.boardManager.setBoardContainer(document.getElementById('gameBoardContainer'));
+        
         this.updateGameState(true);
     }
 
     showGamePage() {
         this.hideAllPages();
-        if (this.gamePage) this.gamePage.style.display = 'block';
+        if (this.gamePage) {
+            // Update the player list manager to use the game player list
+            this.playerListManager.setListElement(document.getElementById('gamePlayerList'));
+
+            // Update the board manager to use the game board container
+            this.boardManager.setBoardContainer(document.getElementById('gameBoardContent'));
+            this.gamePage.style.display = 'block';
+        }
     }
 
     updateGameState(forceUpdate = false) {
+        console.log(this.host.gameState);
+
         // Update the game board
         this.updateGameBoard(forceUpdate);
 
@@ -186,7 +194,7 @@ export default class HostEventHandler extends BaseEventHandler {
         const gameState = this.host.gameState;
 
         if (!gameState) return;
-
+        console.log("Should update pieces?:", this.pieceManager.shouldUpdatePieces(gameState.players));
         if (forceUpdate || this.pieceManager.shouldUpdatePieces(gameState.players)) {
             this.pieceManager.updatePieces(gameState);
         }

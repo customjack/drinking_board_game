@@ -1,4 +1,5 @@
 import Piece from '../models/Piece';
+import Player from '../models/Player';
 
 export default class PieceManager {
     constructor() {
@@ -83,9 +84,10 @@ export default class PieceManager {
             // Find the matching piece by playerId
             const matchingPiece = this.pieces.find(piece => piece.player.playerId === gameStatePlayer.playerId);
 
-            // If a matching piece is found, update the piece's player object
+            // If a matching piece is found, update the piece's player object with a deep copy
             if (matchingPiece) {
-                matchingPiece.player = gameStatePlayer;
+                const playerCopy = Player.fromJSON(gameStatePlayer.toJSON());
+                matchingPiece.player = playerCopy;
             }
         });
     }
@@ -114,11 +116,14 @@ export default class PieceManager {
         gameState.players.forEach(player => {
             const existingPiece = this.pieces.find(p => p.player.playerId === player.playerId);
             if (!existingPiece) {
-                const newPiece = new Piece(player);
+                // Create a deep copy of the player using toJSON and fromJSON
+                const playerCopy = Player.fromJSON(player.toJSON());
+                const newPiece = new Piece(playerCopy);
                 this.pieces.push(newPiece);
             }
         });
     }
+
 
     /**
      * Determines how many players are on each space.

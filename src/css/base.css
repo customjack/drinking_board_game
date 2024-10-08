@@ -50,3 +50,10 @@ input {
     text-align: center;       /* Center the label text */
     margin-bottom: 5px;       /* Space between label and input */
 }
+
+#gamePage, #lobbyPage {
+    height: 100vh; /* Full viewport height */
+    display: flex;
+    flex-direction: column;
+}
+

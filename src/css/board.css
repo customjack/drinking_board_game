@@ -3,29 +3,63 @@
 /* Main container that holds both the sidebar and the board */
 .game-container {
     display: flex;
-    height: 100vh; /* Full height of the viewport */
-    width: 100vw;  /* Full width of the viewport */
-    overflow: hidden; /* Prevent overflowing the viewport */
+    flex-grow: 1; /* Allow it to grow and fill available space */
+    overflow: hidden; /* Remove if causing issues */
 }
 
-#gameBoardContainer {
+
+#gameContainer {
+    flex-grow: 1;
+    display: flex;
+    overflow: hidden; /* Adjust as needed */
+}
+
+
+#gameBoardContainer, #lobbyBoardContainer {
     flex-grow: 1; /* Take up the remaining space */
     position: relative; /* To position elements absolutely if needed */
     background-color: #f4f4f4;
     border: 1px solid #ccc;
-    overflow: hidden; /* Prevent overflow of elements */
+    overflow: auto; /* Allow scrolling if the board is too large */
+    display: flex; /* Center the board content */
+    justify-content: center; /* Horizontally center */
+    align-items: center; /* Vertically center */
 }
 
-
-/* Container for the board */
-#lobbyBoardContainer {
+.board-container {
     position: relative;
-    width: 800px;  /* Or dynamically set based on your board's size */
-    height: 600px;
+    flex-grow: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     background-color: #f4f4f4;
     border: 1px solid #ccc;
-    margin: 0 auto; /* Center the board on the page */
+    /* overflow: hidden; */ /* Remove or comment out this line */
+    overflow: auto; /* Allow scrolling if necessary */
+    height: 100%; /* Add this line to ensure it takes up available height */
 }
+
+
+.board-wrapper {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    max-width: 1200px;
+    max-height: 900px;
+    aspect-ratio: 4 / 3; /* Maintain a 4:3 aspect ratio */
+}
+
+
+
+/* Board content that holds the spaces and pieces */
+.board-content {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
 
 /* Sidebar for player list */
 .game-sidebar {

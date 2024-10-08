@@ -93,12 +93,15 @@ export default class ClientEventHandler extends BaseEventHandler {
     }
 
     showGamePage() {
-        console.log('Client is switching to game page...');
         if (this.gamePage && this.gamePage.style.display !== 'block') {
+            console.log('Client is switching to game page...');
             this.hideAllPages();
             this.gamePage.style.display = 'block';
+            // Update the player list manager to use the game player list
             this.playerListManager.setListElement(document.getElementById('gamePlayerList'));
-            this.boardManager.setBoardContainer(document.getElementById('gameBoardContainer'));
+
+            // Update the board manager to use the game board container
+            this.boardManager.setBoardContainer(document.getElementById('gameBoardContent'));
             this.updateGameState(true);
         }
     }

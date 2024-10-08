@@ -5,7 +5,7 @@ import Board from '../models/Board.js';
 export default class BoardManager {
     constructor() {
         this.board = null;
-        this.boardContainer = document.getElementById('lobbyBoardContainer'); // Assuming a container div for the board
+        this.boardContainer = document.getElementById('lobbyBoardContent'); // Assuming a container div for the board
     }
 
     /**

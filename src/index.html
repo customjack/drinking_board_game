@@ -108,23 +108,34 @@
         <!-- Player's "Leave Game" button (only shown for players) -->
         <button id="leaveGameButton" class="red-button" style="display: none;">Leave Game</button>
 
-        <!-- Board Preview Section -->
+        <!-- Lobby Page Board Preview Section -->
         <div id="boardPreviewSection" style="margin-top: 30px;">
             <h3>Board Preview</h3>
-            <!-- Host: Upload Board Button (only visible to the host) -->
             <button id="uploadBoardButton" style="display: none;">Upload Board</button>
-            <input type="file" id="boardFileInput" accept=".json" style="display: none;" /> <!-- Hidden file input -->
-            <div id="lobbyBoardContainer"></div>
+            <input type="file" id="boardFileInput" accept=".json" style="display: none;" />
+            <div id="lobbyBoardContainer" class="board-container">
+                <div class="board-wrapper">
+                    <div class="board-content" id="lobbyBoardContent">
+                        <!-- Board spaces and pieces for the lobby will be rendered here -->
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
-    <!-- Game Page -->
+    <!-- Game Page Board Section -->
     <div id="gamePage" style="display: none;">
         <div id="gameContainer" class="game-container">
             <div id="gameSidebar" class="game-sidebar">
                 <ul id="gamePlayerList"></ul> <!-- Sidebar for player list -->
             </div>
-            <div id="gameBoardContainer"></div>
+            <div id="gameBoardContainer" class="board-container">
+                <div class="board-wrapper">
+                    <div class="board-content" id="gameBoardContent">
+                        <!-- Board spaces and pieces for the game will be rendered here -->
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 

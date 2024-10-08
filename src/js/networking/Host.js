@@ -55,8 +55,8 @@ export default class Host extends BasePeer {
 
     updateAndBroadcastGameState(newGameState) {
         this.gameState = newGameState;
-        this.broadcastGameState();
         this.eventHandler.updateGameState();
+        this.broadcastGameState();
     }
 
     handleData(conn, data) {
