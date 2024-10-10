@@ -72,6 +72,14 @@
                         <label class="settings-label" for="totalPlayerLimitHost">Total Player Limit:</label>
                         <input class="settings-input" id="totalPlayerLimitHost" type="number" value="8" min="1" max="100">
                     </div>
+                    <div class="settings-row">
+                        <label class="settings-label" for="turnTimerHost">Turn Timer (seconds):</label>
+                        <input class="settings-input" id="turnTimerHost" type="number" value="30" min="5" max="300">
+                    </div>
+                    <div class="settings-row">
+                        <label class="settings-label" for="moveDelayHost">Move Delay (milliseconds):</label>
+                        <input class="settings-input" id="moveDelayHost" type="number" value="500" min="100" max="5000">
+                    </div>
                 </div>
                 
                 <div id="settingsSectionClient" class="compact-settings" style="display: none;">
@@ -83,6 +91,14 @@
                     <div class="settings-row">
                         <label class="settings-label" for="totalPlayerLimitClient">Total Player Limit:</label>
                         <span class="settings-display" id="totalPlayerLimitDisplayClient">8</span>
+                    </div>
+                    <div class="settings-row">
+                        <label class="settings-label" for="turnTimerClient">Turn Timer (seconds):</label>
+                        <span class="settings-display" id="turnTimerClient">30</span>
+                    </div>
+                    <div class="settings-row">
+                        <label class="settings-label" for="moveDelayClient">Move Delay (milliseconds):</label>
+                        <span class="settings-display" id="moveDelayClient">500</span>
                     </div>
                 </div>
         
@@ -127,6 +143,7 @@
     <div id="gamePage" style="display: none;">
         <div id="gameContainer" class="game-container">
             <div id="gameSidebar" class="game-sidebar">
+                <button id="rollButton" class="roll-button">Roll Dice</button> <!-- Roll button positioned above the player list -->
                 <ul id="gamePlayerList"></ul> <!-- Sidebar for player list -->
             </div>
             <div id="gameBoardContainer" class="board-container">

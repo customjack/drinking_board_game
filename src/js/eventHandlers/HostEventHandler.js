@@ -7,10 +7,20 @@ import Board from '../models/Board';
 import PlayerListManager from '../controllers/PlayerListManager';
 import PieceManager from '../controllers/PieceManager';
 import GameEngine from '../controllers/GameEngine';
+import SettingsManager from '../controllers/SettingsManager';
 
 export default class HostEventHandler extends BaseEventHandler {
     constructor() {
         super();
+
+        this.host = null;
+
+        this.boardManager = new BoardManager();
+        this.playerListManager = null;
+        this.pieceManager = new PieceManager();
+        this.settingsManager = new SettingsManager(true); //initialize as host
+        this.gameEngine = null;
+
         // Host-specific DOM elements
         this.hostPage = document.getElementById('hostPage');
         this.startHostButton = document.getElementById('startHostButton');
@@ -19,21 +29,18 @@ export default class HostEventHandler extends BaseEventHandler {
         this.addPlayerButton = document.getElementById('addPlayerButton');
         this.uploadButton = document.getElementById('uploadBoardButton');
         this.fileInput = document.getElementById('boardFileInput');
-
-        this.playerLimitPerPeerInput = document.getElementById('playerLimitPerPeerHost');
-        this.totalPlayerLimitInput = document.getElementById('totalPlayerLimitHost');
         this.copyInviteCodeButton = document.getElementById('copyInviteCodeButton');
         this.copyMessage = document.getElementById('copyMessage');
         this.settingsSection = document.getElementById('settingsSectionHost');
 
+        // Retrieve input elements from the SettingsManager and assign them to the HostEventHandler instance
+        const elements = this.settingsManager.getSettingsElements();
+        this.playerLimitPerPeerInput = elements.playerLimitPerPeerInput;
+        this.totalPlayerLimitInput = elements.totalPlayerLimitInput;
+        this.turnTimerInput = elements.turnTimerInput;
+        this.moveDelayInput = elements.moveDelayInput;
+
         this.inviteCode = document.getElementById('inviteCode');
-
-        this.boardManager = new BoardManager();
-        this.playerListManager = null;
-        this.pieceManager = new PieceManager();
-        this.gameEngine = null;
-
-        this.host = null;
     }
 
     init() {
@@ -60,6 +67,10 @@ export default class HostEventHandler extends BaseEventHandler {
             this.playerLimitPerPeerInput.addEventListener('input', () => this.onSettingsChanged());
         if (this.totalPlayerLimitInput)
             this.totalPlayerLimitInput.addEventListener('input', () => this.onSettingsChanged());
+        if (this.turnTimerInput)
+            this.turnTimerInput.addEventListener('input', () => this.onSettingsChanged());
+        if (this.moveDelayInput)
+            this.moveDelayInput.addEventListener('input', () => this.onSettingsChanged());
 
         if (this.fileInput) {
             this.fileInput.addEventListener('change', async (event) => {
@@ -157,7 +168,9 @@ export default class HostEventHandler extends BaseEventHandler {
     }
 
     updateGameState(forceUpdate = false) {
-        console.log(this.host.gameState);
+
+        //Update settings
+        this.updateSettings(forceUpdate);
 
         // Update the game board
         this.updateGameBoard(forceUpdate);
@@ -174,16 +187,20 @@ export default class HostEventHandler extends BaseEventHandler {
         }
     }
 
-    updateGameBoard(forceUpdate = false) {
+    updateSettings(forceUpdate = false) {
         const gameState = this.host.gameState;
-
         if (!gameState) return;
 
-        if (
-            forceUpdate ||
-            !this.boardManager.board ||
-            JSON.stringify(this.boardManager.board.toJSON()) !== JSON.stringify(gameState.board.toJSON())
-        ) {
+        if (forceUpdate || this.settingsManager.shouldUpdateSettings(gameState.settings)) {
+            this.settingsManager.updateSettings(gameState);
+        }
+    }
+
+    updateGameBoard(forceUpdate = false) {
+        const gameState = this.host.gameState;
+        if (!gameState) return;
+
+        if (forceUpdate || this.boardManager.shouldUpdateBoard(gameState.board)) {
             this.boardManager.setBoard(gameState.board);
             this.boardManager.drawBoard();
             this.updatePieces(true);
@@ -192,9 +209,9 @@ export default class HostEventHandler extends BaseEventHandler {
 
     updatePieces(forceUpdate = false) {
         const gameState = this.host.gameState;
-
         if (!gameState) return;
-        console.log("Should update pieces?:", this.pieceManager.shouldUpdatePieces(gameState.players));
+
+        //console.log("Should update pieces?:", this.pieceManager.shouldUpdatePieces(gameState.players));
         if (forceUpdate || this.pieceManager.shouldUpdatePieces(gameState.players)) {
             this.pieceManager.updatePieces(gameState);
         }
@@ -210,10 +227,11 @@ export default class HostEventHandler extends BaseEventHandler {
             );
         }
 
-        const newGameState = this.host.gameState;
+        const gameState = this.host.gameState;
+        if (!gameState) return;
 
-        if (forceUpdate || this.playerListManager.shouldUpdatePlayers(newGameState)) {
-            this.playerListManager.setGameState(newGameState);
+        if (forceUpdate || this.playerListManager.shouldUpdatePlayers(gameState)) {
+            this.playerListManager.setGameState(gameState);
             this.addKickAndEditListeners();
             this.updateAddPlayerButton();
         }
@@ -291,8 +309,8 @@ export default class HostEventHandler extends BaseEventHandler {
     }
 
     updateAddPlayerButton() {
-        const playerLimitPerPeer = this.host.settings.playerLimitPerPeer;
-        const totalPlayerLimit = this.host.settings.playerLimit;
+        const playerLimitPerPeer = this.host.gameState.settings.playerLimitPerPeer;
+        const totalPlayerLimit = this.host.gameState.settings.playerLimit;
         const ownedPlayers = this.host.ownedPlayers;
         const allPlayers = this.host.gameState.players;
 
@@ -334,15 +352,11 @@ export default class HostEventHandler extends BaseEventHandler {
     }
 
     onSettingsChanged() {
-        const newPlayerLimitPerPeer = parseInt(this.playerLimitPerPeerInput.value, 10);
-        const newTotalPlayerLimit = parseInt(this.totalPlayerLimitInput.value, 10);
-
-        this.host.settings.playerLimitPerPeer = newPlayerLimitPerPeer;
-        this.host.settings.playerLimit = newTotalPlayerLimit;
-
-        this.host.broadcastSettings();
+        this.settingsManager.updateGameStateFromInputs(this.host.gameState);
+        this.host.broadcastGameState();
         this.updateAddPlayerButton();
     }
+    
 
     handlePeerError(err) {
         this.startHostButton.disabled = false;

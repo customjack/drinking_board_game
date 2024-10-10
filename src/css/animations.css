@@ -1,5 +1,7 @@
 /* animations.css */
 
+/*Loading spinner*/
+
 .spinner {
     margin: 100px auto 20px auto;
     width: 50px;
@@ -71,5 +73,98 @@
     transition: top 1s ease-out;
 }
 
+/* Base styles for the roll button */
+.roll-button {
+    background-color: #555; /* Dark background when inactive */
+    color: #aaa; /* Light text color when inactive */
+    padding: 20px 40px;
+    font-size: 24px;
+    border: none;
+    border-radius: 12px;
+    cursor: not-allowed;
+    opacity: 0.6;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden; /* Ensure pseudo-elements are clipped within the button */
+}
 
+/* Styles when the button is active */
+.roll-button.active {
+    background: linear-gradient(135deg, #ff416c, #ff4b2b);
+    background-size: 200% 200%;
+    color: #fff;
+    cursor: pointer;
+    opacity: 1;
+    animation: gradientShift 5s ease infinite, pulseGlow 2s infinite;
+}
 
+/* Gradient animation for active state */
+@keyframes gradientShift {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+/* Pulse glow effect for active state */
+@keyframes pulseGlow {
+    0% {
+        box-shadow: 0 0 10px rgba(255, 75, 43, 0.5), inset 0 0 10px rgba(255, 75, 43, 0.5);
+        transform: scale(1);
+    }
+    50% {
+        box-shadow: 0 0 20px rgba(255, 65, 108, 0.7), inset 0 0 20px rgba(255, 65, 108, 0.7);
+        transform: scale(1.05);
+    }
+    100% {
+        box-shadow: 0 0 10px rgba(255, 75, 43, 0.5), inset 0 0 10px rgba(255, 75, 43, 0.5);
+        transform: scale(1);
+    }
+}
+
+/* Hover effect for active state */
+.roll-button.active:hover {
+    box-shadow: 0 0 25px rgba(255, 75, 43, 0.8), inset 0 0 25px rgba(255, 75, 43, 0.8);
+}
+
+/* Disabled state styling */
+.roll-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    animation: none;
+    background-color: #555;
+    box-shadow: none;
+}
+
+/* Updated shine effect */
+.roll-button.active::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -75%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(
+        to right,
+        rgba(255, 255, 255, 0) 0%,
+        rgba(255, 255, 255, 0.3) 50%,
+        rgba(255, 255, 255, 0) 100%
+    );
+    transform: rotate(25deg);
+    animation: shine 3s ease-in-out infinite;
+}
+
+/* Shine animation */
+@keyframes shine {
+    0% {
+        transform: rotate(25deg) translateX(-100%);
+    }
+    100% {
+        transform: rotate(25deg) translateX(100%);
+    }
+}

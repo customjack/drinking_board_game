@@ -3,7 +3,6 @@
 import BasePeer from './BasePeer';
 import Player from '../models/Player';
 import GameState from '../models/GameState';
-import Settings from '../models/Settings';
 
 export default class Client extends BasePeer {
     constructor(originalName, hostId, eventHandler) {
@@ -72,12 +71,11 @@ export default class Client extends BasePeer {
             case 'joinRejected':
                 this.handleJoinRejected(data.reason);
                 break;
-            case 'settings':
-                this.handleSettings(data.settings);
-                break;
             case 'startGame':
                 this.handleStartGame();
                 break;
+            case 'addPlayerRejected':
+                this.handleAddPlayerRejected(data.reason);
             // Handle other data types...
             default:
                 console.log('Unknown data type:', data.type);
@@ -105,11 +103,6 @@ export default class Client extends BasePeer {
         location.reload();
     }
 
-    handleSettings(settingsData) {
-        this.settings = Settings.fromJSON(settingsData);
-        this.eventHandler.updateDisplayedSettings();
-    }
-
     handleStartGame() {
         this.eventHandler.showGamePage();
     }
@@ -122,5 +115,9 @@ export default class Client extends BasePeer {
     handleConnectionError(err) {
         alert('Connection error: ' + err);
         location.reload();
+    }
+
+    handleAddPlayerRejected(reason) {
+        alert(reason);
     }
 }

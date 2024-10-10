@@ -2,14 +2,12 @@
 
 import BasePeer from './BasePeer';
 import Player from '../models/Player';
-import Settings from '../models/Settings';
 import GameState from '../models/GameState'
 
 export default class Host extends BasePeer {
-    constructor(originalName, eventHandler, playerLimitPerPeer = 1, playerLimit = 8) {
+    constructor(originalName, eventHandler) {
         super(eventHandler);
         this.originalName = originalName;
-        this.settings = new Settings(playerLimitPerPeer, playerLimit);
     }
 
     async init() {
@@ -36,7 +34,6 @@ export default class Host extends BasePeer {
         console.log('New connection from', conn.peer);
         this.connections.push(conn);
         this.sendGameState(conn);
-        this.sendSettings(conn);
         conn.on('data', (data) => this.handleData(conn, data));
         conn.on('close', () => this.handleDisconnection(conn.peer));
     }
@@ -46,11 +43,6 @@ export default class Host extends BasePeer {
             const gameStateData = this.gameState.toJSON();
             conn.send({ type: 'gameState', gameState: gameStateData });
         }
-    }
-
-    sendSettings(conn) {
-        const settingsData = this.settings.toJSON();
-        conn.send({ type: 'settings', settings: settingsData });
     }
 
     updateAndBroadcastGameState(newGameState) {
@@ -111,12 +103,12 @@ export default class Host extends BasePeer {
         const totalPlayersCount = this.gameState.players.length;
         const playersToAddCount = players.length;
 
-        if (totalPlayersCount + playersToAddCount > this.settings.playerLimit) {
+        if (totalPlayersCount + playersToAddCount > this.gameState.settings.playerLimit) {
             conn.send({
                 type: 'joinRejected',
-                reason: `Lobby is full. The maximum player limit of ${this.settings.playerLimit} has been reached.`,
+                reason: `Lobby is full. The maximum player limit of ${this.gameState.settings.playerLimit} has been reached.`,
             });
-            console.log(`Join request rejected. Player limit of ${this.settings.playerLimit} reached.`);
+            console.log(`Join request rejected. Player limit of ${this.gameState.settings.playerLimit} reached.`);
             return;
         }
 
@@ -125,7 +117,7 @@ export default class Host extends BasePeer {
             this.addPlayer(newPlayer);
         });
 
-        this.broadcastAll();
+        this.broadcastGameState();
     }
 
     handleNameChange(playerId, newName) {
@@ -146,20 +138,20 @@ export default class Host extends BasePeer {
         const clientPlayersCount = this.gameState.players.filter(player => player.peerId === peerId).length;
         const totalPlayersCount = this.gameState.players.length;
 
-        if (clientPlayersCount >= this.settings.playerLimitPerPeer) {
+        if (clientPlayersCount >= this.gameState.settings.playerLimitPerPeer) {
             conn.send({
                 type: 'addPlayerRejected',
-                reason: `Player limit reached. You can only create up to ${this.settings.playerLimitPerPeer} players.`,
+                reason: `Local player limit reached for your client. You can only create up to ${this.gameState.settings.playerLimitPerPeer} players.`,
                 player: newPlayerData
             });
             console.log(`Player addition rejected for peerId ${peerId} due to player limit.`);
             return;
         }
 
-        if (totalPlayersCount >= this.settings.playerLimit) {
+        if (totalPlayersCount >= this.gameState.settings.playerLimit) {
             conn.send({
                 type: 'addPlayerRejected',
-                reason: `Total player limit reached. The game can only have up to ${this.settings.playerLimit} players.`,
+                reason: `Total player limit reached. The game can only have up to ${this.gameState.settings.playerLimit} players.`,
                 player: newPlayerData
             });
             console.log(`Player addition rejected for peerId ${peerId} due to total player limit.`);
@@ -168,7 +160,7 @@ export default class Host extends BasePeer {
 
         const newPlayer = Player.fromJSON(newPlayerData);
         this.addPlayer(newPlayer);
-        this.broadcastAll();
+        this.broadcastGameState();
         console.log(`Player added successfully for peerId ${peerId}. Player ID: ${newPlayer.playerId}`);
     }
 
@@ -183,22 +175,10 @@ export default class Host extends BasePeer {
         playersToRemove.forEach(player => this.removePlayer(player.playerId));
     }
 
-    broadcastAll() {
-        this.broadcastSettings();
-        this.broadcastGameState();
-    }
-
     broadcastGameState() {
         const gameStateData = this.gameState.toJSON();
         this.connections.forEach(conn => {
             conn.send({ type: 'gameState', gameState: gameStateData });
-        });
-    }
-
-    broadcastSettings() {
-        const settingsData = this.settings.toJSON();
-        this.connections.forEach((conn) => {
-            conn.send({ type: 'settings', settings: settingsData });
         });
     }
 
@@ -224,14 +204,14 @@ export default class Host extends BasePeer {
 
     addNewOwnedPlayer(playerName) {
         const totalPlayers = this.gameState.players.length;
-        if (totalPlayers >= this.settings.playerLimit) {
-            alert(`Cannot add more players. The maximum limit of ${this.settings.playerLimit} players has been reached.`);
+        if (totalPlayers >= this.gameState.settings.playerLimit) {
+            alert(`Cannot add more players. The maximum limit of ${this.gameState.settings.playerLimit} players has been reached.`);
             return;
         }
 
         const totalOwnedPlayers = this.ownedPlayers.length;
-        if (totalOwnedPlayers >= this.settings.playerLimitPerPeer) {
-            alert(`Cannot add more players. The maximum limit of ${this.settings.playerLimitPerPeer} players for this peer has been reached.`);
+        if (totalOwnedPlayers >= this.gameState.settings.playerLimitPerPeer) {
+            alert(`Cannot add more players. The maximum limit of ${this.gameState.settings.playerLimitPerPeer} players for this peer has been reached.`);
             return;
         }
 

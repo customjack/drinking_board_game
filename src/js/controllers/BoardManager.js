@@ -19,6 +19,19 @@ export default class BoardManager {
     }
 
     /**
+     * Determines if the board needs to be updated based on the game state.
+     * @param {Board} newBoard - The board object from the latest game state.
+     * @returns {boolean} - Returns true if the board should be updated, false otherwise.
+     */
+    shouldUpdateBoard(newBoard) {
+        // Check if the current board and the new board are the same
+        if (!this.board || JSON.stringify(this.board.toJSON()) !== JSON.stringify(newBoard.toJSON())) {
+            return true; // Update required if there is no board or boards don't match
+        }
+        return false; // No update required if boards are the same
+    }
+
+    /**
      * Set the board container to a new DOM element.
      * @param {HTMLElement} containerElement - The new container element.
      */

@@ -7,7 +7,7 @@ export default class Settings {
      * @param {number} turnTimer - The maximum time allowed for each turn (in seconds).
      * @param {number} moveDelay - The delay between each move (in milliseconds).
      */
-    constructor(playerLimitPerPeer, playerLimit, turnTimer, moveDelay) {
+    constructor(playerLimitPerPeer = 1, playerLimit = 8, turnTimer = 30, moveDelay = 500) {
         this.playerLimitPerPeer = playerLimitPerPeer; // Limit the number of players per peer
         this.playerLimit = playerLimit; // Limit the number of total players
         this.turnTimer = turnTimer; // Time limit for each player's turn in seconds

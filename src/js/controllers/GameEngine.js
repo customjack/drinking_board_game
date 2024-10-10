@@ -3,6 +3,7 @@
 import GameState from '../models/GameState';
 import TurnPhases from '../enums/TurnPhases'; // Import TurnPhases enum
 import ParticleAnimation from '../animations/ParticleAnimation';
+import RollButtonManager from './RollButtonManager';
 
 export default class GameEngine {
     /**
@@ -17,25 +18,38 @@ export default class GameEngine {
         this.peerId = peerId; // The peer ID of the current player
         this.proposeGameState = proposeGameState; // Function to send proposed game state to host
         this.isHost = isHost; // Whether this peer is the host
-        this.rollButton = null; // Will hold the roll button for rolling dice
         this.particleAnimation = new ParticleAnimation(); // Initialize the roll animation
+        this.rollButtonManager = new RollButtonManager(); // Initialize the roll button manager
+
     }
 
     // Initialize the GameEngine (e.g., add roll button)
     init() {
-        this.setupRollButton();
+        const existingRollButton = document.getElementById('rollButton'); // Check if there's a predefined roll button in the HTML
+        this.rollButtonManager.init(existingRollButton, () => this.rollDiceForCurrentPlayer());
     }
 
-    // Setup a roll button in the DOM for the player to click
+    // Update the setupRollButton method to handle button states
     setupRollButton() {
-        this.rollButton = document.createElement('button');
-        this.rollButton.textContent = "Roll Dice";
-        this.rollButton.style.display = 'none'; // Initially hidden
-        document.body.appendChild(this.rollButton);
+        this.rollButton = document.getElementById('rollButton'); // Use the roll button from the HTML
+        this.updateRollButtonState(false); // Set initial state to inactive
 
         this.rollButton.addEventListener('click', () => {
-            this.rollDiceForCurrentPlayer();
+            if (this.rollButton.classList.contains('active')) {
+                this.rollDiceForCurrentPlayer();
+            }
         });
+    }
+
+    // Method to update the roll button state
+    updateRollButtonState(isActive) {
+        if (isActive) {
+            this.rollButton.classList.add('active');
+            this.rollButton.style.cursor = 'pointer';
+        } else {
+            this.rollButton.classList.remove('active');
+            this.rollButton.style.cursor = 'not-allowed';
+        }
     }
 
     // Main method to update the game state
@@ -50,13 +64,12 @@ export default class GameEngine {
 
         // If we're in the BEGIN_TURN phase
         if (this.gameState.turnPhase === TurnPhases.BEGIN_TURN) {
-            // Check if the current player belongs to this peer
             if (currentPlayer.peerId === this.peerId) {
                 console.log(`It's your turn, ${currentPlayer.nickname}!`);
-                this.promptForRoll(); // Prompt player to roll dice
+                this.rollButtonManager.activate(); // Activate the roll button
             } else {
                 console.log(`Waiting for ${currentPlayer.nickname} to take their turn.`);
-                this.rollButton.style.display = 'none'; // Hide roll button if it's not our turn
+                this.rollButtonManager.deactivate(); // Deactivate the roll button if it's not our turn
             }
         }
 
@@ -66,9 +79,16 @@ export default class GameEngine {
         }
     }
 
-    // Prompt the player to roll the dice (show the roll button)
+    // Prompt the player to roll the dice (show the roll button and set it active)
     promptForRoll() {
-        this.rollButton.style.display = 'block'; // Show the roll button
+        this.updateRollButtonState(true); // Activate the roll button
+        this.rollButton.style.display = 'block';
+    }
+
+    // Hide and deactivate the roll button when it shouldn't be used
+    hideRollButton() {
+        this.updateRollButtonState(false); // Deactivate the roll button
+        this.rollButton.style.display = 'none';
     }
 
     // Modify the rollDiceForCurrentPlayer method to call the correct method
@@ -77,12 +97,12 @@ export default class GameEngine {
         const rollResult = currentPlayer.rollDice(); // Roll using player's roll engine
         console.log(`${currentPlayer.nickname} rolled a ${rollResult}`);
 
-        // Hide the roll button after rolling
-        this.rollButton.style.display = 'none';
+        // Deactivate the roll button after rolling
+        this.rollButtonManager.deactivate();
 
         // Show the particle animation and proceed after it's done
         this.particleAnimation.showRollResult(rollResult, () => {
-            this.handleAfterDiceRoll(rollResult); // Correct method call
+            this.handleAfterDiceRoll(rollResult);
         });
     }
 

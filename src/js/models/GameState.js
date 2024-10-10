@@ -2,14 +2,16 @@ import Player from './Player';
 import Board from './Board';
 import TurnPhases from '../enums/TurnPhases'; // Import TurnPhases enum
 import GamePhases from '../enums/GamePhases'; // Import GamePhases enum
+import Settings from './Settings'; // Import the Settings class
 
 export default class GameState {
-    constructor(board, players = []) {
+    constructor(board, players = [], settings = new Settings()) {
         this.board = board; // Game board
         this.players = players; // List of players
         this.remainingMoves = 0; // Remaining moves for the current player
         this.turnPhase = TurnPhases.BEGIN_TURN; // Start with the beginning turn phase
         this.gamePhase = GamePhases.IN_LOBBY; // Set initial game phase to lobby
+        this.settings = settings; // Game settings
     }
 
     // Start the game by setting the game phase to IN_GAME
@@ -35,7 +37,7 @@ export default class GameState {
 
     // Add a player to the game
     addPlayer(player) {
-        player.setTurnsTaken(this.getTurnNumber()-1); //Ensure they don't get a bunch of turns when they first join.
+        player.setTurnsTaken(this.getTurnNumber() - 1); // Ensure they don't get a bunch of turns when they first join.
         this.players.push(player);
     }
 
@@ -116,7 +118,8 @@ export default class GameState {
             players: this.players.map(player => player.toJSON()),
             remainingMoves: this.remainingMoves,
             turnPhase: this.turnPhase, // Include the current turn phase
-            gamePhase: this.gamePhase  // Include the current game phase
+            gamePhase: this.gamePhase,  // Include the current game phase
+            settings: this.settings.toJSON() // Include the game settings
         };
     }
 
@@ -124,7 +127,8 @@ export default class GameState {
     static fromJSON(json) {
         const board = Board.fromJSON(json.board);
         const players = json.players.map(playerData => Player.fromJSON(playerData));
-        const gameState = new GameState(board, players);
+        const settings = Settings.fromJSON(json.settings); // Create settings from JSON
+        const gameState = new GameState(board, players, settings);
         gameState.remainingMoves = json.remainingMoves;
         gameState.turnPhase = json.turnPhase;
         gameState.gamePhase = json.gamePhase;

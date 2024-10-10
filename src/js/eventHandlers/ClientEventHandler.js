@@ -5,6 +5,7 @@ import Client from '../networking/Client';
 import BoardManager from '../controllers/BoardManager';
 import PlayerListManager from '../controllers/PlayerListManager';
 import PieceManager from '../controllers/PieceManager';
+import SettingsManager from '../controllers/SettingsManager';
 import Player from '../models/Player';
 import GameEngine from '../controllers/GameEngine';
 
@@ -19,6 +20,8 @@ export default class ClientEventHandler extends BaseEventHandler {
         this.copyInviteCodeButton = document.getElementById('copyInviteCodeButton');
         this.playerLimitPerPeerDisplay = document.getElementById('playerLimitPerPeerDisplayClient');
         this.totalPlayerLimitDisplay = document.getElementById('totalPlayerLimitDisplayClient');
+        this.turnTimerDisplay = document.getElementById('turnTimerClient');
+        this.moveDelayDisplay = document.getElementById('moveDelayClient');
         this.settingsSection = document.getElementById('settingsSectionClient');
         this.copyMessage = document.getElementById('copyMessage');
 
@@ -27,6 +30,7 @@ export default class ClientEventHandler extends BaseEventHandler {
         this.boardManager = new BoardManager();
         this.playerListManager = null;
         this.pieceManager = new PieceManager();
+        this.settingsManager = new SettingsManager(false); //initialize as client
         this.gameEngine = null;
 
         this.client = null;
@@ -107,6 +111,10 @@ export default class ClientEventHandler extends BaseEventHandler {
     }
 
     updateGameState(forceUpdate = false) {
+
+        //Update settings
+        this.updateSettings(forceUpdate);
+
         // Update the game board
         this.updateGameBoard(forceUpdate);
 
@@ -122,16 +130,22 @@ export default class ClientEventHandler extends BaseEventHandler {
         }
     }
 
+    updateSettings(forceUpdate = false) {
+        const gameState = this.client.gameState;
+        if (!gameState) return;
+
+        if (forceUpdate || this.settingsManager.shouldUpdateSettings(gameState.settings)) {
+            this.settingsManager.updateSettings(gameState);
+            this.updateAddPlayerButton();
+        }
+    }
+
     updateGameBoard(forceUpdate = false) {
         const gameState = this.client.gameState;
 
         if (!gameState) return;
 
-        if (
-            forceUpdate ||
-            !this.boardManager.board ||
-            JSON.stringify(this.boardManager.board.toJSON()) !== JSON.stringify(gameState.board.toJSON())
-        ) {
+        if (forceUpdate || this.boardManager.shouldUpdateBoard(gameState.board)) {
             this.boardManager.setBoard(gameState.board);
             this.boardManager.drawBoard();
             this.updatePieces(true);
@@ -235,10 +249,10 @@ export default class ClientEventHandler extends BaseEventHandler {
     }
 
     updateAddPlayerButton() {
-        if (!this.client.settings) return;
+        if (!this.client.gameState.settings) return;
 
-        const playerLimitPerPeer = this.client.settings.playerLimitPerPeer;
-        const totalPlayerLimit = this.client.settings.playerLimit;
+        const playerLimitPerPeer = this.client.gameState.settings.playerLimitPerPeer;
+        const totalPlayerLimit = this.client.gameState.settings.playerLimit;
         const ownedPlayers = this.client.ownedPlayers;
         const allPlayers = this.client.gameState.players;
 
@@ -280,6 +294,12 @@ export default class ClientEventHandler extends BaseEventHandler {
         }
         if (this.totalPlayerLimitDisplay) {
             this.totalPlayerLimitDisplay.textContent = this.client.settings.playerLimit;
+        }
+        if (this.turnTimerDisplay) {
+            this.totalPlayerLimitDisplay.textContent = this.client.settings.turnTimer;
+        }
+        if (this.moveDelayDisplay) {
+            this.totalPlayerLimitDisplay.textContent = this.client.settings.moveDelay;
         }
         this.updateAddPlayerButton();
     }

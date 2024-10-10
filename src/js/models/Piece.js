@@ -31,9 +31,6 @@ export default class Piece {
             this.element.style.opacity = '0.75';  // Set transparency (0.7 = 70% opaque)
             const darkerBorderColor = darkenColor(this.player.playerColor, 0.75);
             this.element.style.border = `2px solid ${darkerBorderColor}`; // Use darker color for outline
-            console.log("Inner color:",this.player.playerColor);
-            console.log("Border color:",darkerBorderColor);
-            console.log("Border Element:",this.element.style.border);
 
 
             // Add click listener for piece interactions
