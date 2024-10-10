@@ -122,5 +122,3 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - **Jack (customjack)**: Reviewed, refined, and maintained the project.
 
 ---
-
-Feel free to customize this README to better suit your project's needs. Include any additional information that might be helpful for contributors or users.
