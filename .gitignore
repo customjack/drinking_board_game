@@ -5,6 +5,9 @@ node_modules/
 dist/
 build/
 
+# Don't include deprecated directory
+deprecated/
+
 # Runtime files
 npm-debug.log*
 yarn-debug.log*
