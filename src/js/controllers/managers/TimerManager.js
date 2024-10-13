@@ -1,0 +1,111 @@
+// controllers/TimerManager.js
+
+export default class TimerManager {
+    /**
+     * Constructs the TimerManager instance.
+     * @param {Animation} animation - An instance of an Animation subclass (e.g., TimerAnimation).
+     * @param {GameState} gameState - The current game state to get settings from.
+     */
+    constructor(animation, gameState) {
+        this.animation = animation; // The animation to display the timer
+        this.gameState = gameState; // The game state to access settings dynamically
+        this.onTimerEndCallback = null; // Callback when the timer ends
+        this.pausedMessage = null; // DOM element for "Game Paused" message
+    }
+
+    /**
+     * Initializes the timer manager.
+     * @param {Function} onTimerEndCallback - Function to call when the timer ends.
+     * @param {Function} pauseCallback - Function to call when the pause button is clicked.
+     */
+    init(onTimerEndCallback, pauseCallback = null) {
+        this.onTimerEndCallback = onTimerEndCallback;
+        this.animation.init(pauseCallback);
+        this.createPausedMessage();
+
+        // Initially hide the "Game Paused" message
+        this.hidePausedMessage();
+    }
+
+    /**
+     * Starts the timer.
+     */
+    startTimer() {
+        this.stopTimer(); // Stop any existing timer
+
+        const duration = this.gameState.settings.getTurnTimer();
+        this.animation.start({ duration }, () => {
+            // Timer reached zero
+            if (this.onTimerEndCallback) {
+                this.onTimerEndCallback();
+            }
+        });
+    }
+
+    /**
+     * Stops the timer.
+     */
+    stopTimer() {
+        this.animation.cleanup();
+    }
+
+    /**
+     * Pauses the timer and shows the "Game Paused" message.
+     */
+    pauseTimer() {
+        this.animation.pause();
+        this.showPausedMessage();
+    }
+
+    /**
+     * Resumes the timer and hides the "Game Paused" message.
+     */
+    resumeTimer() {
+        this.animation.resume();
+        this.hidePausedMessage();
+    }
+
+    /**
+     * Creates the "Game Paused" notification element if one doesn't exist.
+     */
+    createPausedMessage() {
+        if (!this.pausedMessage) {
+            const pausedMessage = document.createElement('div');
+            pausedMessage.id = 'pausedMessage';
+            pausedMessage.textContent = 'Game Paused';
+            pausedMessage.classList.add('paused-message');
+
+            // Insert the message into the pausedMessageContainer
+            const pausedMessageContainer = document.getElementById('pausedMessageContainer');
+            if (pausedMessageContainer) {
+                pausedMessageContainer.appendChild(pausedMessage);
+            } else {
+                // Fallback: insert into the game sidebar
+                const gameSidebar = document.getElementById('gameSidebar');
+                if (gameSidebar) {
+                    gameSidebar.insertBefore(pausedMessage, gameSidebar.firstChild);
+                }
+            }
+
+            this.pausedMessage = pausedMessage;
+        }
+    }
+
+    /**
+     * Displays the "Game Paused" message.
+     */
+    showPausedMessage() {
+        if (this.pausedMessage) {
+            this.pausedMessage.style.display = 'block';
+        }
+    }
+
+    /**
+     * Hides the "Game Paused" message.
+     */
+    hidePausedMessage() {
+        if (this.pausedMessage) {
+            this.pausedMessage.style.display = 'none';
+        }
+    }
+}

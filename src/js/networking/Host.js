@@ -3,6 +3,7 @@
 import BasePeer from './BasePeer';
 import Player from '../models/Player';
 import GameState from '../models/GameState'
+import GamePhases from '../enums/GamePhases';
 
 export default class Host extends BasePeer {
     constructor(originalName, eventHandler) {
@@ -47,8 +48,8 @@ export default class Host extends BasePeer {
 
     updateAndBroadcastGameState(newGameState) {
         this.gameState = newGameState;
-        this.eventHandler.updateGameState();
         this.broadcastGameState();
+        this.eventHandler.updateGameState();
     }
 
     handleData(conn, data) {
@@ -86,13 +87,14 @@ export default class Host extends BasePeer {
             this.broadcastGameState();
         } else {
             console.error('Invalid game state proposed by peer:', conn.peer);
-            // Optionally send an error back to the client
+            this.sendGameState(conn); //Send them the corrected game state
         }
     }
 
     validateProposedGameState(peerId, proposedGameState) {
-        // Additional validation logic can be added here
-        // For simplicity, we'll assume the proposed game state is valid
+        if (this.gameState.gamePhase === GamePhases.PAUSED && proposedGameState.gamePhase !== GamePhases.PAUSED) {
+            return false;
+        }
 
         return true;
     }

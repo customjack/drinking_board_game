@@ -1,28 +1,62 @@
 // controllers/RollButtonManager.js
 
+import Animation from '../../animations/Animation'; // Import the base Animation class
+
 export default class RollButtonManager {
     /**
      * Constructs the RollButtonManager instance.
+     * @param {Animation} animation - An instance of an Animation subclass.
      */
-    constructor() {
+    constructor(animation) {
         this.rollButton = null; // Will hold the roll button element
+        this.animation = animation; // The animation to play when the roll button is clicked
+        this.onRollDiceCallback = null; // Callback to perform the dice roll
+        this.onRollCompleteCallback = null; // Callback after roll and animation complete
     }
 
     /**
      * Initializes the roll button. Uses the existing button element if provided, or creates a new one.
      * @param {HTMLElement} existingButtonElement - An existing button element to use for the roll button.
-     * @param {Function} onClickCallback - The function to call when the roll button is clicked.
+     * @param {Function} onRollDiceCallback - Function to call to perform the dice roll.
+     * @param {Function} onRollCompleteCallback - Function to call when roll and animation are complete.
      */
-    init(existingButtonElement, onClickCallback) {
+    init(existingButtonElement, onRollDiceCallback, onRollCompleteCallback) {
         // Use the existing button element if provided, otherwise create a new one
         this.rollButton = existingButtonElement || this.createRollButton();
+
+        // Store the callbacks
+        this.onRollDiceCallback = onRollDiceCallback;
+        this.onRollCompleteCallback = onRollCompleteCallback;
 
         // Add click event listener
         this.rollButton.addEventListener('click', () => {
             if (this.rollButton.classList.contains('active')) {
-                onClickCallback();
+                // Deactivate the roll button immediately to prevent multiple clicks
+                this.deactivate();
+
+                // Handle the roll and animation
+                this.handleRoll();
             }
         });
+    }
+
+    /**
+     * Handles the roll action, including playing the animation.
+     */
+    handleRoll() {
+        // Perform the dice roll using the provided callback
+        const rollResult = this.onRollDiceCallback();
+
+        // Play the animation
+        this.animation.start(
+            { resultText: rollResult.toString() },
+            () => {
+                // When the animation is complete, call the onRollCompleteCallback with the roll result
+                if (this.onRollCompleteCallback) {
+                    this.onRollCompleteCallback(rollResult);
+                }
+            }
+        );
     }
 
     /**

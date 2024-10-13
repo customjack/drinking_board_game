@@ -1,7 +1,20 @@
-/* styles.css */
+/* In your main CSS file, include all themes */
+/* styles.scss */
+@import 'variables.css';
+@import 'base.css';
+@import 'utilities.css';
+@import 'layout.css';
+@import 'components/button.css';
+@import 'components/modal.css';
+@import 'components/player-list.css';
+@import 'components/form.css';
+@import 'components/box.css';
+@import 'components/input.css';
+@import 'components/navbar.css';
+@import './components/icon.css';
+@import 'animations.css';
 
-@import './base.css';
-@import './layout.css';
-@import './components.css';
-@import './board.css';
-@import './animations.css';
+/* Import all themes */
+@import 'themes/light.css';
+@import 'themes/dark.css';
+@import 'themes/retro.css';

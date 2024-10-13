@@ -3,11 +3,18 @@
 import '../css/styles.css';
 import HostEventHandler from './eventHandlers/HostEventHandler';
 import ClientEventHandler from './eventHandlers/ClientEventHandler';
+import PersonalSettings from './models/PersonalSettings';
+import PersonalSettingsMenu from './controllers/menus/PersonalSettingsMenu';
 
 document.addEventListener('DOMContentLoaded', () => {
+    // Initialize personal settings
+    const personalSettings = new PersonalSettings();
+    const personalSettingsMenu = new PersonalSettingsMenu('settingsModal', personalSettings);
+
     // DOM Elements
     const hostButton = document.getElementById('hostButton');
     const joinButton = document.getElementById('joinButton');
+
 
     if (hostButton)
         hostButton.addEventListener('click', () => {

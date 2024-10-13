@@ -16,7 +16,7 @@ export default class GameState {
 
     // Start the game by setting the game phase to IN_GAME
     startGame() {
-        this.turnPhase = TurnPhases.BEGIN_TURN; // Reset the turn phase
+        this.turnPhase = TurnPhases.CHANGE_TURN; // Reset the turn phase
         this.gamePhase = GamePhases.IN_GAME;    // Transition to in-game phase
     }
 
@@ -27,7 +27,7 @@ export default class GameState {
 
     // Check if the game has started
     isGameStarted() {
-        return this.gamePhase === GamePhases.IN_GAME;
+        return this.gamePhase === GamePhases.IN_GAME || this.gamePhase === GamePhases.PAUSED;
     }
 
     // Check if the game has ended
@@ -105,9 +105,20 @@ export default class GameState {
     // Change the turn phase (e.g., BEGIN_TURN, END_TURN, etc.)
     setTurnPhase(phase) {
         if (Object.values(TurnPhases).includes(phase)) {
+            if (phase === TurnPhases.END_TURN) {
+                this.setRemainingMoves(0);
+            }
             this.turnPhase = phase;
         } else {
             console.error(`Invalid turn phase: ${phase}`);
+        }
+    }
+
+    setGamePhase(phase) {
+        if (Object.values(GamePhases).includes(phase)) {
+            this.gamePhase = phase;
+        } else {
+            console.error(`Invalid game phase: ${phase}`);
         }
     }
 

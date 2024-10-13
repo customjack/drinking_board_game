@@ -1,59 +1,82 @@
 /* base.css */
 
-/* General Body Styles */
+/*
+TODO:
+
+Add:
+label.css
+header.css
+select.css
+
+to create base classes (and custom classes)
+
+The custom classes will be used for aligning (for example the game settings section). Custom headers will also be made to make the titles and such much cooler.
+*/
+
+/* Import variables */
+@import './variables.css';
+
+/* Reset Styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Body Styles */
 body {
-    font-family: 'Arial', sans-serif;
-    text-align: center;
-    margin-top: 50px;
-    background-color: #f4f7f6;
-    color: #333;
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-base);
+  background-color: var(--background-body);
+  color: var(--text-color);
+  text-align: center;
+  margin-top: 50px;
 }
 
-/* Style for Headers */
-h1 {
-    font-size: 48px; /* Larger font for main title */
-    font-weight: bold;
-    background: linear-gradient(90deg, #ff416c, #ff4b2b); /* Cool gradient effect */
-    -webkit-background-clip: text;
-    color: transparent; /* Make the gradient apply to text */
-    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2); /* Subtle shadow for depth */
-    margin-bottom: 30px;
-    letter-spacing: 1px; /* Slightly spaced-out letters */
+/* Headings */
+h1, h2, h3, h4, h5, h6 {
+  color: var(--text-color);
 }
 
-h2 {
-    font-size: 36px; /* Make the lobby header larger */
-    font-weight: bold;
-    background: linear-gradient(90deg, #00c6ff, #0072ff); /* Another gradient for variation */
-    -webkit-background-clip: text;
-    color: transparent;
-    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2); /* Subtle shadow for depth */
-    margin-bottom: 20px;
+/* Links */
+a {
+  color: var(--color-primary);
+  text-decoration: none;
 }
 
-/* Style for input fields */
-input {
-    width: 80%;              /* Centered width for input fields */
-    max-width: 300px;         /* Set a maximum width */
-    padding: 10px;
-    margin: 10px 0;          /* Space between inputs */
-    border-radius: 5px;
-    border: 1px solid #ccc;
-    font-size: 16px;
-    text-align: center;       /* Center the input text */
+a:hover {
+  text-decoration: underline;
+}
+
+/* Input Fields */
+input, select, textarea {
+  font-family: inherit;
+  font-size: inherit;
+  padding: calc(var(--spacing-unit) * 1);
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 /* Labels */
-#hostPage label, #joinPage label {
-    display: block;
-    width: 100%;
-    text-align: center;       /* Center the label text */
-    margin-bottom: 5px;       /* Space between label and input */
+label {
+    text-align: center; /* Center all labels by default */
+    display: block; /* Ensure label spans full width */
+    font-family: var(--font-family-label, var(--font-family-base)); /* Allow labels font family to be themed */
+    margin-bottom: calc(var(--spacing-unit) * 1); /* Add some margin below the label */
+    color: var(--label-color, var(--text-color)); /* Allow theme to customize label color */
 }
 
-#gamePage, #lobbyPage {
-    height: 100vh; /* Full viewport height */
-    display: flex;
-    flex-direction: column;
+/* List Styles */
+ul {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
 }
 
+h1, h2, h3, h4, h5, h6 {
+    text-align: center; /* Center all headers by default */
+    font-family: var(--font-family-header, var(--font-family-base)); /* Allow header font family to be themed */
+    margin: calc(var(--spacing-unit) * 2) 0; /* Add consistent spacing */
+}

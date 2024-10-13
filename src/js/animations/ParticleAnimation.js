@@ -1,7 +1,10 @@
-// ParticleAnimation.js
+// animations/ParticleAnimation.js
 
-export default class ParticleAnimation {
+import Animation from './Animation';
+
+export default class ParticleAnimation extends Animation {
     constructor() {
+        super();
         this.canvas = null;
         this.ctx = null;
         this.particles = [];
@@ -9,20 +12,30 @@ export default class ParticleAnimation {
         this.animationDuration = 4000; // Total duration in milliseconds
         this.startTime = null;
         this.resultText = '';
+        this.callback = null;
     }
 
     /**
-     * Shows the particle animation and displays the result.
-     * @param {any} rollResult - The result of the roll to display.
-     * @param {Function} callback - A function to call when the animation ends.
+     * Initializes the animation.
      */
-    showRollResult(rollResult, callback) {
-        this.resultText = rollResult.toString();
+    init() {
+        // No specific initialization needed for this animation
+    }
+
+    /**
+     * Starts or plays the animation.
+     * @param {Object} options - Options for the animation (e.g., resultText).
+     * @param {Function} callback - Function to call when the animation ends.
+     */
+    start(options = {}, callback = () => {}) {
+        this.resultText = options.resultText || '';
+        this.callback = callback;
+
         this.initCanvas();
         this.createParticles();
 
         this.startTime = performance.now();
-        this.animate(callback);
+        this.animate();
     }
 
     /**
@@ -71,9 +84,8 @@ export default class ParticleAnimation {
 
     /**
      * Animates the particles.
-     * @param {Function} callback - Function to call after animation completes.
      */
-    animate(callback) {
+    animate() {
         const elapsed = performance.now() - this.startTime;
 
         // Clear canvas
@@ -95,7 +107,7 @@ export default class ParticleAnimation {
             this.drawParticles();
 
             // Request next frame
-            this.animationFrameId = requestAnimationFrame(() => this.animate(callback));
+            this.animationFrameId = requestAnimationFrame(() => this.animate());
         } else {
             // Phase 3: Reveal
             this.drawResultText();
@@ -103,7 +115,7 @@ export default class ParticleAnimation {
             // End the animation after a delay
             setTimeout(() => {
                 this.cleanup();
-                if (callback) callback();
+                if (this.callback) this.callback();
             }, 2000); // Display result for 2 seconds
         }
     }

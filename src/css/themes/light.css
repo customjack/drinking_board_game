@@ -1,0 +1,6 @@
+/* themes/light.css */
+
+/* Import variables */
+@import '../variables.css';
+
+/* Since the default variables are for the light theme, no overrides are necessary. */

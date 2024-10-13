@@ -1,6 +1,6 @@
 // PlayerListManager.js
 
-import GameState from "../models/GameState";
+import GameState from "../../models/GameState";
 
 export default class PlayerListManager {
     constructor(defaultListElement, isHost, currentPlayerPeerId, hostPeerId) {

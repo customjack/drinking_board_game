@@ -2,10 +2,10 @@
 
 import BaseEventHandler from './BaseEventHandler';
 import Client from '../networking/Client';
-import BoardManager from '../controllers/BoardManager';
-import PlayerListManager from '../controllers/PlayerListManager';
-import PieceManager from '../controllers/PieceManager';
-import SettingsManager from '../controllers/SettingsManager';
+import BoardManager from '../controllers/managers/BoardManager';
+import PlayerListManager from '../controllers/managers/PlayerListManager';
+import PieceManager from '../controllers/managers/PieceManager';
+import SettingsManager from '../controllers/managers/SettingsManager';
 import Player from '../models/Player';
 import GameEngine from '../controllers/GameEngine';
 

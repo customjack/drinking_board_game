@@ -2,12 +2,12 @@
 
 import BaseEventHandler from './BaseEventHandler';
 import Host from '../networking/Host';
-import BoardManager from '../controllers/BoardManager';
+import BoardManager from '../controllers/managers/BoardManager';
 import Board from '../models/Board';
-import PlayerListManager from '../controllers/PlayerListManager';
-import PieceManager from '../controllers/PieceManager';
+import PlayerListManager from '../controllers/managers/PlayerListManager';
+import PieceManager from '../controllers/managers/PieceManager';
 import GameEngine from '../controllers/GameEngine';
-import SettingsManager from '../controllers/SettingsManager';
+import SettingsManager from '../controllers/managers/SettingsManager';
 
 export default class HostEventHandler extends BaseEventHandler {
     constructor() {
@@ -63,15 +63,7 @@ export default class HostEventHandler extends BaseEventHandler {
             this.addPlayerButton.addEventListener('click', () => this.addPlayer());
         if (this.uploadButton)
             this.uploadButton.addEventListener('click', () => this.fileInput.click());
-        if (this.playerLimitPerPeerInput)
-            this.playerLimitPerPeerInput.addEventListener('input', () => this.onSettingsChanged());
-        if (this.totalPlayerLimitInput)
-            this.totalPlayerLimitInput.addEventListener('input', () => this.onSettingsChanged());
-        if (this.turnTimerInput)
-            this.turnTimerInput.addEventListener('input', () => this.onSettingsChanged());
-        if (this.moveDelayInput)
-            this.moveDelayInput.addEventListener('input', () => this.onSettingsChanged());
-
+        
         if (this.fileInput) {
             this.fileInput.addEventListener('change', async (event) => {
                 const file = event.target.files[0];
@@ -100,6 +92,26 @@ export default class HostEventHandler extends BaseEventHandler {
                 }
             });
         }
+
+        // Helper function to add multiple event listeners
+        const addDelayedSettingsListener = (inputElement) => {
+            if (inputElement) {
+                inputElement.addEventListener('change', () => this.onSettingsChanged());
+                inputElement.addEventListener('blur', () => this.onSettingsChanged());
+                inputElement.addEventListener('keydown', (event) => {
+                    if (event.key === 'Enter') {
+                        inputElement.blur(); // Trigger blur event
+                        this.onSettingsChanged();
+                    }
+                });
+            }
+        };
+
+        addDelayedSettingsListener(this.playerLimitPerPeerInput);
+        addDelayedSettingsListener(this.totalPlayerLimitInput);
+        addDelayedSettingsListener(this.turnTimerInput);
+        addDelayedSettingsListener(this.moveDelayInput);
+
     }
 
     showHostPage() {

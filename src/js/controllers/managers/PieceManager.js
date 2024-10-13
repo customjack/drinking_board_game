@@ -1,5 +1,5 @@
-import Piece from '../models/Piece';
-import Player from '../models/Player';
+import Piece from '../../models/Piece';
+import Player from '../../models/Player';
 
 export default class PieceManager {
     constructor() {

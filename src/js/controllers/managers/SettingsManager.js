@@ -1,6 +1,6 @@
 // controllers/SettingsManager.js
 
-import Settings from '../models/Settings';
+import Settings from '../../models/Settings';
 
 export default class SettingsManager {
     constructor(isHost = false) {

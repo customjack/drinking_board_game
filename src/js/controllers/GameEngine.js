@@ -1,9 +1,14 @@
 // GameEngine.js
 
 import GameState from '../models/GameState';
-import TurnPhases from '../enums/TurnPhases'; // Import TurnPhases enum
+import TurnPhases from '../enums/TurnPhases';
+import GamePhases from '../enums/GamePhases';
 import ParticleAnimation from '../animations/ParticleAnimation';
-import RollButtonManager from './RollButtonManager';
+import RollButtonManager from './managers/RollButtonManager';
+import TimerManager from './managers/TimerManager';
+import TimerAnimation from '../animations/TimerAnimation';
+import PauseButtonManager from './managers/PauseButtonManager';
+
 
 export default class GameEngine {
     /**
@@ -15,95 +20,202 @@ export default class GameEngine {
      */
     constructor(gameState, peerId, proposeGameState, isHost = false) {
         this.gameState = gameState;
-        this.peerId = peerId; // The peer ID of the current player
-        this.proposeGameState = proposeGameState; // Function to send proposed game state to host
-        this.isHost = isHost; // Whether this peer is the host
-        this.particleAnimation = new ParticleAnimation(); // Initialize the roll animation
-        this.rollButtonManager = new RollButtonManager(); // Initialize the roll button manager
+        this.peerId = peerId;
+        this.proposeGameState = proposeGameState;
+        this.isHost = isHost;
 
-    }
+        // Initialize the roll button manager
+        const particleAnimation = new ParticleAnimation();
+        this.rollButtonManager = new RollButtonManager(particleAnimation);
 
-    // Initialize the GameEngine (e.g., add roll button)
-    init() {
-        const existingRollButton = document.getElementById('rollButton'); // Check if there's a predefined roll button in the HTML
-        this.rollButtonManager.init(existingRollButton, () => this.rollDiceForCurrentPlayer());
-    }
+        // Initialize the timer manager with the TimerAnimation and gameState
+        const timerAnimation = new TimerAnimation(this.isHost);
+        this.timerManager = new TimerManager(timerAnimation, this.gameState);
 
-    // Update the setupRollButton method to handle button states
-    setupRollButton() {
-        this.rollButton = document.getElementById('rollButton'); // Use the roll button from the HTML
-        this.updateRollButtonState(false); // Set initial state to inactive
-
-        this.rollButton.addEventListener('click', () => {
-            if (this.rollButton.classList.contains('active')) {
-                this.rollDiceForCurrentPlayer();
-            }
-        });
-    }
-
-    // Method to update the roll button state
-    updateRollButtonState(isActive) {
-        if (isActive) {
-            this.rollButton.classList.add('active');
-            this.rollButton.style.cursor = 'pointer';
-        } else {
-            this.rollButton.classList.remove('active');
-            this.rollButton.style.cursor = 'not-allowed';
+        // Initialize PauseButtonManager (only for host)
+        if (isHost) {
+            this.pauseButtonManager = new PauseButtonManager();
         }
+
+        // Bind state handlers for game phases
+        this.stateHandlers = {
+            [GamePhases.IN_LOBBY]: this.handleInLobby.bind(this),
+            [GamePhases.IN_GAME]: this.handleInGame.bind(this),
+            [GamePhases.PAUSED]: this.handlePaused.bind(this),
+            [GamePhases.GAME_ENDED]: this.handleGameEnded.bind(this),
+        };
+
+        // Bind state handlers for turn phases
+        this.turnPhaseHandlers = {
+            [TurnPhases.CHANGE_TURN]: this.handleChangeTurn.bind(this),
+            [TurnPhases.BEGIN_TURN]: this.handleBeginTurn.bind(this),
+            [TurnPhases.WAITING_FOR_MOVE]: this.handleWaitingForMove.bind(this),
+            [TurnPhases.PROCESSING_MOVE]: this.handleProcessingMove.bind(this),
+            [TurnPhases.END_TURN]: this.handleEndTurn.bind(this),
+        };
+    }
+
+    // Initialize the GameEngine
+    init() {
+        const existingRollButton = document.getElementById('rollButton');
+        this.rollButtonManager.init(
+            existingRollButton,
+            () => this.rollDiceForCurrentPlayer(),  // Perform the dice roll
+            (rollResult) => this.handleAfterDiceRoll(rollResult) // After animation completes
+        );
+
+        // Initialize the timer manager
+        this.timerManager.init(
+            () => this.handleTimerEnd(),
+            this.isHost ? () => this.togglePauseGame() : null // Pause callback only for host
+        );
+
+        /*
+        if (this.isHost) {
+            const existingPauseButton = document.getElementById('pauseButton');
+            this.pauseButtonManager.init(existingPauseButton, () => this.togglePauseGame())
+        }
+            */
     }
 
     // Main method to update the game state
     updateGameState(gameState) {
         this.gameState = gameState;
 
-        if (!this.gameState.isGameStarted()) { // Game hasn't started yet
-            return;
-        }
+        // Update the gameState in TimerManager to ensure it has the latest settings
+        this.timerManager.gameState = gameState;
 
+        // Handle game phase
+        const gamePhaseHandler = this.stateHandlers[this.gameState.gamePhase];
+        if (gamePhaseHandler) {
+            gamePhaseHandler();
+        } else {
+            console.error(`No handler for game phase: ${this.gameState.gamePhase}`);
+        }
+    }
+
+    // Game phase handlers
+    handleInLobby() {
+        console.log('Game is in the lobby phase.');
+    }
+
+    handleInGame() {
+        // Handle turn phases within the in-game phase
+        const turnPhaseHandler = this.turnPhaseHandlers[this.gameState.turnPhase];
+        if (turnPhaseHandler) {
+            this.timerManager.resumeTimer(); //Resumes timer if paused (does nothing otherwise)
+            turnPhaseHandler();
+        } else {
+            console.error(`No handler for turn phase: ${this.gameState.turnPhase}`);
+        }
+    }
+
+    handlePaused() {
+        this.timerManager.pauseTimer();
+        this.rollButtonManager.deactivate();
+        console.log('Game is currently paused.');
+    }
+
+    handleGameEnded() {
+        console.log('Game has ended.');
+    }
+
+    handleChangeTurn() {
+        const currentPlayer = this.gameState.getCurrentPlayer();
+        
+        if (currentPlayer.peerId === this.peerId) {
+            this.gameState.setTurnPhase(TurnPhases.BEGIN_TURN);
+            this.proposeGameStateWrapper(0); //propose change with no delay
+        }
+    }
+
+    // Turn phase handlers
+    handleBeginTurn() {
+        console.log("test");
         const currentPlayer = this.gameState.getCurrentPlayer();
 
-        // If we're in the BEGIN_TURN phase
-        if (this.gameState.turnPhase === TurnPhases.BEGIN_TURN) {
-            if (currentPlayer.peerId === this.peerId) {
-                console.log(`It's your turn, ${currentPlayer.nickname}!`);
-                this.rollButtonManager.activate(); // Activate the roll button
+        // Resets timer for all players
+        this.timerManager.startTimer();
+
+        if (currentPlayer.peerId === this.peerId) {
+            console.log(`It's your turn, ${currentPlayer.nickname}!`);
+            this.gameState.setTurnPhase(TurnPhases.WAITING_FOR_MOVE);
+            this.proposeGameStateWrapper(0); //propose change with no delay
+        }
+    }
+
+    handleWaitingForMove() {
+        const currentPlayer = this.gameState.getCurrentPlayer();
+
+        if (currentPlayer.peerId === this.peerId) {
+            this.rollButtonManager.activate();
+        } else {
+            console.log(`Waiting for ${currentPlayer.nickname} to take their turn.`);
+            this.rollButtonManager.deactivate();
+        }
+    }
+
+    handleProcessingMove() {
+        const currentPlayer = this.gameState.getCurrentPlayer();
+
+        if (currentPlayer.peerId === this.peerId) {
+            if (this.gameState.hasMovesLeft()) {
+                this.processSingleMove();
             } else {
-                console.log(`Waiting for ${currentPlayer.nickname} to take their turn.`);
-                this.rollButtonManager.deactivate(); // Deactivate the roll button if it's not our turn
+                // Transition to END_TURN phase
+                this.gameState.setTurnPhase(TurnPhases.END_TURN);
+                this.proposeGameStateWrapper();
             }
         }
+    }
 
-        // If we're in the PROCESSING_MOVE phase and this peer owns the current player
-        if (this.gameState.turnPhase === TurnPhases.PROCESSING_MOVE && currentPlayer.peerId === this.peerId) {
-            this.processSingleMove();
+    handleEndTurn() {
+        const currentPlayer = this.gameState.getCurrentPlayer();
+        console.log(`Ending turn for ${currentPlayer.nickname}.`);
+
+        // Stop the timer for all players
+        this.timerManager.stopTimer();
+
+        if (currentPlayer.peerId === this.peerId) {
+
+            // Move to the next player's turn
+            this.gameState.nextPlayerTurn();
+
+            // Transition to CHANGE_TURN phase
+            this.gameState.setTurnPhase(TurnPhases.CHANGE_TURN);
+
+            // Propose the updated game state
+            this.proposeGameStateWrapper();
         }
     }
 
-    // Prompt the player to roll the dice (show the roll button and set it active)
-    promptForRoll() {
-        this.updateRollButtonState(true); // Activate the roll button
-        this.rollButton.style.display = 'block';
+    // When the timer ends
+    handleTimerEnd() {
+        const currentPlayer = this.gameState.getCurrentPlayer();
+        //Maybe this would be better handled by the host, leaving it as such for now
+        if (currentPlayer.peerId === this.peerId) {
+            console.log(`Time's up for ${currentPlayer.nickname}! Ending turn.`);
+
+            // Deactivate the roll button
+            this.rollButtonManager.deactivate();
+
+            // Transition to END_TURN phase
+            this.gameState.setTurnPhase(TurnPhases.END_TURN);
+            this.proposeGameStateWrapper();
+        }
     }
 
-    // Hide and deactivate the roll button when it shouldn't be used
-    hideRollButton() {
-        this.updateRollButtonState(false); // Deactivate the roll button
-        this.rollButton.style.display = 'none';
-    }
-
-    // Modify the rollDiceForCurrentPlayer method to call the correct method
+    // Perform the dice roll and return the result
     rollDiceForCurrentPlayer() {
         const currentPlayer = this.gameState.getCurrentPlayer();
-        const rollResult = currentPlayer.rollDice(); // Roll using player's roll engine
+        const rollResult = currentPlayer.rollDice();
         console.log(`${currentPlayer.nickname} rolled a ${rollResult}`);
 
         // Deactivate the roll button after rolling
         this.rollButtonManager.deactivate();
 
-        // Show the particle animation and proceed after it's done
-        this.particleAnimation.showRollResult(rollResult, () => {
-            this.handleAfterDiceRoll(rollResult);
-        });
+        // Return the roll result to be used by RollButtonManager
+        return rollResult;
     }
 
     /**
@@ -119,50 +231,44 @@ export default class GameEngine {
         this.proposeGameStateWrapper();
     }
 
-    // Process the player's moves one at a time (move player and decrement moves)
+    // Process a single move
     processSingleMove() {
         const currentPlayer = this.gameState.getCurrentPlayer();
 
-        // If there are moves left, process one move
-        if (this.gameState.hasMovesLeft()) {
-            // Increment player's position (e.g., move one space forward)
-            const newSpaceId = currentPlayer.getCurrentSpaceId() + 1;
-            currentPlayer.setCurrentSpaceId(newSpaceId);
+        // Move the player
+        const newSpaceId = currentPlayer.getCurrentSpaceId() + 1;
+        currentPlayer.setCurrentSpaceId(newSpaceId);
 
-            console.log(`${currentPlayer.nickname} moved to space ${newSpaceId}`);
+        console.log(`${currentPlayer.nickname} moved to space ${newSpaceId}`);
 
-            // Decrement remaining moves
-            this.gameState.decrementMoves();
-
-            // Propose the updated game state to the host
-            this.proposeGameStateWrapper();
-        } else {
-            this.endTurn();
-        }
-    }
-
-    // End the current player's turn and pass it to the next player
-    endTurn() {
-        console.log(`End of ${this.gameState.getCurrentPlayer().nickname}'s turn.`);
-
-        // Transition the turn phase to END_TURN
-        this.gameState.setTurnPhase(TurnPhases.END_TURN);
-
-        // Move to the next player's turn
-        this.gameState.nextPlayerTurn();
-
-        // Transition the turn phase to BEGIN_TURN
-        this.gameState.setTurnPhase(TurnPhases.BEGIN_TURN);
+        // Decrement remaining moves
+        this.gameState.decrementMoves();
 
         // Propose the updated game state to the host
         this.proposeGameStateWrapper();
-
     }
 
-    proposeGameStateWrapper() {
+    // Toggle between play and pause
+    togglePauseGame() {
+        if (this.gameState.gamePhase === GamePhases.IN_GAME) {
+            this.gameState.setGamePhase(GamePhases.PAUSED); // Set game state to PAUSED
+            this.proposeGameStateWrapper(0); // Proposes (broadcasts) the game state with no delay
+            this.timerManager.pauseTimer(); // Pause the timer
+            this.rollButtonManager.deactivate();
+            console.log('Game paused.');
+        } else if (this.gameState.gamePhase === GamePhases.PAUSED) {
+            this.gameState.setGamePhase(GamePhases.IN_GAME); // Resume the game
+            this.proposeGameStateWrapper(0); // Proposes (broadcasts) the game state with no delay
+            this.timerManager.resumeTimer(); // Resume the timer
+            console.log('Game resumed.');
+        }
+    }
+
+    // Wrapper to propose the game state with delay
+    proposeGameStateWrapper(customDelay = -1) {
+        const moveDelay = customDelay >= 0 ? customDelay : this.gameState.settings.getMoveDelay();  // Use custom delay if provided, otherwise default
         setTimeout(() => {
             this.proposeGameState(this.gameState);
-        }, 1000); // Adjust delay as needed
+        }, moveDelay);  // Apply the move delay or custom delay
     }
-
 }

@@ -1,6 +1,6 @@
 // BoardManager.js
 
-import Board from '../models/Board.js';
+import Board from '../../models/Board.js';
 
 export default class BoardManager {
     constructor() {

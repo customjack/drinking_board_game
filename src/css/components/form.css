@@ -1,0 +1,38 @@
+/* components/form.css */
+
+/* Import variables */
+@import '../variables.css';
+
+/* Form Group */
+.form-group {
+  margin-bottom: calc(var(--spacing-unit) * 2);
+}
+
+/* Input Fields */
+.form-group input,
+.form-group select,
+.form-group textarea {
+  width: 80%;
+  max-width: 300px;
+  padding: calc(var(--spacing-unit) * 1);
+  margin: calc(var(--spacing-unit) * 1) 0;
+  border-radius: 5px;
+  border: 1px solid var(--border-color);
+  font-size: 16px;
+  text-align: center;
+}
+
+/* Labels */
+.form-group label {
+  display: block;
+  width: 100%;
+  text-align: center;
+  margin-bottom: 5px;
+}
+
+/* Centering */
+.form-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}

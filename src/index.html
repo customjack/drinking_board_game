@@ -2,16 +2,56 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Drinking Board Game</title>
+    <title>Board Game</title>
     <script src="https://unpkg.com/peerjs@1.4.7/dist/peerjs.min.js"></script> <!-- PeerJS CDN -->
 </head>
 <body>
-    <h1>Drinking Board Game</h1>
+    <h1>Board Game</h1>
+
+    <!-- Gear Icon for opening Personal Settings -->
+    <button id="gearButton" class="button gear-button">
+        <img src="assets/images/gear-icon.png" alt="Settings" width="30" height="30">
+    </button>
+    
+
+    <!-- Modal Popup for Personal Settings -->
+    <div id="settingsModal" class="modal">
+        <div class="modal-content">
+            <h2>Personal Settings</h2>
+    
+            <!-- Theme Selection -->
+            <div>
+                <label for="themeSelect">Theme:</label>
+                <select id="themeSelect"></select> <!-- Empty, to be populated by JS -->
+            </div>
+    
+            <!-- Sound Volume Slider -->
+            <div>
+                <label for="soundVolume">Sound Volume:</label>
+                <input class="input-range" type="range" id="soundVolume" min="0" max="1" step="0.1">
+            </div>
+    
+            <!-- Show Tips Toggle -->
+            <div>
+                <label for="showTips">Show Gameplay Tips:</label>
+                <input class="input-checkbox" type="checkbox" id="showTips">
+            </div>
+    
+            <!-- Auto Roll Toggle -->
+            <div>
+                <label for="autoRoll">Enable Auto Roll:</label>
+                <input class="input-checkbox" type="checkbox" id="autoRoll">
+            </div>
+    
+            <!-- Buttons -->
+            <button id="closeSettingsButton" class="button">Close</button>
+        </div>
+    </div>
 
     <!-- Home Page with Host and Join buttons -->
     <div id="homePage">
-        <button id="hostButton">Host Game</button>
-        <button id="joinButton">Join Game</button>
+        <button id="hostButton" class="button">Host Game</button>
+        <button id="joinButton" class="button">Join Game</button>
     </div>
     
     <!-- Host Game Page -->
@@ -19,9 +59,9 @@
         <h2>Host Game</h2>
         <div class="input-group">
             <label for="hostNameInput">Enter Your Name:</label>
-            <input id="hostNameInput" type="text" placeholder="Your Name">
+            <input class="input" id="hostNameInput" type="text" placeholder="Your Name">
         </div>
-        <button id="startHostButton">Start Game</button>  <!-- Button added below the input -->
+        <button id="startHostButton" class="button">Start Game</button>  <!-- Button added below the input -->
     </div>
 
     <!-- Join Game Page -->
@@ -29,9 +69,9 @@
         <h2>Join Game</h2>
         <div class="input-group">
             <label for="joinNameInput">Enter Your Name:</label>
-            <input id="joinNameInput" type="text" placeholder="Your Name">
+            <input class="input" id="joinNameInput" type="text" placeholder="Your Name">
             <label for="joinCodeInput">Enter Game Code:</label>
-            <input id="joinCodeInput" type="text" placeholder="Game Code">
+            <input class="input" id="joinCodeInput" type="text" placeholder="Game Code">
         </div>
         <button id="startJoinButton">Join Game</button>
     </div>
@@ -49,9 +89,9 @@
 
         <!-- Invite Code and Copy Button -->
         <div class="invite-code-container">
-            <div class="invite-code-box">
-                <span id="inviteCode">ABCD-1234</span>
-                <button id="copyInviteCodeButton" class="copy-button" title="Copy Invite Code">
+            <div class="box-container invite-code-box">
+                <span id="inviteCode" class="invite-code-box-content">ABCD-1234</span>
+                <button id="copyInviteCodeButton" class="button-invite-code button " title="Copy Invite Code">
                     Copy Invite Code
                 </button>
             </div>
@@ -66,19 +106,19 @@
                     <h3>Game Settings</h3>
                     <div class="settings-row">
                         <label class="settings-label" for="playerLimitPerPeerHost">Max Players per Peer:</label>
-                        <input class="settings-input" id="playerLimitPerPeerHost" type="number" value="1" min="1" max="10">
+                        <input class="input settings-input" id="playerLimitPerPeerHost" type="number" value="1" min="1" max="10">
                     </div>
                     <div class="settings-row">
                         <label class="settings-label" for="totalPlayerLimitHost">Total Player Limit:</label>
-                        <input class="settings-input" id="totalPlayerLimitHost" type="number" value="8" min="1" max="100">
+                        <input class="input settings-input" id="totalPlayerLimitHost" type="number" value="8" min="1" max="100">
                     </div>
                     <div class="settings-row">
                         <label class="settings-label" for="turnTimerHost">Turn Timer (seconds):</label>
-                        <input class="settings-input" id="turnTimerHost" type="number" value="30" min="5" max="300">
+                        <input class="input settings-input" id="turnTimerHost" type="number" value="30" min="5" max="300">
                     </div>
                     <div class="settings-row">
                         <label class="settings-label" for="moveDelayHost">Move Delay (milliseconds):</label>
-                        <input class="settings-input" id="moveDelayHost" type="number" value="500" min="100" max="5000">
+                        <input class="input settings-input" id="moveDelayHost" type="number" value="500" min="100" max="5000">
                     </div>
                 </div>
                 
@@ -108,7 +148,7 @@
                     <ul id="lobbyPlayerList"></ul>
                     <!-- Green "+" button to add players -->
                     <div class="add-player-container">
-                        <button id="addPlayerButton" class="add-player-button">Add Another Local Player</button>
+                        <button id="addPlayerButton" class="button">Add Another Local Player</button>
                     </div>
                 </div>
             </div>
@@ -116,18 +156,18 @@
     
         
         <!-- Host: Start Game Button (Visible to Host Only) -->
-        <button id="startGameButton" style="display: none;">Start Game</button>
+        <button id="startGameButton" class="button" style="display: none;">Start Game</button>
 
         <!-- Host's "Close Game" button (only shown for host) -->
-        <button id="closeGameButton" class="red-button" style="display: none;">Close Game</button>
+        <button id="closeGameButton" class="button button-danger" style="display: none;">Close Game</button>
 
         <!-- Player's "Leave Game" button (only shown for players) -->
-        <button id="leaveGameButton" class="red-button" style="display: none;">Leave Game</button>
+        <button id="leaveGameButton" class="button button-danger" style="display: none;">Leave Game</button>
 
         <!-- Lobby Page Board Preview Section -->
         <div id="boardPreviewSection" style="margin-top: 30px;">
             <h3>Board Preview</h3>
-            <button id="uploadBoardButton" style="display: none;">Upload Board</button>
+            <button id="uploadBoardButton" class="button" style="display: none;">Upload Board</button>
             <input type="file" id="boardFileInput" accept=".json" style="display: none;" />
             <div id="lobbyBoardContainer" class="board-container">
                 <div class="board-wrapper">
@@ -141,10 +181,21 @@
 
     <!-- Game Page Board Section -->
     <div id="gamePage" style="display: none;">
+
         <div id="gameContainer" class="game-container">
             <div id="gameSidebar" class="game-sidebar">
-                <button id="rollButton" class="roll-button">Roll Dice</button> <!-- Roll button positioned above the player list -->
-                <ul id="gamePlayerList"></ul> <!-- Sidebar for player list -->
+                <!-- Game Paused Message Container -->
+                <div id="pausedMessageContainer"></div>
+                
+                <!-- Timer Container -->
+                <div class="timer-container">
+                    <canvas id="timerCanvas" class="timer-canvas" width="100" height="100"></canvas>
+                    <!-- The pause button will be added dynamically inside the timer-container -->
+                </div>
+                <!-- Roll Button -->
+                <button id="rollButton" class="button button-roll">Roll Dice</button>
+                <!-- Sidebar for player list -->
+                <ul id="gamePlayerList"></ul>
             </div>
             <div id="gameBoardContainer" class="board-container">
                 <div class="board-wrapper">
@@ -155,6 +206,7 @@
             </div>
         </div>
     </div>
+
 
 </div>
 </body>

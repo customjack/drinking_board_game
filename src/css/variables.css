@@ -1,0 +1,59 @@
+/* variables.css */
+
+/* Color Palette */
+:root {
+    /* Primary Colors */
+    --color-primary: #007bff;
+    --color-primary-hover: #0056b3;
+    --color-secondary: #6c757d;
+    --color-secondary-hover: #5a6268;
+    --color-success: #28a745;
+    --color-success-hover: #218838;
+    --color-danger: #dc3545;
+    --color-danger-hover: #c82333;
+    --color-warning: #ffc107;
+    --color-info: #17a2b8;
+    --color-light: #f8f9fa;
+    --color-dark: #343a40;
+  
+    /* Background Colors */
+    --background-body: var(--color-light);
+    --background-sidebar: #f0f0f0;
+    --background-modal: var(--color-light);
+    --background-board: #f4f4f4;
+
+    /*Headers*/
+    --font-family-header: 'Arial', sans-serif; /* Default header font */
+    --header-color: #333; /* Default header color */
+    
+    /*Labels*/
+    --font-family-label: 'Arial', sans-serif; /* Default label font */
+    --label-color: #333; /* Default label color */
+  
+    /* Text Colors */
+    --text-color: #212529;
+    --text-color-light: #ffffff;
+
+    /* Input Background and Text */
+    --input-bg: #ffffff;
+    --input-text-color: #000000;
+    --input-border-color: #cccccc;
+
+    /* Box backgrounds */
+    --background-box: #f4f4f4;
+  
+    /* Borders */
+    --border-color: #cccccc;
+  
+    /* Fonts */
+    --font-family-base: 'Arial', sans-serif;
+    --font-size-base: 16px;
+  
+    /* Spacing */
+    --spacing-unit: 8px;
+  
+    /* Z-Index Levels */
+    --z-index-modal: 1000;
+    --z-index-tooltip: 1100;
+  }
+  

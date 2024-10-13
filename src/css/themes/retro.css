@@ -1,0 +1,53 @@
+/* Import variables */
+@import '../variables.css';
+
+/* Override variables for retro theme */
+.retro-theme {
+  --background-body: #f4ecd8;
+  --background-box: #f0e4d8;
+  --text-color: #5c5b5a;
+  --background-sidebar: #fff0d4;
+  --background-modal: #fff0d4;
+  --background-board: #ffcc5c;
+  --border-color: #e6be8a;
+
+  --color-primary: #e6be8a;
+  --color-primary-hover: #d4a572;
+  --color-secondary: #d4a572;
+  --color-secondary-hover: #c0935f;
+  --color-success: #c97b63;
+  --color-success-hover: #b76553;
+  --color-danger: #b76553;
+  --color-danger-hover: #a35245;
+  --color-warning: #ffc107;
+  --color-info: #17a2b8;
+
+  --input-bg: #ffcc5c;
+  --input-text-color: #5c5b5a;
+  --input-border-color: #e6be8a;
+
+  --text-color-light: #333333;
+
+  /* Headers and Labels */
+  --font-family-header: 'Courier New', Courier, monospace;
+  --header-color: #5c5b5a;
+
+  --font-family-label: 'Courier New', Courier, monospace;
+  --label-color: #5c5b5a;
+}
+
+/* Additional styles for retro theme */
+body {
+  background-color: var(--background-body);
+  color: var(--text-color);
+  font-family: var(--font-family-base);
+}
+
+/* Optional Background Texture */
+/*
+body {
+  background-image: url('../assets/images/retro-pattern.png');
+  background-size: cover;
+  background-attachment: fixed;
+}
+*/

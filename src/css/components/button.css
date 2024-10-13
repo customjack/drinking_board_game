@@ -1,0 +1,202 @@
+/* components/button.css */
+
+/* Import variables */
+@import '../variables.css';
+
+/* Base Button Styles */
+.button {
+  display: inline-block;
+  font-weight: 400;
+  text-align: center;
+  color: var(--text-color-light);
+  background-color: var(--color-primary);
+  border: 1px solid var(--color-primary);
+  padding: calc(var(--spacing-unit) * 1) calc(var(--spacing-unit) * 2);
+  font-size: 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.button:hover {
+  background-color: var(--color-primary-hover);
+}
+
+/* Secondary Button */
+.button-secondary {
+  background-color: var(--color-secondary);
+  border-color: var(--color-secondary);
+}
+
+.button-secondary:hover {
+  background-color: var(--color-secondary-hover);
+}
+
+/* Success Button */
+.button-success {
+  background-color: var(--color-success);
+  border-color: var(--color-success);
+}
+
+.button-success:hover {
+  background-color: var(--color-success-hover);
+}
+
+/* Danger Button */
+.button-danger {
+  background-color: var(--color-danger);
+  border-color: var(--color-danger);
+}
+
+.button-danger:hover {
+  background-color: var(--color-danger-hover);
+}
+
+/* Disabled State */
+.button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Roll Button */
+.button-roll {
+    /* Styles specific to the roll button */
+    background-color: #555;
+    color: #aaa;
+    padding: 20px 40px;
+    font-size: 24px;
+    border: none;
+    border-radius: 12px;
+    cursor: not-allowed;
+    opacity: 0.6;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .button-roll.active {
+    background: linear-gradient(135deg, #ff416c, #ff4b2b);
+    background-size: 200% 200%;
+    color: #fff;
+    cursor: pointer;
+    opacity: 1;
+    animation: gradientShift 5s ease infinite, pulseGlow 2s infinite;
+  }
+  
+  .button-roll.active:hover {
+    box-shadow: 0 0 25px rgba(255, 75, 43, 0.8), inset 0 0 25px rgba(255, 75, 43, 0.8);
+  }
+  
+  .button-roll.active::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -75%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(
+      to right,
+      rgba(255, 255, 255, 0) 0%,
+      rgba(255, 255, 255, 0.3) 50%,
+      rgba(255, 255, 255, 0) 100%
+    );
+    transform: rotate(25deg);
+    animation: shine 3s ease-in-out infinite;
+  }
+  
+  .button-roll:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    animation: none;
+    background-color: #555;
+    box-shadow: none;
+  }
+  
+  /* Pause Button Styles */
+  .button-pause {
+    /* Styles as defined earlier */
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: transparent;
+    border: none;
+    color: var(--text-color);
+    font-size: 30px;
+    width: 50px;
+    height: 50px;
+    cursor: pointer;
+    border-radius: 50%;
+    transition: background-color 0.2s ease, opacity 0.2s ease;
+    z-index: 2;
+    opacity: 0.8;
+  }
+  
+  .button-pause:hover  {
+    background-color: rgba(0, 0, 0, 0.1);
+    opacity: 1;
+  }
+  
+  .button-pause:focus {
+    outline: none;
+  }
+
+/* Gear Button */
+.gear-button {
+    position: fixed;
+    top: 10px;
+    left: 10px;
+    width: 50px;
+    height: 50px;
+    padding: 10px;
+    background-color: rgba(255, 255, 255, 0.3);  /* Increased opacity for better visibility */
+    border: none;
+    cursor: pointer;
+    border-radius: 50%;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    z-index: 1000;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);  /* Add a default subtle shadow */
+}
+
+/* Image within the gear button */
+.gear-button img {
+    width: 30px;
+    height: 30px;
+}
+
+/* Hover Effect - Make the background more prominent */
+.gear-button:hover {
+    background-color: rgba(255, 255, 255, 0.6); /* Brighter on hover for better visibility */
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.5);  /* Stronger shadow for added contrast */
+}
+
+/* Active/Pressed State */
+.gear-button:active {
+    transform: scale(0.95);
+    background-color: rgba(255, 255, 255, 0.7); /* Slightly darker when pressed */
+}
+
+/* Focus outline for accessibility */
+.gear-button:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.5);  /* Visible focus outline */
+}
+
+/* Copy Button */
+.button-invite-code {
+    background-color: rgba(0, 0, 0, 0.7); /* Dark background for better contrast */
+    color: #fff; /* White text */
+    border: none;
+    border-radius: 40px; /* Smaller pill shape */
+    padding: 8px 20px; /* Reduced padding */
+    font-weight: bold;
+    font-size: 0.9rem; /* Reduced font size */
+    cursor: pointer;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
+}
+
+.button-invite-code:hover {
+    background-color: rgba(0, 0, 0, 0.9); /* Slightly darker hover */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+    transform: translateY(-2px); /* Slight lift */
+}

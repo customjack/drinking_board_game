@@ -2,7 +2,7 @@
 
 import Peer from 'peerjs';
 import GameState from '../models/GameState';
-import BoardManager from '../controllers/BoardManager';
+import BoardManager from '../controllers/managers/BoardManager';
 
 export default class BasePeer {
     constructor(eventHandler) {

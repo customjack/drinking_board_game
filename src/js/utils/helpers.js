@@ -118,3 +118,35 @@ export function componentToHex(component) {
     const hex = component.toString(16);
     return hex.length === 1 ? '0' + hex : hex;
 }
+
+/**
+ * Interpolates between two colors.
+ * @param {string} color1 - The starting color in hex format.
+ * @param {string} color2 - The ending color in hex format.
+ * @param {number} factor - The interpolation factor (0 to 1).
+ * @returns {string} - The interpolated color in hex format.
+ */
+export function interpolateColor(color1, color2, factor) {
+    // Ensure factor is between 0 and 1
+    factor = Math.min(Math.max(factor, 0), 1);
+
+    // Parse the colors and convert to RGB
+    const c1 = parseInt(color1.slice(1), 16);
+    const c2 = parseInt(color2.slice(1), 16);
+
+    const r1 = (c1 >> 16) & 0xff;
+    const g1 = (c1 >> 8) & 0xff;
+    const b1 = c1 & 0xff;
+
+    const r2 = (c2 >> 16) & 0xff;
+    const g2 = (c2 >> 8) & 0xff;
+    const b2 = c2 & 0xff;
+
+    // Interpolate each color component
+    const r = Math.round(r1 + factor * (r2 - r1));
+    const g = Math.round(g1 + factor * (g2 - g1));
+    const b = Math.round(b1 + factor * (b2 - b1));
+
+    // Convert back to hex format
+    return `#${componentToHex(r)}${componentToHex(g)}${componentToHex(b)}`;
+}

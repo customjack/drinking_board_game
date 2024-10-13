@@ -1,0 +1,33 @@
+/* components/navbar.css */
+
+/* Import variables */
+@import '../variables.css';
+
+/* Navbar */
+.navbar {
+  background-color: var(--background-sidebar);
+  padding: calc(var(--spacing-unit) * 2);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.navbar-brand {
+  font-size: 1.5rem;
+  color: var(--text-color);
+}
+
+.navbar-menu {
+  display: flex;
+  gap: calc(var(--spacing-unit) * 2);
+}
+
+.navbar-item {
+  color: var(--text-color);
+  text-decoration: none;
+  font-size: 1rem;
+}
+
+.navbar-item:hover {
+  color: var(--color-primary);
+}
