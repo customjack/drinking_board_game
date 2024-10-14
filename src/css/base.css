@@ -1,18 +1,5 @@
 /* base.css */
 
-/*
-TODO:
-
-Add:
-label.css
-header.css
-select.css
-
-to create base classes (and custom classes)
-
-The custom classes will be used for aligning (for example the game settings section). Custom headers will also be made to make the titles and such much cooler.
-*/
-
 /* Import variables */
 @import './variables.css';
 
@@ -36,6 +23,9 @@ body {
 /* Headings */
 h1, h2, h3, h4, h5, h6 {
   color: var(--text-color);
+  text-align: center; /* Center all headers by default */
+  font-family: var(--font-family-header, var(--font-family-base)); /* Allow header font family to be themed */
+  margin: calc(var(--spacing-unit) * 2) 0; /* Add consistent spacing */
 }
 
 /* Links */
@@ -61,11 +51,11 @@ input, select, textarea {
 
 /* Labels */
 label {
-    text-align: center; /* Center all labels by default */
-    display: block; /* Ensure label spans full width */
-    font-family: var(--font-family-label, var(--font-family-base)); /* Allow labels font family to be themed */
-    margin-bottom: calc(var(--spacing-unit) * 1); /* Add some margin below the label */
-    color: var(--label-color, var(--text-color)); /* Allow theme to customize label color */
+  text-align: center; /* Center all labels by default */
+  display: block; /* Ensure label spans full width */
+  font-family: var(--font-family-label, var(--font-family-base)); /* Allow labels font family to be themed */
+  margin-bottom: calc(var(--spacing-unit) * 1); /* Add some margin below the label */
+  color: var(--label-color, var(--text-color)); /* Allow theme to customize label color */
 }
 
 /* List Styles */
@@ -75,8 +65,46 @@ ul {
   margin: 0;
 }
 
-h1, h2, h3, h4, h5, h6 {
-    text-align: center; /* Center all headers by default */
-    font-family: var(--font-family-header, var(--font-family-base)); /* Allow header font family to be themed */
-    margin: calc(var(--spacing-unit) * 2) 0; /* Add consistent spacing */
+li {
+  padding: 0; /* Ensure no padding inside list items */
+  margin: 0;  /* Ensure no margin for list items unless explicitly added */
+}
+
+/* Default Span */
+span {
+  font-family: var(--font-family-base); /* Use base font family */
+  font-size: var(--font-size-base); /* Use base font size */
+  color: var(--text-color); /* Use base text color */
+  display: inline; /* Default to inline element */
+  margin: 0; /* No default margin */
+  padding: 0; /* No default padding */
+}
+
+/* Buttons */
+button {
+  padding: calc(var(--spacing-unit) * 1.5) calc(var(--spacing-unit) * 2); /* Add more padding around buttons */
+  font-size: 1rem;
+  font-family: inherit;
+  background-color: var(--color-primary);
+  color: var(--text-color-light);
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-bottom: calc(var(--spacing-unit) * 1.5); /* Space below buttons */
+}
+
+button:hover {
+  background-color: var(--color-primary-hover);
+}
+
+/* General Sections and Containers */
+section, .container {
+  padding: calc(var(--spacing-unit) * 2); /* General container padding */
+  margin-bottom: calc(var(--spacing-unit) * 3); /* Space between sections */
+}
+
+/* Paragraphs */
+p, div {
+  margin-bottom: calc(var(--spacing-unit) * 2); /* Ensure space below paragraphs and divs */
 }

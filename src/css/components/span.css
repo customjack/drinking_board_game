@@ -1,0 +1,22 @@
+/* components/span.css */
+
+/* Import variables */
+@import '../variables.css';
+
+.settings-display {
+    display: inline-block;
+    padding: 5px 10px;
+    
+    /* Background and border colors should be theme-aware */
+    background-color: var(--input-bg);  /* Use theme-specific input background */
+    color: var(--input-text-color);     /* Use theme-specific input text color */
+    border: 1px solid var(--input-border-color); /* Use theme-specific input border color */
+    
+    border-radius: 4px;         /* Rounded corners */
+    min-width: 50px;            /* Minimum width to give enough space */
+    text-align: center;         /* Center the text */
+    font-size: 0.9em;
+    
+    margin-left: 10px;          /* Space between label and value */
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease; /* Smooth transition */
+}

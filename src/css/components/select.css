@@ -1,0 +1,48 @@
+/* Import variables */
+@import '../variables.css';
+
+/* Base Select Styles */
+.select {
+  width: 100%;
+  max-width: 300px;
+  padding: calc(var(--spacing-unit) * 1);
+  margin: calc(var(--spacing-unit) * 1) 0;
+  font-size: 16px;
+  color: var(--input-text-color);
+  background-color: var(--input-bg);
+  border: 1px solid var(--input-border-color);
+  border-radius: 4px;
+  appearance: none; /* Hide default OS-specific dropdown arrow */
+  background-image: url('data:image/svg+xml;utf8,<svg fill="%23333" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>');
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 16px;
+  cursor: pointer;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.select:hover {
+  border-color: var(--color-primary-hover);
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.3);
+}
+
+.select:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 8px rgba(0, 123, 255, 0.5);
+}
+
+/* Disabled State */
+.select:disabled {
+  background-color: var(--input-bg-disabled);
+  color: var(--input-text-color-disabled);
+  border-color: var(--input-border-color-disabled);
+  cursor: not-allowed;
+}
+
+/* Adjusting width for narrow layouts */
+@media (max-width: 768px) {
+  .select {
+    max-width: 100%;
+  }
+}

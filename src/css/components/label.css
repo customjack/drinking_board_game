@@ -1,0 +1,58 @@
+/* Import variables */
+@import '../variables.css';
+
+/* Base Label Styles */
+.label {
+  display: block;
+  font-size: 1rem;
+  color: var(--label-color);
+  margin-bottom: calc(var(--spacing-unit) * 1);
+  text-align: center; /* Centering by default */
+  font-family: var(--font-family-label);
+  transition: color 0.3s ease;
+}
+
+/* Larger Labels */
+.label-lg {
+  font-size: 1.25rem;
+  font-weight: bold;
+}
+S
+/* Smaller Labels */
+.label-sm {
+  font-size: 0.875rem;
+  font-weight: normal;
+}
+
+/* Hover Effect for Labels (Optional) */
+.label:hover {
+  color: var(--color-primary);
+}
+
+/* Label Alignment Utilities */
+.label-left {
+  text-align: left;
+}
+
+.label-right {
+  text-align: right;
+}
+
+.label-center {
+  text-align: center;
+}
+
+/* Ensure the label is aligned to the left */
+.settings-label {
+    width: 200px; /* Fixed width for consistent alignment */
+    font-size: 0.9em;
+    text-align: left;
+    margin-right: 10px; /* Space between label and input */
+}
+
+/* Responsive Adjustment */
+@media (max-width: 768px) {
+  .label {
+    font-size: 0.875rem; /* Adjust label size on smaller screens */
+  }
+}

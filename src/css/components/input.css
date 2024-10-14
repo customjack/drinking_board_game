@@ -1,3 +1,5 @@
+/* components/input.css */
+
 /* Import variables */
 @import '../variables.css';
 
@@ -84,4 +86,12 @@
 .input-textarea {
     resize: vertical;
     min-height: 100px;
+}
+
+.settings-input {
+    width: 60px; /* Adjust input width */
+    padding: 5px;
+    font-size: 0.9em;
+    border-radius: 4px;
+    text-align: right; /* Align text inside the input to the right */
 }

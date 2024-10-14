@@ -53,3 +53,48 @@
     font-family: 'Courier New', Courier, monospace;
     text-align: center;
 }
+
+/* Combined Section */
+.combined-section {
+    display: flex;
+    justify-content: space-between;
+    background-color: var(--background-box); /* Theme-specific background */
+    border-radius: 10px;
+    padding: calc(var(--spacing-unit) * 2);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Standard box shadow */
+    width: 100%;
+    gap: calc(var(--spacing-unit) * 2); /* Add gap between the settings and player list */
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+
+/* Compact Settings */
+.compact-settings {
+    flex: 1;
+    padding: calc(var(--spacing-unit) * 2);
+    border-right: 3px solid var(--border-color); /* Theme-aware border */
+    text-align: left;
+    background-color: var(--background-sidebar); /* Theme-aware background */
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+
+/* Compact Player List Section */
+.compact-player-list {
+    flex: 2;
+    padding: calc(var(--spacing-unit) * 2);
+    background-color: var(--background-box); /* Theme-specific background */
+    border-radius: 10px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.compact-player-list h3 {
+    margin: 0 0 calc(var(--spacing-unit) * 1) 0;
+    font-size: 1.2em;
+    color: var(--text-color); /* Ensure it follows the theme’s text color */
+}
+
+
+
+
