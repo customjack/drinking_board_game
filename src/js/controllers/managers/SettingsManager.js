@@ -136,6 +136,7 @@ export default class SettingsManager {
         // Update the game state's settings
         gameState.settings = Settings.fromJSON(this.currentSettings.toJSON());
 
+        console.log("gamestaet from inputs: ", gameState);
         return gameState;
     }
 

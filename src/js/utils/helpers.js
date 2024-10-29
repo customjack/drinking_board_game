@@ -150,3 +150,19 @@ export function interpolateColor(color1, color2, factor) {
     // Convert back to hex format
     return `#${componentToHex(r)}${componentToHex(g)}${componentToHex(b)}`;
 }
+
+/**
+ * Converts a string into an enum format.
+ * - Converts to uppercase
+ * - Replaces spaces with underscores
+ * - Strips any non-alphanumeric characters (except underscores)
+ *
+ * @param {string} str - The input string to process
+ * @returns {string} - The processed string in enum format
+ */
+export function processStringToEnum(str) {
+    return str
+        .toUpperCase()
+        .replace(/\s+/g, '_') // Replace spaces with underscores
+        .replace(/[^\w]/g, ''); // Remove any non-alphanumeric characters (except underscores)
+}

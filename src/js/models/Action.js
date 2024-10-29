@@ -1,31 +1,38 @@
-export class Action {
-    constructor(type, trigger, payload) {
-        this.type = type;
-        this.trigger = trigger; // "onPass" or "onLand"
-        this.payload = payload; // Data related to the action (e.g., scoreName, delta)
+import ActionTypes from '../enums/ActionTypes';
+import { processStringToEnum } from '../utils/helpers';
+
+export default class Action {
+    constructor(type, payload) {
+        this.type = type; // e.g., "execute", "updateStat", etc.
+        this.payload = payload; // JavaScript code or parameters for the action
     }
 
-    // Execute the action on a player
-    execute(player) {
-        if (this.type === "updateScore") {
-            const { scoreName, delta } = this.payload;
-            player.updateScore(scoreName, delta);
-            console.log(`${player.nickname}'s ${scoreName} updated by ${delta}. New score: ${player.getScore(scoreName)}`);
+    // Executes the action in the provided context
+    execute(context) {
+        switch (this.type) {
+            case "execute":
+                eval(this.payload); // Execute custom JavaScript action
+                break;
+            case "updateStat":
+                // Example of how to handle an updateStat action
+                const { statName, value } = this.payload;
+                context.player.updateStat(statName, value);
+                break;
+            // Add other cases as needed
+            default:
+                console.log(`Action type ${this.type} not recognized.`);
         }
-        // Additional action types can be added here
     }
 
-    // Serialize to JSON
+    // Serialization
     toJSON() {
         return {
             type: this.type,
-            trigger: this.trigger,
             payload: this.payload
         };
     }
 
-    // Deserialize from JSON
     static fromJSON(json) {
-        return new Action(json.type, json.trigger, json.payload);
+        return new Action(json.type, json.payload);
     }
 }

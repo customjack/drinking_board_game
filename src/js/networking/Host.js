@@ -16,6 +16,7 @@ export default class Host extends BasePeer {
 
         console.log('Host ID:', id);
         this.hostId = id;
+        this.eventHandler.initManagers(id,id);
         await this.initializeGameState();
         this.setupUI();
         const hostPlayer = new Player(id, this.originalName, true);
@@ -28,13 +29,14 @@ export default class Host extends BasePeer {
     setupUI() {
         console.log("Setting up UI");
         this.eventHandler.displayInviteCode(this.hostId);
-        this.eventHandler.displayLobbyForHost();
+        this.eventHandler.showPage("lobbyPage");
     }
 
     handleConnection(conn) {
         console.log('New connection from', conn.peer);
         this.connections.push(conn);
-        this.sendGameState(conn);
+        // Send a one-time connection package
+        this.sendConnectionPackage(conn);
         conn.on('data', (data) => this.handleData(conn, data));
         conn.on('close', () => this.handleDisconnection(conn.peer));
     }
@@ -43,6 +45,13 @@ export default class Host extends BasePeer {
         if (this.gameState) {
             const gameStateData = this.gameState.toJSON();
             conn.send({ type: 'gameState', gameState: gameStateData });
+        }
+    }
+
+    sendConnectionPackage(conn) {
+        if (this.gameState) {
+            const gameStateData = this.gameState.toJSON();
+            conn.send({ type: 'connectionPackage', gameState: gameStateData });
         }
     }
 
@@ -123,10 +132,11 @@ export default class Host extends BasePeer {
     }
 
     handleNameChange(playerId, newName) {
+        console.log("recieved name change");
         const player = this.gameState.players.find((p) => p.playerId === playerId);
         if (player) {
             player.nickname = newName;
-            this.broadcastGameState();
+            this.updateAndBroadcastGameState(this.gameState);
         }
     }
 
@@ -182,6 +192,7 @@ export default class Host extends BasePeer {
         this.connections.forEach(conn => {
             conn.send({ type: 'gameState', gameState: gameStateData });
         });
+        console.log("Broadcasted gamestate:", this.gameState);
     }
 
     broadcastStartGame() {

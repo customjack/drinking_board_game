@@ -1,123 +1,113 @@
-// HostEventHandler.js
-
 import BaseEventHandler from './BaseEventHandler';
 import Host from '../networking/Host';
-import BoardManager from '../controllers/managers/BoardManager';
-import Board from '../models/Board';
-import PlayerListManager from '../controllers/managers/PlayerListManager';
-import PieceManager from '../controllers/managers/PieceManager';
 import GameEngine from '../controllers/GameEngine';
-import SettingsManager from '../controllers/managers/SettingsManager';
 
 export default class HostEventHandler extends BaseEventHandler {
-    constructor() {
-        super();
-
-        this.host = null;
-
-        this.boardManager = new BoardManager();
-        this.playerListManager = null;
-        this.pieceManager = new PieceManager();
-        this.settingsManager = new SettingsManager(true); //initialize as host
-        this.gameEngine = null;
-
-        // Host-specific DOM elements
-        this.hostPage = document.getElementById('hostPage');
-        this.startHostButton = document.getElementById('startHostButton');
-        this.closeGameButton = document.getElementById('closeGameButton');
-        this.startGameButton = document.getElementById('startGameButton');
-        this.addPlayerButton = document.getElementById('addPlayerButton');
-        this.uploadButton = document.getElementById('uploadBoardButton');
-        this.fileInput = document.getElementById('boardFileInput');
-        this.copyInviteCodeButton = document.getElementById('copyInviteCodeButton');
-        this.copyMessage = document.getElementById('copyMessage');
-        this.settingsSection = document.getElementById('settingsSectionHost');
-
-        // Retrieve input elements from the SettingsManager and assign them to the HostEventHandler instance
-        const elements = this.settingsManager.getSettingsElements();
-        this.playerLimitPerPeerInput = elements.playerLimitPerPeerInput;
-        this.totalPlayerLimitInput = elements.totalPlayerLimitInput;
-        this.turnTimerInput = elements.turnTimerInput;
-        this.moveDelayInput = elements.moveDelayInput;
-
-        this.inviteCode = document.getElementById('inviteCode');
+    constructor(registryManager,pluginManager,eventBus) {
+        super(true, registryManager,pluginManager,eventBus);  // Initialize as host (isHost = true), peerId and hostPeerId will be set later
     }
 
     init() {
         super.init();
-        // Add hostPage to the pages array so it gets hidden when hideAllPages is called
-        this.pages.push(this.hostPage);
-        this.showHostPage();
+        this.showPage("hostPage");
     }
 
     setupEventListeners() {
-        if (this.startHostButton)
-            this.startHostButton.addEventListener('click', () => this.startHostGame());
-        if (this.copyInviteCodeButton)
-            this.copyInviteCodeButton.addEventListener('click', () => this.copyInviteCode());
-        if (this.closeGameButton)
-            this.closeGameButton.addEventListener('click', () => this.closeGame());
-        if (this.startGameButton)
-            this.startGameButton.addEventListener('click', () => this.startGame());
-        if (this.addPlayerButton)
-            this.addPlayerButton.addEventListener('click', () => this.addPlayer());
-        if (this.uploadButton)
-            this.uploadButton.addEventListener('click', () => this.fileInput.click());
-        
-        if (this.fileInput) {
-            this.fileInput.addEventListener('change', async (event) => {
+        super.setupEventListeners();
+    
+        // Ensure all necessary DOM elements exist before registering listeners
+        const startHostButton = document.getElementById('startHostButton');
+        const copyInviteCodeButton = document.getElementById('copyInviteCodeButton');
+        const closeGameButton = document.getElementById('closeGameButton');
+        const startGameButton = document.getElementById('startGameButton');
+        const addPlayerButton = document.getElementById('addPlayerButton');
+        const uploadBoardButton = document.getElementById('uploadBoardButton');
+        const fileInput = document.getElementById('boardFileInput');
+        const uploadPluginButton = document.getElementById('uploadPluginButton');
+        const pluginFileInput = document.getElementById('pluginFileInput');
+    
+        // Retrieve input elements from the SettingsManager
+        const playerLimitPerPeerInput = document.getElementById('playerLimitPerPeerHost');
+        const totalPlayerLimitInput = document.getElementById('totalPlayerLimitHost');
+        const turnTimerInput = document.getElementById('turnTimerHost');
+        const moveDelayInput = document.getElementById('moveDelayHost');
+    
+        // Register listeners via ListenerRegistry if elements are defined
+        if (startHostButton)
+            this.listenerRegistry.registerListener('startHostButton', 'click', () => this.startHostGame());
+        if (copyInviteCodeButton)
+            this.listenerRegistry.registerListener('copyInviteCodeButton', 'click', () => this.copyInviteCode());
+        if (closeGameButton)
+            this.listenerRegistry.registerListener('closeGameButton', 'click', () => this.closeGame());
+        if (startGameButton)
+            this.listenerRegistry.registerListener('startGameButton', 'click', () => this.startGame());
+        if (addPlayerButton)
+            this.listenerRegistry.registerListener('addPlayerButton', 'click', () => this.addPlayer());
+        if (uploadBoardButton && fileInput) {
+            this.listenerRegistry.registerListener('uploadBoardButton', 'click', () => fileInput.click());
+    
+            // Register the file input change event listener
+            this.listenerRegistry.registerListener('boardFileInput', 'change', async (event) => {
                 const file = event.target.files[0];
                 if (file) {
-                    const reader = new FileReader();
-                    reader.onload = async (e) => {
-                        try {
-                            const content = e.target.result;
-                            console.log('Raw file content:', content);
-                            const boardData = JSON.parse(content);
-                            console.log('Board JSON uploaded:', boardData);
+                    try {
+                        await this.boardManager.loadBoardFromFile(file);
+                        this.peer.broadcastGameState(); // Broadcast after loading the board
+                    } catch (error) {
+                        alert(`Error loading board file: ${error.message}`);
+                    }
+                }
+            });
 
-                            const board = Board.fromJSON(boardData);
-                            this.host.gameState.board = board;
+        }
 
-                            this.boardManager.setBoard(board);
-                            this.boardManager.drawBoard();
+        // Plugin upload handling
+        if (uploadPluginButton && pluginFileInput) {
+            this.listenerRegistry.registerListener('uploadPluginButton', 'click', () => pluginFileInput.click());
 
-                            this.host.broadcastGameState();
-                        } catch (err) {
-                            console.error('Invalid board JSON:', err);
-                            alert('Invalid board file.');
-                        }
-                    };
-                    reader.readAsText(file);
+            // Register the file input change event listener for plugins
+            this.listenerRegistry.registerListener('pluginFileInput', 'change', async (event) => {
+                const file = event.target.files[0];
+                if (file) {
+                    try {
+                        await this.pluginManager.initializePluginFromFile(file);
+                        alert('Plugin uploaded and initialized successfully!');
+                    } catch (error) {
+                        alert(`Error loading plugin: ${error.message}`);
+                    }
                 }
             });
         }
-
-        // Helper function to add multiple event listeners
-        const addDelayedSettingsListener = (inputElement) => {
+    
+        // Helper function to add multiple event listeners for settings
+        const addDelayedSettingsListener = (inputElement, eventHandler) => {
             if (inputElement) {
-                inputElement.addEventListener('change', () => this.onSettingsChanged());
-                inputElement.addEventListener('blur', () => this.onSettingsChanged());
-                inputElement.addEventListener('keydown', (event) => {
+                this.listenerRegistry.registerListener(inputElement.id, 'change', eventHandler);
+                this.listenerRegistry.registerListener(inputElement.id, 'blur', eventHandler);
+                this.listenerRegistry.registerListener(inputElement.id, 'keydown', (event) => {
                     if (event.key === 'Enter') {
                         inputElement.blur(); // Trigger blur event
-                        this.onSettingsChanged();
+                        eventHandler();
                     }
                 });
             }
         };
-
-        addDelayedSettingsListener(this.playerLimitPerPeerInput);
-        addDelayedSettingsListener(this.totalPlayerLimitInput);
-        addDelayedSettingsListener(this.turnTimerInput);
-        addDelayedSettingsListener(this.moveDelayInput);
-
+    
+        // Register delayed event listeners for settings inputs
+        if (playerLimitPerPeerInput) {
+            addDelayedSettingsListener(playerLimitPerPeerInput, () => this.onSettingsChanged());
+        }
+        if (totalPlayerLimitInput) {
+            addDelayedSettingsListener(totalPlayerLimitInput, () => this.onSettingsChanged());
+        }
+        if (turnTimerInput) {
+            addDelayedSettingsListener(turnTimerInput, () => this.onSettingsChanged());
+        }
+        if (moveDelayInput) {
+            addDelayedSettingsListener(moveDelayInput, () => this.onSettingsChanged());
+        }
     }
-
-    showHostPage() {
-        this.hideAllPages();
-        if (this.hostPage) this.hostPage.style.display = 'block';
-    }
+    
 
     async startHostGame() {
         const hostNameInput = document.getElementById('hostNameInput');
@@ -127,184 +117,117 @@ export default class HostEventHandler extends BaseEventHandler {
             return;
         }
 
-        this.startHostButton.disabled = true;
-        this.showLoadingPage();
+        document.getElementById('startHostButton').disabled = true;
+        this.showPage("loadingPage");
 
-        this.host = new Host(hostName, this);
-        await this.host.init();
+        this.peer = new Host(hostName, this);
+        await this.peer.init();
 
-        // Initialize GameEngine with direct update and broadcast for host
-        console.log("Host Peer ID:", this.host.peer.id);
         this.gameEngine = new GameEngine(
-            this.host.gameState,
-            this.host.peer.id,
-            (proposedGameState) => this.host.updateAndBroadcastGameState(proposedGameState),
-            true // isHost = true
+            this.peer.gameState,
+            this.peer.peer.id,
+            (proposedGameState) => this.peer.updateAndBroadcastGameState(proposedGameState),
+            this.eventBus,
+            true  // isHost = true
         );
         this.gameEngine.init();
+
+        this.showPage("lobbyPage");
+        this.displayLobbyControls();
     }
 
-    displayLobbyForHost() {
-        console.log("Displaying lobby for host");
-        this.hideAllPages();
-        if (this.lobbyPage) {
-            this.lobbyPage.style.display = 'block';
-            this.closeGameButton.style.display = 'inline';
-            this.settingsSection.style.display = 'inline';
-            this.uploadButton.style.display = 'inline';
-            this.startGameButton.style.display = 'inline';
-            this.updateAddPlayerButton();
-        }
+    /**
+     * Handles displaying the buttons and elements in the lobby
+     */
+    displayLobbyControls() {
+        const closeGameButton = document.getElementById('closeGameButton');
+        const startGameButton = document.getElementById('startGameButton');
+        const uploadBoardButton = document.getElementById('uploadBoardButton');
+        const settingsSection = document.getElementById('settingsSectionHost');
+
+        // Show or hide buttons based on conditions, e.g., game state or player limits
+        if (closeGameButton) closeGameButton.style.display = 'inline';
+        if (startGameButton) startGameButton.style.display = 'inline';
+        if (uploadBoardButton) uploadBoardButton.style.display = 'inline';
+        if (settingsSection) settingsSection.style.display = 'inline';
+
+        // Conditionally show or hide the "Add Player" button
+        this.updateAddPlayerButton();
     }
 
     startGame() {
         console.log('Host is starting the game...');
-        if (this.host) {
-            this.host.broadcastStartGame();
+        if (this.peer) {
+            this.peer.broadcastStartGame();
         }
-        this.showGamePage();
+        this.showPage("gamePage");
+        this.playerListManager.setListElement(document.getElementById('gamePlayerList'));
+        this.boardManager.setBoardContainer(document.getElementById('gameBoardContent'));
         
-        this.updateGameState(true);
+        this.updateGameState(true); //force update
     }
 
-    showGamePage() {
-        this.hideAllPages();
-        if (this.gamePage) {
-            // Update the player list manager to use the game player list
-            this.playerListManager.setListElement(document.getElementById('gamePlayerList'));
-
-            // Update the board manager to use the game board container
-            this.boardManager.setBoardContainer(document.getElementById('gameBoardContent'));
-            this.gamePage.style.display = 'block';
-        }
-    }
-
-    updateGameState(forceUpdate = false) {
-
-        //Update settings
-        this.updateSettings(forceUpdate);
-
-        // Update the game board
-        this.updateGameBoard(forceUpdate);
-
-        // Update the pieces
-        this.updatePieces(forceUpdate);
-
-        // Update the player list
-        this.updatePlayerList(forceUpdate);
-
-        // Update the game engine with the new game state
-        if (this.gameEngine) {
-            this.gameEngine.updateGameState(this.host.gameState);
-        }
-    }
-
-    updateSettings(forceUpdate = false) {
-        const gameState = this.host.gameState;
-        if (!gameState) return;
-
-        if (forceUpdate || this.settingsManager.shouldUpdateSettings(gameState.settings)) {
-            this.settingsManager.updateSettings(gameState);
-        }
-    }
-
-    updateGameBoard(forceUpdate = false) {
-        const gameState = this.host.gameState;
-        if (!gameState) return;
-
-        if (forceUpdate || this.boardManager.shouldUpdateBoard(gameState.board)) {
-            this.boardManager.setBoard(gameState.board);
-            this.boardManager.drawBoard();
-            this.updatePieces(true);
-        }
-    }
-
-    updatePieces(forceUpdate = false) {
-        const gameState = this.host.gameState;
-        if (!gameState) return;
-
-        //console.log("Should update pieces?:", this.pieceManager.shouldUpdatePieces(gameState.players));
-        if (forceUpdate || this.pieceManager.shouldUpdatePieces(gameState.players)) {
-            this.pieceManager.updatePieces(gameState);
-        }
-    }
-
-    updatePlayerList(forceUpdate = false) {
-        if (!this.playerListManager) {
-            this.playerListManager = new PlayerListManager(
-                document.getElementById('lobbyPlayerList'),
-                true,
-                this.host.peer.id,
-                this.host.peer.id,
-            );
-        }
-
-        const gameState = this.host.gameState;
-        if (!gameState) return;
-
-        if (forceUpdate || this.playerListManager.shouldUpdatePlayers(gameState)) {
-            this.playerListManager.setGameState(gameState);
-            this.addKickAndEditListeners();
-            this.updateAddPlayerButton();
-        }
-    }
-
-    addKickAndEditListeners() {
+    addPlayerListListeners() {
+        // Register click listener for kick buttons
         document.querySelectorAll('.kick-button').forEach((button) => {
-            button.addEventListener('click', (e) => {
-                const playerId = e.target.getAttribute('data-playerId');
+            const playerId = button.getAttribute('data-playerId');
+            this.listenerRegistry.registerListener(button.id, 'click', () => {
                 this.confirmAndKickPlayer(playerId);
             });
         });
-
+    
+        // Register click listener for edit buttons
         document.querySelectorAll('.edit-button').forEach((button) => {
-            button.addEventListener('click', (e) => {
-                const playerId = e.target.getAttribute('data-playerId');
+            const playerId = button.getAttribute('data-playerId');
+            this.listenerRegistry.registerListener(button.id, 'click', () => {
                 this.editPlayerName(playerId);
             });
         });
+    
+        // Register click listener for remove buttons
         document.querySelectorAll('.remove-button').forEach((button) => {
-            button.addEventListener('click', (e) => {
-                const playerId = e.target.getAttribute('data-playerId');
+            const playerId = button.getAttribute('data-playerId');
+            this.listenerRegistry.registerListener(button.id, 'click', () => {
                 this.removePlayer(playerId);
             });
         });
     }
+    
 
     confirmAndKickPlayer(playerId) {
-        const player = this.host.gameState.players.find((p) => p.playerId === playerId);
+        const player = this.peer.gameState.players.find((p) => p.playerId === playerId);
         if (
             player &&
             confirm(`Are you sure you want to kick ${player.nickname}? This will disconnect all players associated with this player's client.`)
         ) {
-            this.host.kickPlayer(player.peerId);
+            this.peer.kickPlayer(player.peerId);
         }
     }
 
     editPlayerName(playerId) {
-        const player = this.host.ownedPlayers.find((p) => p.playerId === playerId);
+        const player = this.peer.ownedPlayers.find((p) => p.playerId === playerId);
         if (player) {
             const newName = prompt('Enter new name:', player.nickname);
             if (newName) {
                 player.nickname = newName;
                 this.updateGameState();
-                this.host.broadcastGameState();
+                this.peer.broadcastGameState();
             }
         }
     }
 
     removePlayer(playerId) {
-        const playerIndex = this.host.ownedPlayers.findIndex((p) => p.playerId === playerId);
+        const playerIndex = this.peer.ownedPlayers.findIndex((p) => p.playerId === playerId);
 
         if (playerIndex !== -1) {
-            if (this.host.ownedPlayers.length === 1) {
+            if (this.peer.ownedPlayers.length === 1) {
                 alert('You have removed your last player. Leaving the game.');
                 this.leaveGame();
             } else {
-                const removedPlayer = this.host.ownedPlayers.splice(playerIndex, 1)[0];
-                this.host.removePlayer(removedPlayer.playerId);
+                const removedPlayer = this.peer.ownedPlayers.splice(playerIndex, 1)[0];
+                this.peer.removePlayer(removedPlayer.playerId);
 
-                this.host.broadcastGameState();
+                this.peer.broadcastGameState();
                 this.updateGameState();
                 this.updateAddPlayerButton();
             }
@@ -316,63 +239,16 @@ export default class HostEventHandler extends BaseEventHandler {
     addPlayer() {
         const newName = prompt('Enter a new player name:');
         if (newName && newName.trim() !== "") {
-            this.host.addNewOwnedPlayer(newName.trim());
+            this.peer.addNewOwnedPlayer(newName.trim());
         }
-    }
-
-    updateAddPlayerButton() {
-        const playerLimitPerPeer = this.host.gameState.settings.playerLimitPerPeer;
-        const totalPlayerLimit = this.host.gameState.settings.playerLimit;
-        const ownedPlayers = this.host.ownedPlayers;
-        const allPlayers = this.host.gameState.players;
-
-        if (ownedPlayers.length < playerLimitPerPeer && allPlayers.length < totalPlayerLimit) {
-            this.addPlayerButton.style.display = 'block';
-        } else {
-            this.addPlayerButton.style.display = 'none';
-        }
-        this.updatePieces(true);
-    }
-
-    copyInviteCode() {
-        const inviteCode = this.inviteCode.textContent.trim();
-        if (inviteCode) {
-            navigator.clipboard
-                .writeText(inviteCode)
-                .then(() => {
-                    this.showCopyMessage();
-                })
-                .catch((err) => console.error('Failed to copy invite code:', err));
-        }
-    }
-
-    showCopyMessage() {
-        this.copyMessage.style.display = 'inline';
-        setTimeout(() => {
-            this.copyMessage.style.display = 'none';
-        }, 2000);
-    }
-
-    closeGame() {
-        alert('The host has closed the game.');
-        location.reload();
-    }
-
-    leaveGame() {
-        alert('You have left the game.');
-        location.reload();
     }
 
     onSettingsChanged() {
-        this.settingsManager.updateGameStateFromInputs(this.host.gameState);
-        this.host.broadcastGameState();
+        console.log("Called");
+        this.settingsManager.updateGameStateFromInputs(this.peer.gameState);
+        this.peer.broadcastGameState();
         this.updateAddPlayerButton();
     }
-    
 
-    handlePeerError(err) {
-        this.startHostButton.disabled = false;
-        this.showHostPage();
-        alert('An error occurred: ' + err);
-    }
+    
 }

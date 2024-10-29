@@ -1,10 +1,16 @@
 {
+  "metadata": {
+    "name": "Drinking Board Game",
+    "author": "Jack Carlton",
+    "description": "Game to drink with your friends while playing",
+    "createdDate": "2024-10-28T12:00:00Z"
+  },
   "spaces": [
     {
       "id": 1,
       "name": "Start",
       "type": "start",
-      "actions": [],
+      "events": [],
       "visualDetails": {
         "x": 300,
         "y": 300,
@@ -26,9 +32,16 @@
       "id": 2,
       "name": "Take a Drink",
       "type": "action",
-      "actions": [
+      "events": [
         {
-          "code": "if (player.getStat('drinks') < 5) { player.updateStat('drinks', 1); console.log(`${player.nickname} takes a drink!`); } else { console.log(`${player.nickname} can't drink more!`); }"
+          "trigger": {
+            "type": "code",
+            "payload": "player.getStat('drinks') < 5"
+          },
+          "action": {
+            "type": "execute",
+            "payload": "player.updateStat('drinks', 1); console.log(`${player.nickname} takes a drink!`);"
+          }
         }
       ],
       "visualDetails": {
@@ -52,9 +65,16 @@
       "id": 3,
       "name": "Move Forward 2",
       "type": "action",
-      "actions": [
+      "events": [
         {
-          "code": "if (player.getStat('moves') >= 1) { gameEngine.movePlayer(player, 2); console.log(`${player.nickname} moves forward 2 spaces!`); player.updateStat('moves', -1); } else { console.log(`${player.nickname} doesn't have enough moves!`); }"
+          "trigger": {
+            "type": "code",
+            "payload": "player.getStat('moves') >= 1"
+          },
+          "action": {
+            "type": "execute",
+            "payload": "gameEngine.movePlayer(player, 2); console.log(`${player.nickname} moves forward 2 spaces!`); player.updateStat('moves', -1);"
+          }
         }
       ],
       "visualDetails": {
@@ -78,9 +98,16 @@
       "id": 4,
       "name": "Take Another Drink",
       "type": "action",
-      "actions": [
+      "events": [
         {
-          "code": "player.updateStat('drinks', 1); console.log(`${player.nickname} takes another drink!`);"
+          "trigger": {
+            "type": "always",
+            "payload": null
+          },
+          "action": {
+            "type": "execute",
+            "payload": "player.updateStat('drinks', 1); console.log(`${player.nickname} takes another drink!`);"
+          }
         }
       ],
       "visualDetails": {
@@ -97,6 +124,10 @@
         {
           "targetId": 5,
           "drawConnection": true
+        },
+        {
+          "targetId": 6,
+          "drawConnection": true
         }
       ]
     },
@@ -104,9 +135,16 @@
       "id": 5,
       "name": "Lose a Turn",
       "type": "action",
-      "actions": [
+      "events": [
         {
-          "code": "console.log(`${player.nickname} loses a turn!`); player.updateStat('turnsLost', 1);"
+          "trigger": {
+            "type": "always",
+            "payload": null
+          },
+          "action": {
+            "type": "execute",
+            "payload": "console.log(`${player.nickname} loses a turn!`); player.updateStat('turnsLost', 1);"
+          }
         }
       ],
       "visualDetails": {
@@ -130,9 +168,16 @@
       "id": 6,
       "name": "Move Back 1",
       "type": "action",
-      "actions": [
+      "events": [
         {
-          "code": "player.setCurrentSpaceId(player.getCurrentSpaceId() - 1); console.log(`${player.nickname} moves back 1 space!`);"
+          "trigger": {
+            "type": "always",
+            "payload": null
+          },
+          "action": {
+            "type": "execute",
+            "payload": "player.setCurrentSpaceId(player.getCurrentSpaceId() - 1); console.log(`${player.nickname} moves back 1 space!`);"
+          }
         }
       ],
       "visualDetails": {
@@ -149,6 +194,14 @@
         {
           "targetId": 7,
           "drawConnection": true
+        },
+        {
+          "targetId": 8,
+          "drawConnection": true
+        },
+        {
+          "targetId": 1,
+          "drawConnection": true
         }
       ]
     },
@@ -156,9 +209,16 @@
       "id": 7,
       "name": "Skip a Drink",
       "type": "action",
-      "actions": [
+      "events": [
         {
-          "code": "console.log(`${player.nickname} skips taking a drink this round.`);"
+          "trigger": {
+            "type": "always",
+            "payload": null
+          },
+          "action": {
+            "type": "execute",
+            "payload": "console.log(`${player.nickname} skips taking a drink this round.`);"
+          }
         }
       ],
       "visualDetails": {
@@ -182,9 +242,16 @@
       "id": 8,
       "name": "Move Forward 3",
       "type": "action",
-      "actions": [
+      "events": [
         {
-          "code": "if (player.getStat('moves') >= 3) { gameEngine.movePlayer(player, 3); console.log(`${player.nickname} moves forward 3 spaces!`); player.updateStat('moves', -3); } else { console.log(`${player.nickname} doesn't have enough moves!`); }"
+          "trigger": {
+            "type": "code",
+            "payload": "player.getStat('moves') >= 3"
+          },
+          "action": {
+            "type": "execute",
+            "payload": "gameEngine.movePlayer(player, 3); console.log(`${player.nickname} moves forward 3 spaces!`); player.updateStat('moves', -3);"
+          }
         }
       ],
       "visualDetails": {
@@ -208,9 +275,16 @@
       "id": 9,
       "name": "Double Drinks",
       "type": "action",
-      "actions": [
+      "events": [
         {
-          "code": "let drinks = player.getStat('drinks'); player.updateStat('drinks', drinks); console.log(`${player.nickname} drinks double!`);"
+          "trigger": {
+            "type": "always",
+            "payload": null
+          },
+          "action": {
+            "type": "execute",
+            "payload": "let drinks = player.getStat('drinks'); player.updateStat('drinks', drinks); console.log(`${player.nickname} drinks double!`);"
+          }
         }
       ],
       "visualDetails": {
@@ -234,14 +308,21 @@
       "id": 10,
       "name": "Move Back 2",
       "type": "action",
-      "actions": [
+      "events": [
         {
-          "code": "player.setCurrentSpaceId(player.getCurrentSpaceId() - 2); console.log(`${player.nickname} moves back 2 spaces!`);"
+          "trigger": {
+            "type": "always",
+            "payload": null
+          },
+          "action": {
+            "type": "execute",
+            "payload": "player.setCurrentSpaceId(player.getCurrentSpaceId() - 2); console.log(`${player.nickname} moves back 2 spaces!`);"
+          }
         }
       ],
       "visualDetails": {
-        "x": 400,
-        "y": 500,
+        "x": 500,
+        "y": 400,
         "size": 60,
         "color": "#ccccff",
         "textColor": "#000000",
@@ -251,57 +332,10 @@
       },
       "connections": [
         {
-          "targetId": 11,
+          "targetId": 1,
           "drawConnection": true
         }
       ]
-    },
-    {
-      "id": 11,
-      "name": "Finish Your Drink",
-      "type": "action",
-      "actions": [
-        {
-          "code": "console.log(`${player.nickname} must finish their drink!`); player.updateStat('drinks', -player.getStat('drinks'));"
-        }
-      ],
-      "visualDetails": {
-        "x": 300,
-        "y": 500,
-        "size": 60,
-        "color": "#ddffdd",
-        "textColor": "#000000",
-        "font": "12px Arial",
-        "textAlign": "center",
-        "textBaseline": "middle"
-      },
-      "connections": [
-        {
-          "targetId": 12,
-          "drawConnection": true
-        }
-      ]
-    },
-    {
-      "id": 12,
-      "name": "Finish",
-      "type": "finish",
-      "actions": [
-        {
-          "code": "console.log(`${player.nickname} has finished the game!`);"
-        }
-      ],
-      "visualDetails": {
-        "x": 300,
-        "y": 600,
-        "size": 60,
-        "color": "#ccccff",
-        "textColor": "#000000",
-        "font": "12px Arial",
-        "textAlign": "center",
-        "textBaseline": "middle"
-      },
-      "connections": []
     }
   ]
 }

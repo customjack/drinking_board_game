@@ -37,4 +37,31 @@
   .d-none {
     display: none;
   }
+
+  .highlight {
+    position: relative; /* Ensure the glow is positioned correctly */
+    z-index: 1; /* Bring the highlighted element above others */
+    transition: box-shadow 0.3s ease; /* Smooth transition for the glow effect */
+  }
+
+  .highlight::after {
+      content: ''; /* Empty content for the pseudo-element */
+      position: absolute; /* Position it relative to the parent */
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      border-radius: inherit; /* Match the parent's border-radius */
+      box-shadow: 0 0 20px var(--highlight-glow); /* Use the theme-dependent glow color */
+      opacity: 0.7; /* Semi-transparent glow */
+      pointer-events: none; /* Prevent interaction with the pseudo-element */
+      transition: opacity 0.3s ease; /* Smooth transition for the opacity */
+  }
+
+  /* Optional: Reduce opacity on hover to make it more dynamic */
+  .highlight:hover::after {
+      opacity: 1; /* Full glow on hover */
+  }
+
+
   

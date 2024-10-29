@@ -58,6 +58,33 @@ export default class BoardManager {
         }
     }
 
+    /**
+     * Load the board from a JSON file.
+     * @param {File} file - The board file to load.
+     */
+    async loadBoardFromFile(file) {
+        if (file && file.type === 'application/json') {
+            const text = await this.readFile(file);
+            const boardData = JSON.parse(text);
+            const board = Board.fromJSON(boardData);
+            this.setBoard(board);
+            this.drawBoard();
+            return board; // Return the loaded board if needed
+        } else {
+            throw new Error('File must be a valid JSON file.');
+        }
+    }
+    
+    // Read the file as text
+    readFile(file) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = (event) => resolve(event.target.result);
+            reader.onerror = (event) => reject(new Error('Failed to read file.'));
+            reader.readAsText(file);
+        });
+    }
+
     // Function to draw the board as HTML elements
     drawBoard() {
         // Clear the previous board

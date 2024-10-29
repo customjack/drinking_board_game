@@ -34,6 +34,8 @@
 
   --font-family-label: 'Courier New', Courier, monospace;
   --label-color: #5c5b5a;
+
+  --highlight-glow: rgba(255, 0, 255, 0.8); /* Pink glow for retro theme */
 }
 
 /* Additional styles for retro theme */

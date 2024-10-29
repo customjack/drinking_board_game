@@ -16,11 +16,13 @@ export default class GameEngine {
      * @param {GameState} gameState - The current game state
      * @param {String} peerId - The peer ID of the current player
      * @param {Function} proposeGameState - Function to propose a new game state to the host
+     * @param {EventBus} eventBus - Event bus to emit events
      * @param {Boolean} isHost - Whether this peer is the host
      */
-    constructor(gameState, peerId, proposeGameState, isHost = false) {
+    constructor(gameState, peerId, proposeGameState, eventBus, isHost = false) {
         this.gameState = gameState;
         this.peerId = peerId;
+        this.eventBus = eventBus;
         this.proposeGameState = proposeGameState;
         this.isHost = isHost;
 
@@ -50,6 +52,7 @@ export default class GameEngine {
             [TurnPhases.CHANGE_TURN]: this.handleChangeTurn.bind(this),
             [TurnPhases.BEGIN_TURN]: this.handleBeginTurn.bind(this),
             [TurnPhases.WAITING_FOR_MOVE]: this.handleWaitingForMove.bind(this),
+            [TurnPhases.PLAYER_CHOOSING_DESTINATION]: this.handlePlayerChoosingDestination.bind(this), // New handler
             [TurnPhases.PROCESSING_MOVE]: this.handleProcessingMove.bind(this),
             [TurnPhases.END_TURN]: this.handleEndTurn.bind(this),
         };
@@ -122,6 +125,7 @@ export default class GameEngine {
 
     handleChangeTurn() {
         const currentPlayer = this.gameState.getCurrentPlayer();
+        this.eventBus.emit('changeTurn', { gamestate: this.gameState });
         
         if (currentPlayer.peerId === this.peerId) {
             this.gameState.setTurnPhase(TurnPhases.BEGIN_TURN);
@@ -131,8 +135,8 @@ export default class GameEngine {
 
     // Turn phase handlers
     handleBeginTurn() {
-        console.log("test");
         const currentPlayer = this.gameState.getCurrentPlayer();
+        this.eventBus.emit('beginTurn', { gamestate: this.gameState });
 
         // Resets timer for all players
         this.timerManager.startTimer();
@@ -146,6 +150,7 @@ export default class GameEngine {
 
     handleWaitingForMove() {
         const currentPlayer = this.gameState.getCurrentPlayer();
+        this.eventBus.emit('waitingForMove', { gamestate: this.gameState });
 
         if (currentPlayer.peerId === this.peerId) {
             this.rollButtonManager.activate();
@@ -155,8 +160,28 @@ export default class GameEngine {
         }
     }
 
+    // New handler method for PLAYER_CHOOSING_DESTINATION
+    handlePlayerChoosingDestination() {
+        const currentPlayer = this.gameState.getCurrentPlayer();
+        const currentSpaceId = currentPlayer.getCurrentSpaceId();
+        const currentSpace = this.gameState.board.getSpace(currentSpaceId);
+    
+        // Get the connections from the current space
+        const connections = currentSpace.connections;
+        const targetSpaces = connections.map(conn => conn.target);
+        console.log(`${currentPlayer.nickname} is choosing a destination...`);
+        
+        console.log(`${currentPlayer.nickname} has multiple choices to move to: ${targetSpaces.map(space => space.id).join(', ')}`);
+        
+        // Wait for a click event to determine the destination space
+        if (currentPlayer.peerId === this.peerId) {
+            this.waitForChoice(currentPlayer,targetSpaces);
+        }
+    }
+
     handleProcessingMove() {
         const currentPlayer = this.gameState.getCurrentPlayer();
+        this.eventBus.emit('processingMove', { gamestate: this.gameState });
 
         if (currentPlayer.peerId === this.peerId) {
             if (this.gameState.hasMovesLeft()) {
@@ -172,6 +197,7 @@ export default class GameEngine {
     handleEndTurn() {
         const currentPlayer = this.gameState.getCurrentPlayer();
         console.log(`Ending turn for ${currentPlayer.nickname}.`);
+        this.eventBus.emit('turnEnded', { gamestate: this.gameState });
 
         // Stop the timer for all players
         this.timerManager.stopTimer();
@@ -195,6 +221,7 @@ export default class GameEngine {
         //Maybe this would be better handled by the host, leaving it as such for now
         if (currentPlayer.peerId === this.peerId) {
             console.log(`Time's up for ${currentPlayer.nickname}! Ending turn.`);
+            this.eventBus.emit('timerEnded', { gamestate: this.gameState});
 
             // Deactivate the roll button
             this.rollButtonManager.deactivate();
@@ -225,28 +252,68 @@ export default class GameEngine {
     handleAfterDiceRoll(rollResult) {
         // Update remaining moves and transition to the next phase
         this.gameState.setRemainingMoves(rollResult);
+        this.eventBus.emit('playerRoll', { gamestate: this.gameState});
         this.gameState.setTurnPhase(TurnPhases.PROCESSING_MOVE);
 
         // Propose the updated game state to the host
         this.proposeGameStateWrapper();
     }
 
-    // Process a single move
     processSingleMove() {
         const currentPlayer = this.gameState.getCurrentPlayer();
-
-        // Move the player
-        const newSpaceId = currentPlayer.getCurrentSpaceId() + 1;
-        currentPlayer.setCurrentSpaceId(newSpaceId);
-
-        console.log(`${currentPlayer.nickname} moved to space ${newSpaceId}`);
-
-        // Decrement remaining moves
-        this.gameState.decrementMoves();
-
-        // Propose the updated game state to the host
-        this.proposeGameStateWrapper();
+        const currentSpaceId = currentPlayer.getCurrentSpaceId();
+        const currentSpace = this.gameState.board.getSpace(currentSpaceId); // Get the current space
+    
+        // Get the connections from the current space
+        const connections = currentSpace.connections;
+    
+        if (connections.length === 1) {
+            // Move the player automatically if there's only one connection
+            const targetSpace = connections[0].target;
+            currentPlayer.setCurrentSpaceId(targetSpace.id);
+            console.log(`${currentPlayer.nickname} moved to space ${targetSpace.id}`);
+            this.gameState.decrementMoves(); //decriment move by one
+            this.proposeGameStateWrapper();
+        } else if (connections.length > 1) {
+            // Set a flag indicating the player is choosing a connection
+            this.gameState.setTurnPhase(TurnPhases.PLAYER_CHOOSING_DESTINATION);
+            this.proposeGameStateWrapper(0); //propose gamestate to host immediately
+        }
+        
     }
+    
+    // Method to wait for the player's choice
+    waitForChoice(currentPlayer, targetSpaces) {
+        this.gameState.board.highlightSpaces(targetSpaces);
+        const handleClick = (space) => {
+            // Move the player to the selected space
+            currentPlayer.setCurrentSpaceId(space.id);
+            this.gameState.decrementMoves();
+            console.log(`${currentPlayer.nickname} chose to move to space ${space.id}`);
+    
+            // Clear highlights
+            this.gameState.board.removeHighlightFromSpaces(targetSpaces);
+    
+            // Transition back to PROCESSING_MOVE phase
+            this.gameState.setTurnPhase(TurnPhases.PROCESSING_MOVE);
+    
+            // Propose the updated game state to the host
+            this.proposeGameStateWrapper();
+    
+            // Remove click listener
+            targetSpaces.forEach(targetSpace => {
+                const spaceElement = document.getElementById(`space-${targetSpace.id}`);
+                spaceElement.removeEventListener('click', () => handleClick(targetSpace));
+            });
+        };
+    
+        // Add click listeners to target spaces
+        targetSpaces.forEach(targetSpace => {
+            const spaceElement = document.getElementById(`space-${targetSpace.id}`);
+            spaceElement.addEventListener('click', () => handleClick(targetSpace));
+        });
+    }
+    
 
     // Toggle between play and pause
     togglePauseGame() {
@@ -255,11 +322,13 @@ export default class GameEngine {
             this.proposeGameStateWrapper(0); // Proposes (broadcasts) the game state with no delay
             this.timerManager.pauseTimer(); // Pause the timer
             this.rollButtonManager.deactivate();
+            this.eventBus.emit('gamePaused', { gamestate: this.gameState });
             console.log('Game paused.');
         } else if (this.gameState.gamePhase === GamePhases.PAUSED) {
             this.gameState.setGamePhase(GamePhases.IN_GAME); // Resume the game
             this.proposeGameStateWrapper(0); // Proposes (broadcasts) the game state with no delay
             this.timerManager.resumeTimer(); // Resume the timer
+            this.eventBus.emit('gameResumed', { gamestate: this.gameState });
             console.log('Game resumed.');
         }
     }

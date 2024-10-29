@@ -16,6 +16,7 @@ export default class Client extends BasePeer {
         console.log("Initializing Client...");
         const id = await this.initPeer();  // Get the id from initPeer()
         console.log("Peer connection open with ID:", id);
+        this.eventHandler.initManagers(id,this.hostId);
 
         await this.initializeGameState();
 
@@ -62,6 +63,8 @@ export default class Client extends BasePeer {
     handleData(data) {
         // Handle incoming data from the host
         switch (data.type) {
+            case 'connectionPackage':
+                this.handleConnectionPackage(data.gameState);
             case 'gameState':
                 this.handleGameStateUpdate(data.gameState);
                 break;
@@ -82,7 +85,7 @@ export default class Client extends BasePeer {
         }
     }
 
-    handleGameStateUpdate(gameStateData) {
+    handleConnectionPackage(gameStateData) {
         this.gameState = GameState.fromJSON(gameStateData);  // Sync local game state with the host's state
         console.log('Game state updated:', this.gameState);
         if(this.gameState.isGameStarted()) {
@@ -90,6 +93,11 @@ export default class Client extends BasePeer {
         } else {
             this.eventHandler.showLobbyPage();
         }
+    }
+
+    handleGameStateUpdate(gameStateData) {
+        this.gameState = GameState.fromJSON(gameStateData);  // Sync local game state with the host's state
+        console.log('Game state updated:', this.gameState);
         this.eventHandler.updateGameState(); 
     }
 

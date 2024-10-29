@@ -20,7 +20,7 @@ export default class PlayerListManager {
     setIsHost(isHost) {
         this.isHost = isHost;
     }
-
+AC
     // Update the game state and refresh the player list UI
     setGameState(gameState) {
         // Create a deep copy of the gameState by serializing and deserializing
@@ -52,66 +52,63 @@ export default class PlayerListManager {
     createPlayerElement(player) {
         const li = document.createElement('li');
         li.className = 'player-container';
-
+    
         const playerNameBadges = document.createElement('div');
         playerNameBadges.className = 'player-name-badges';
-
-        // Get the assigned color for this player's peerId
-        const playerColor = player.playerColor || '#FFFFFF'; // Default to white if no color
-
-        // Assign the same border color to all players with the same peerId
-        const peerBorderColor = player.peerColor || '#FFFFFF'; // Default to white if no color
-
-        // Add player name and badges (Host, You) with bold style
-        let nameHtml = `<span style="color:${playerColor}; font-weight: bold;">${player.nickname}</span>`;
+        
+        const playerColor = player.playerColor || '#FFFFFF';
+        const peerBorderColor = player.peerColor || '#FFFFFF';
+    
+        let nameHtml = `<span class="player-name" style="color:${playerColor}; font-weight: bold;">${player.nickname}</span>`;
         if (player.peerId === this.hostPeerId) {
             nameHtml += `<span class="host-badge">Host</span>`;
         }
         if (player.peerId === this.currentPlayerPeerId) {
             nameHtml += `<span class="you-badge">You</span>`;
         }
-
+    
         playerNameBadges.innerHTML = nameHtml;
-
-        // Apply the shared border color based on peerId
         li.style.border = `2px solid ${peerBorderColor}`;
-
+    
         const playerButtons = document.createElement('div');
         playerButtons.className = 'player-buttons';
-
+    
         // Add edit and remove buttons for the current user's own players
         if (player.peerId === this.currentPlayerPeerId) {
             const editButton = document.createElement('button');
             editButton.className = 'edit-button';
             editButton.textContent = '✏️';
             editButton.setAttribute('data-playerId', player.playerId);
+            editButton.id = `${this.listElement.id}-edit-${player.playerId}`;
             playerButtons.appendChild(editButton);
-
+    
             const removeButton = document.createElement('button');
             removeButton.className = 'remove-button';
             removeButton.textContent = '❌';
             removeButton.setAttribute('data-playerId', player.playerId);
+            removeButton.id = `${this.listElement.id}-remove-${player.playerId}`; 
             playerButtons.appendChild(removeButton);
         }
-
+    
         // If the current user is the host, add a kick button for other players
         if (this.isHost && player.peerId !== this.hostPeerId) {
             const kickButton = document.createElement('button');
             kickButton.className = 'kick-button';
             kickButton.textContent = '❌';
             kickButton.setAttribute('data-playerId', player.playerId);
+            kickButton.id = `${this.listElement.id}-kick-${player.playerId}`; 
             playerButtons.appendChild(kickButton);
         }
-
-        // Highlight the player's box if it's their turn (if the game has started)
+    
         if ((this.gameState.getCurrentPlayer().playerId === player.playerId) && this.gameState.isGameStarted()) {
             li.classList.add('current-turn');
         }
-
+    
         li.appendChild(playerNameBadges);
         li.appendChild(playerButtons);
         return li;
     }
+    
 
     // Clear the player list UI
     clearPlayerListUI() {

@@ -1,30 +1,88 @@
-/* components/player-list.css */
-
-/* Import variables */
-@import '../variables.css';
-
 /* Player Container */
 .player-container {
   display: flex;
-  align-items: center; /* Ensure items are vertically centered */
-  justify-content: space-between; /* Ensure items are spread out */
-  margin-bottom: calc(var(--spacing-unit) * 1); /* Add some margin between player containers */
-  padding: calc(var(--spacing-unit) * 1.5); /* Add padding inside each player container */
+  align-items: center; /* Vertically center the items */
+  justify-content: space-between;
+  padding: calc(var(--spacing-unit) * 1.5);
   background-color: var(--background-modal);
   border-radius: 5px;
   border: 1px solid var(--border-color);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  height: 50px; /* Set a fixed height to ensure equal size */
+  margin-bottom: calc(var(--spacing-unit) * 1); /* Add space between list items */
 }
 
 /* Player Name and Badges */
 .player-name-badges {
   display: flex;
-  align-items: center; /* Ensure items are vertically centered */
-  justify-content: center; /* Center items horizontally */
-  gap: calc(var(--spacing-unit) * 0.5); /* Add space between name and badges */
-  flex: 1; /* Allow player name and badges to take up available space */
-  margin: 0; /* Reset margin */
+  align-items: center; /* Vertically center the badges and name */
+  justify-content: center; /* Center horizontally */
+  gap: calc(var(--spacing-unit) * 0.5); /* Space between name and badges */
+  flex-grow: 1; /* Allow this container to take up available space */
+}
+
+/* Player Buttons */
+.player-buttons {
+  display: flex;
+  align-items: center; /* Ensure buttons are vertically centered */
+  justify-content: flex-end; /* Align buttons to the right */
+  gap: calc(var(--spacing-unit) * 0.5); /* Add space between buttons */
+}
+
+/* Reset margins and paddings */
+.player-container,
+.player-name-badges,
+.player-buttons,
+.player-name {
+  margin: 0;
+  padding: 0;
+}
+
+/* Ensure consistent line height */
+.player-name {
+  line-height: 1; /* Set line height to reduce extra space */
+}
+
+/* Buttons */
+.edit-button,
+.kick-button,
+.remove-button {
+  background: none;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+  width: 24px;  /* Define a fixed width */
+  height: 24px; /* Define a fixed height */
+  color: var(--color-primary);
+  transition: color 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center; /* Center the button content */
   padding: 0; /* Reset padding */
+}
+
+.edit-button:hover {
+  color: var(--color-primary-hover);
+}
+
+.kick-button:hover,
+.remove-button:hover {
+  color: var(--color-danger-hover);
+}
+
+/* Ensure consistent height for list items */
+#lobbyPlayerList li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 50px; /* Apply a fixed height to all list items */
+  padding: calc(var(--spacing-unit) * 0.5); /* Add some internal padding */
+  margin: 0;
+  background-color: var(--background-modal);
+  border-radius: 5px;
+  border: 1px solid var(--border-color);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-bottom: calc(var(--spacing-unit) * 1); /* Add spacing between items */
 }
 
 /* Badges */
@@ -46,60 +104,7 @@
   background-color: var(--color-success);
 }
 
-/* Player Buttons */
-.player-buttons {
-  display: flex;
-  align-items: center; /* Ensure buttons are vertically centered */
-  justify-content: center; /* Center buttons horizontally */
-  gap: calc(var(--spacing-unit) * 0.5); /* Add space between buttons */
-  margin-left: calc(var(--spacing-unit) * 1); /* Add margin to separate buttons from name */
-  padding: 0; /* Reset padding */
-}
-
-.edit-button,
-.kick-button,
-.remove-button {
-  background: none;
-  border: none;
-  font-size: 16px;
-  cursor: pointer;
-  padding: 0;
-  margin: 0;
-  width: 24px;
-  height: 24px;
-  color: var(--color-primary);
-  transition: color 0.3s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center; /* Center the button content */
-}
-
-.edit-button:hover {
-  color: var(--color-primary-hover);
-}
-
-.kick-button:hover,
-.remove-button:hover {
-  color: var(--color-danger);
-}
-
-/* Adjust list item flex container to ensure content is spaced evenly */
-#lobbyPlayerList {
-  display: flex;
-  flex-direction: column;
-  gap: calc(var(--spacing-unit) * 1); /* Add gap between player list items */
-  padding: 0;
-  margin: 0;
-}
-
-#lobbyPlayerList li {
-  display: flex;
-  align-items: center;
-  justify-content: space-between; /* Ensure even spacing between name and buttons */
-  padding: calc(var(--spacing-unit) * 0.2); /* Add padding inside each list item for consistent space */
-  margin: 0;
-  background-color: var(--background-modal);
-  border-radius: 5px;
-  border: 1px solid var(--border-color);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+/* Box sizing */
+*, *::before, *::after {
+  box-sizing: border-box;
 }

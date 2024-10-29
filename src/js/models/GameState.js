@@ -92,9 +92,9 @@ export default class GameState {
         this.remainingMoves = moves;
     }
 
-    // Reduce the remaining moves by 1
-    decrementMoves() {
-        this.remainingMoves--;
+    // Reduce the remaining moves
+    decrementMoves(amount = 1) {
+        this.remainingMoves = this.remainingMoves - amount < 0 ? 0 : this.remainingMoves - amount;
     }
 
     // Check if the current player has any remaining moves
