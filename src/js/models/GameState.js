@@ -2,6 +2,7 @@ import Player from './Player';
 import Board from './Board';
 import TurnPhases from '../enums/TurnPhases'; // Import TurnPhases enum
 import GamePhases from '../enums/GamePhases'; // Import GamePhases enum
+import GameEventState from '../enums/GameEventState.js'; // Import the new enum
 import Settings from './Settings'; // Import the Settings class
 
 export default class GameState {
@@ -12,6 +13,7 @@ export default class GameState {
         this.turnPhase = TurnPhases.BEGIN_TURN; // Start with the beginning turn phase
         this.gamePhase = GamePhases.IN_LOBBY; // Set initial game phase to lobby
         this.settings = settings; // Game settings
+        this.triggeredEvents = []; //Events to be processed
     }
 
     // Start the game by setting the game phase to IN_GAME
@@ -70,6 +72,55 @@ export default class GameState {
 
         const minTurnsTaken = Math.min(...this.players.map(player => player.turnsTaken));
         return minTurnsTaken + 1;
+    }
+
+    // Check all spaces to see if any events are triggered based on the current game state
+    determineTriggeredEvents(eventBus = null) {
+        const triggeredEvents = [];
+
+        // Loop through all spaces on the board to check for triggered events
+        for (const space of this.board.spaces) {
+            // For each event on the space, check if it should be triggered
+            const context = {
+                gameState: this,
+                eventBus: eventBus,
+                space: space
+            };
+
+            for (const event of space.events) {
+                // Check if the event is in the READY state before checking the trigger
+                if (event.state === GameEventState.READY && event.checkTrigger(context)) {
+                    // Include the space in the event for context
+                    triggeredEvents.push({ event, space }); // Add the triggered event along with its space to the list
+                }
+            }
+        }
+
+        // Sort the triggered events by priority
+        this.triggeredEvents = triggeredEvents.sort((a, b) => {
+            const aPriority = a.event.priority.value;
+            const bPriority = b.event.priority.value;
+            return bPriority - aPriority; // Sort in descending order (highest to lowest priority)
+        });
+
+        return this.triggeredEvents;
+    }
+
+    // Get the triggered events without recalculating
+    getTriggeredEvents() {
+        return this.triggeredEvents;
+    }
+
+
+    // Reset all COMPLETED events to READY
+    resetEvents() {
+        for (const space of this.board.spaces) {
+            for (const event of space.events) {
+                if (event.state === GameEventState.COMPLETED) {
+                    event.state = GameEventState.READY;
+                }
+            }
+        }
     }
 
     // Update stats for a player

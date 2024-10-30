@@ -52,8 +52,9 @@ export default class GameEngine {
             [TurnPhases.CHANGE_TURN]: this.handleChangeTurn.bind(this),
             [TurnPhases.BEGIN_TURN]: this.handleBeginTurn.bind(this),
             [TurnPhases.WAITING_FOR_MOVE]: this.handleWaitingForMove.bind(this),
-            [TurnPhases.PLAYER_CHOOSING_DESTINATION]: this.handlePlayerChoosingDestination.bind(this), // New handler
+            [TurnPhases.PLAYER_CHOOSING_DESTINATION]: this.handlePlayerChoosingDestination.bind(this),
             [TurnPhases.PROCESSING_MOVE]: this.handleProcessingMove.bind(this),
+            [TurnPhases.PROCESSING_EVENTS]: this.handleProcessingEvents.bind(this), // New handler bound here
             [TurnPhases.END_TURN]: this.handleEndTurn.bind(this),
         };
     }
@@ -194,6 +195,22 @@ export default class GameEngine {
         }
     }
 
+    handleProcessingEvents() {
+        const currentPlayer = this.gameState.getCurrentPlayer();
+        console.log(`Processing events for ${currentPlayer.nickname}'s move.`);
+
+        // Logic to process events triggered by the move
+        const gameEvents = this.gameState.determineTriggeredEvents();
+        gameEvents.forEach(gameEvent => {
+            this.eventBus.emit('gameEventTriggered', { gameEvent: gameEvent, gamestate: this.gameState });
+            this.processEvent(gameEvent); // Hypothetical method to apply event effects
+        });
+
+        // Transition back to PROCESSING_MOVE phase after events are processed
+        this.gameState.setTurnPhase(TurnPhases.PROCESSING_MOVE);
+        this.proposeGameStateWrapper();
+    }
+
     handleEndTurn() {
         const currentPlayer = this.gameState.getCurrentPlayer();
         console.log(`Ending turn for ${currentPlayer.nickname}.`);
@@ -281,38 +298,49 @@ export default class GameEngine {
         }
         
     }
-    
+
     // Method to wait for the player's choice
     waitForChoice(currentPlayer, targetSpaces) {
+        // Highlight possible target spaces
         this.gameState.board.highlightSpaces(targetSpaces);
-        const handleClick = (space) => {
-            // Move the player to the selected space
-            currentPlayer.setCurrentSpaceId(space.id);
-            this.gameState.decrementMoves();
-            console.log(`${currentPlayer.nickname} chose to move to space ${space.id}`);
-    
-            // Clear highlights
-            this.gameState.board.removeHighlightFromSpaces(targetSpaces);
-    
-            // Transition back to PROCESSING_MOVE phase
-            this.gameState.setTurnPhase(TurnPhases.PROCESSING_MOVE);
-    
-            // Propose the updated game state to the host
-            this.proposeGameStateWrapper();
-    
-            // Remove click listener
-            targetSpaces.forEach(targetSpace => {
-                const spaceElement = document.getElementById(`space-${targetSpace.id}`);
-                spaceElement.removeEventListener('click', () => handleClick(targetSpace));
-            });
+
+        // Track handlers so they can be removed
+        const handlers = {};
+
+        // Helper to create a unique handler for each space
+        const createClickHandler = (space) => {
+            return () => {
+                // Move the player to the selected space
+                currentPlayer.setCurrentSpaceId(space.id);
+                this.gameState.decrementMoves();
+                console.log(`${currentPlayer.nickname} chose to move to space ${space.id}`);
+        
+                // Clear highlights
+                this.gameState.board.removeHighlightFromSpaces(targetSpaces);
+        
+                // Transition back to PROCESSING_MOVE phase
+                this.gameState.setTurnPhase(TurnPhases.PROCESSING_MOVE);
+        
+                // Propose the updated game state to the host
+                this.proposeGameStateWrapper();
+        
+                // Remove click listeners from all target spaces
+                targetSpaces.forEach(targetSpace => {
+                    const spaceElement = document.getElementById(`space-${targetSpace.id}`);
+                    spaceElement.removeEventListener('click', handlers[targetSpace.id]);
+                });
+            };
         };
-    
+
         // Add click listeners to target spaces
         targetSpaces.forEach(targetSpace => {
             const spaceElement = document.getElementById(`space-${targetSpace.id}`);
-            spaceElement.addEventListener('click', () => handleClick(targetSpace));
+            const handler = createClickHandler(targetSpace);
+            handlers[targetSpace.id] = handler; // Save handler reference for removal
+            spaceElement.addEventListener('click', handler);
         });
     }
+
     
 
     // Toggle between play and pause
