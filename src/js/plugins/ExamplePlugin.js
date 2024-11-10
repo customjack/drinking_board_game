@@ -1,9 +1,9 @@
 import Plugin from '../pluginManagement/Plugin';
 
 export default class ExamplePlugin extends Plugin {
-    initialize(eventBus, registryManager, isHost) {
+    initialize(eventBus, registryManager) {
         // Plugin initialization logic
-        console.log('Example Plugin initialized!', { eventBus, registryManager, isHost });
+        console.log('Example Plugin initialized!', { eventBus, registryManager});
 
         // Listen for game state updates
         eventBus.on('settingsUpdated', this.handleSettingsUpdate.bind(this));
@@ -43,4 +43,5 @@ export default class ExamplePlugin extends Plugin {
         this.eventBus.off('playerListUpdated', this.handlePlayerListUpdate.bind(this));
         this.eventBus.off('gameStateUpdated', this.handleGameStateUpdate.bind(this));
     }
+
 }

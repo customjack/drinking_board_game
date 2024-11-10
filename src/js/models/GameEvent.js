@@ -10,10 +10,21 @@ export default class GameEvent {
         this.action = action;   // Instance of Action
         this.priority = priority; // Priority level, defaulting to MID if not specified
         this.state = GameEventState.READY; // Initialize state to READY
+        //Flow: READY -> CHECKING_TRIGGER (can bypass) -> TRIGGERED -> PROCESSING_ACTION -> COMPLETED_ACTION
+        //Can be deactived with -->INACTIVE
     }
 
     // Checks if the trigger conditions are met
+    // Triggered states will not "untriggered" until resolved,
+    // even if the conditions which triggered them are no longer true 
+    // (ex. triggered based on score > 5, score reduced before event occurs, event will STILL occur)
     checkTrigger(context) {
+        if (this.state === GameEventState.TRIGGERED) {
+            return true; //The event has already been triggered
+        }
+        if (this.state !== GameEventState.READY) {
+            return false; // Not ready, so it cannot be tested for trigger
+        }
         this.state = GameEventState.CHECKING_TRIGGER; // Update state
         const isTriggered = this.trigger.isTriggered(context);
         this.state = isTriggered ? GameEventState.TRIGGERED : GameEventState.READY; // Update state based on trigger
@@ -21,15 +32,15 @@ export default class GameEvent {
     }
 
     // Executes the action if the trigger is met, with an option to force execution
-    executeAction(context, force = false) {
-        if (this.state !== GameEventState.READY) {
-            console.log(`Cannot execute action; current state: ${this.state}`);
-            return; // Do not execute if not in READY state
+    executeAction(gameEngine, force = false) {
+        if (force) {
+            this.state = GameEventState.TRIGGERED; //Trigger the event
+        } else {
+            this.checkTrigger(); //Check if the event is triggered, if it is the state will be updated
         }
-
-        if (force || this.checkTrigger(context)) {
+        if (this.state === GameEventState.TRIGGERED) {
             this.state = GameEventState.PROCESSING_ACTION; // Update state before execution
-            this.action.execute(context);
+            this.action.execute(gameEngine);
             this.state = GameEventState.COMPLETED_ACTION; // Update state after execution
         }
     }
@@ -40,11 +51,6 @@ export default class GameEvent {
             throw new Error(`Invalid state: ${newState}`);
         }
         this.state = newState;
-    }
-
-    // Convenience method to set the state to READY
-    setStateReady() {
-        this.setState(GameEventState.READY);
     }
 
     // Get the current state of the GameEvent

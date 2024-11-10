@@ -90,10 +90,11 @@ export default class Host extends BasePeer {
 
         // Validate the proposed game state
         if (this.validateProposedGameState(conn.peer, proposedGameState)) {
-            // Update the game state and broadcast
+            // Broadcast the new game state and do work to update on the client side
+            // All clients should also do their work to update client side
             this.gameState = proposedGameState;
-            this.eventHandler.updateGameState();
             this.broadcastGameState();
+            this.eventHandler.updateGameState();
         } else {
             console.error('Invalid game state proposed by peer:', conn.peer);
             this.sendGameState(conn); //Send them the corrected game state
@@ -192,7 +193,7 @@ export default class Host extends BasePeer {
         this.connections.forEach(conn => {
             conn.send({ type: 'gameState', gameState: gameStateData });
         });
-        console.log("Broadcasted gamestate:", this.gameState);
+        //console.log("Broadcasted gamestate:", gameStateData);
     }
 
     broadcastStartGame() {

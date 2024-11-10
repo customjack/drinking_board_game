@@ -39,6 +39,7 @@ export default class ClientEventHandler extends BaseEventHandler {
 
         this.peer = new Client(playerName, gameCode, this);
         await this.peer.init();
+        this.pluginManager.setPeer(this.peer.peer); //This isn't pretty but it passes the PeerJS instance
 
         this.gameEngine = new GameEngine(
             this.peer.gameState,

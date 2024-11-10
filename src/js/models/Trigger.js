@@ -9,9 +9,9 @@ export default class Trigger {
 
     // Check if this trigger is met based on the game state and associated space
     isTriggered(context) {
-        const { gameState, space, eventBus } = context; // Destructure context
+        const { gameState, space, eventBus, peerId} = context; // Destructure context
 
-        const player = gameState.currentPlayer;
+        const player = gameState.getCurrentPlayer();
 
         // Emit an event before checking the trigger if the eventEmitter is provided
         if (eventBus) {
@@ -22,16 +22,22 @@ export default class Trigger {
 
         switch (this.type) {
             case TriggerTypes.CODE:
-                isTriggered = eval(this.payload); // Evaluate custom JavaScript condition
+                if (this.payload) {
+                    isTriggered = eval(this.payload); // Evaluate custom JavaScript condition
+                }
                 break;
             case TriggerTypes.ON_ENTER:
-                isTriggered = player.location === space.id;
+                isTriggered = player.currentSpaceId === space.id;
                 break;
             case TriggerTypes.ON_LAND:
-                isTriggered = player.landedOn === space.id;
+                isTriggered = player.currentSpaceId === space.id && !gameState.hasMovesLeft();
                 break;
             case TriggerTypes.ON_EXIT:
-                isTriggered = player.exitedFrom === space.id;
+                // Check if the player exited from the space by looking up their movement history
+                const movementHistory = player.movementHistory.getFullHistory();
+                const allMoves = Object.values(movementHistory).flat(); // Flatten the history into a single array
+                const lastMove = allMoves[allMoves.length - 2]; // Get the second most recent move (most recent is current)
+                isTriggered = lastMove && lastMove.spaceId === space.id; // Check if it matches the space ID
                 break;
             default:
                 isTriggered = false;
@@ -42,6 +48,11 @@ export default class Trigger {
             eventBus.emit('triggerCheckEnded', { trigger: this, result: isTriggered, gameState: gameState, space: space });
         }
 
+        // Debug print if the event is triggered
+        if (isTriggered) {
+            console.log(`Trigger of type ${this.type} was activated for space ID ${space.id} by player ${player.nickname}.`);
+        }
+
         return isTriggered;
     }
 
@@ -49,13 +60,14 @@ export default class Trigger {
     toJSON() {
         return {
             type: this.type,
-            payload: this.payload
+            payload: this.payload || null // Ensure payload is present in JSON output
         };
     }
 
     static fromJSON(json) {
         // Process the type before using it
         const processedType = processStringToEnum(json.type);
-        return new Trigger(processedType, json.payload);
+        const payload = json.payload !== undefined ? json.payload : null; // Default to null if payload is missing
+        return new Trigger(processedType, payload);
     }
 }

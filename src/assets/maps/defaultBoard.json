@@ -35,12 +35,13 @@
       "events": [
         {
           "trigger": {
-            "type": "code",
-            "payload": "player.getStat('drinks') < 5"
+            "type": "ON_ENTER"
           },
           "action": {
-            "type": "execute",
-            "payload": "player.updateStat('drinks', 1); console.log(`${player.nickname} takes a drink!`);"
+            "type": "PROMPT_CURRENT_PLAYER",
+            "payload": {
+              "message": "You take a drink!"
+            }
           }
         }
       ],
@@ -68,12 +69,13 @@
       "events": [
         {
           "trigger": {
-            "type": "code",
-            "payload": "player.getStat('moves') >= 1"
+            "type": "ON_ENTER"
           },
           "action": {
-            "type": "execute",
-            "payload": "gameEngine.movePlayer(player, 2); console.log(`${player.nickname} moves forward 2 spaces!`); player.updateStat('moves', -1);"
+            "type": "PROMPT_CURRENT_PLAYER",
+            "payload": {
+              "message": "You can move forward 2 spaces!"
+            }
           }
         }
       ],
@@ -101,12 +103,13 @@
       "events": [
         {
           "trigger": {
-            "type": "always",
-            "payload": null
+            "type": "ON_LAND"
           },
           "action": {
-            "type": "execute",
-            "payload": "player.updateStat('drinks', 1); console.log(`${player.nickname} takes another drink!`);"
+            "type": "PROMPT_ALL_PLAYERS",
+            "payload": {
+              "message": "All players take another drink!"
+            }
           }
         }
       ],
@@ -138,12 +141,13 @@
       "events": [
         {
           "trigger": {
-            "type": "always",
-            "payload": null
+            "type": "ON_LAND"
           },
           "action": {
-            "type": "execute",
-            "payload": "console.log(`${player.nickname} loses a turn!`); player.updateStat('turnsLost', 1);"
+            "type": "PROMPT_CURRENT_PLAYER",
+            "payload": {
+              "message": "You lose a turn!"
+            }
           }
         }
       ],
@@ -171,12 +175,13 @@
       "events": [
         {
           "trigger": {
-            "type": "always",
-            "payload": null
+            "type": "ON_EXIT"
           },
           "action": {
-            "type": "execute",
-            "payload": "player.setCurrentSpaceId(player.getCurrentSpaceId() - 1); console.log(`${player.nickname} moves back 1 space!`);"
+            "type": "PROMPT_CURRENT_PLAYER",
+            "payload": {
+              "message": "You move back 1 space!"
+            }
           }
         }
       ],
@@ -212,12 +217,13 @@
       "events": [
         {
           "trigger": {
-            "type": "always",
-            "payload": null
+            "type": "ON_ENTER"
           },
           "action": {
-            "type": "execute",
-            "payload": "console.log(`${player.nickname} skips taking a drink this round.`);"
+            "type": "PROMPT_CURRENT_PLAYER",
+            "payload": {
+              "message": "You skip taking a drink this round."
+            }
           }
         }
       ],
@@ -245,12 +251,13 @@
       "events": [
         {
           "trigger": {
-            "type": "code",
-            "payload": "player.getStat('moves') >= 3"
+            "type": "ON_ENTER"
           },
           "action": {
-            "type": "execute",
-            "payload": "gameEngine.movePlayer(player, 3); console.log(`${player.nickname} moves forward 3 spaces!`); player.updateStat('moves', -3);"
+            "type": "PROMPT_CURRENT_PLAYER",
+            "payload": {
+              "message": "You can move forward 3 spaces!"
+            }
           }
         }
       ],
@@ -278,12 +285,13 @@
       "events": [
         {
           "trigger": {
-            "type": "always",
-            "payload": null
+            "type": "ON_LAND"
           },
           "action": {
-            "type": "execute",
-            "payload": "let drinks = player.getStat('drinks'); player.updateStat('drinks', drinks); console.log(`${player.nickname} drinks double!`);"
+            "type": "PROMPT_ALL_PLAYERS",
+            "payload": {
+              "message": "All players drink double!"
+            }
           }
         }
       ],
@@ -311,12 +319,13 @@
       "events": [
         {
           "trigger": {
-            "type": "always",
-            "payload": null
+            "type": "ON_EXIT"
           },
           "action": {
-            "type": "execute",
-            "payload": "player.setCurrentSpaceId(player.getCurrentSpaceId() - 2); console.log(`${player.nickname} moves back 2 spaces!`);"
+            "type": "PROMPT_CURRENT_PLAYER",
+            "payload": {
+              "message": "You move back 2 spaces!"
+            }
           }
         }
       ],

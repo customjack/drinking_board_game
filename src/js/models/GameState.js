@@ -7,13 +7,17 @@ import Settings from './Settings'; // Import the Settings class
 
 export default class GameState {
     constructor(board, players = [], settings = new Settings()) {
+
+        //Serialized Data
         this.board = board; // Game board
         this.players = players; // List of players
         this.remainingMoves = 0; // Remaining moves for the current player
         this.turnPhase = TurnPhases.BEGIN_TURN; // Start with the beginning turn phase
         this.gamePhase = GamePhases.IN_LOBBY; // Set initial game phase to lobby
         this.settings = settings; // Game settings
-        this.triggeredEvents = []; //Events to be processed
+
+        //Unserialized Data
+        this.triggeredEvents = []; //Events to be processed (with space data as well)
     }
 
     // Start the game by setting the game phase to IN_GAME
@@ -75,7 +79,7 @@ export default class GameState {
     }
 
     // Check all spaces to see if any events are triggered based on the current game state
-    determineTriggeredEvents(eventBus = null) {
+    determineTriggeredEvents(eventBus = null, peerId = null) {
         const triggeredEvents = [];
 
         // Loop through all spaces on the board to check for triggered events
@@ -83,13 +87,15 @@ export default class GameState {
             // For each event on the space, check if it should be triggered
             const context = {
                 gameState: this,
+                space: space,
                 eventBus: eventBus,
-                space: space
+                peerId: peerId
             };
 
             for (const event of space.events) {
                 // Check if the event is in the READY state before checking the trigger
-                if (event.state === GameEventState.READY && event.checkTrigger(context)) {
+                console.log(event);
+                if (event.checkTrigger(context)) {
                     // Include the space in the event for context
                     triggeredEvents.push({ event, space }); // Add the triggered event along with its space to the list
                 }
@@ -116,7 +122,7 @@ export default class GameState {
     resetEvents() {
         for (const space of this.board.spaces) {
             for (const event of space.events) {
-                if (event.state === GameEventState.COMPLETED) {
+                if (event.state === GameEventState.COMPLETED_ACTION) {
                     event.state = GameEventState.READY;
                 }
             }
@@ -147,6 +153,29 @@ export default class GameState {
     decrementMoves(amount = 1) {
         this.remainingMoves = this.remainingMoves - amount < 0 ? 0 : this.remainingMoves - amount;
     }
+
+    // Move Player
+    movePlayer(spaceId, playerId = null, movesDecremented = 1) {
+        // Determine the current player based on playerId or fallback to the current player
+        const currentPlayer = playerId 
+            ? this.players.find(player => player.playerId === playerId) 
+            : this.getCurrentPlayer();
+
+        if (!currentPlayer) {
+            console.error(`No player found with ID: ${playerId}`);
+            return;
+        }
+
+        // Move the player to the specified space
+        currentPlayer.setCurrentSpaceId(spaceId);
+
+        // Track the movement history
+        currentPlayer.movementHistory.addMove(this.getTurnNumber(), spaceId, this.remainingMoves);
+
+        // Decrement the remaining moves
+        this.decrementMoves(movesDecremented);
+    }
+
 
     // Check if the current player has any remaining moves
     hasMovesLeft() {

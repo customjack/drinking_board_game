@@ -1,6 +1,8 @@
 import { v4 as uuidv4 } from 'uuid';
-import ColorAssigner from '../utils/ColorAssigner';  // Import the ColorAssigner class
-import RollEngine from '../utils/RollEngine';        // Import the RollEngine class
+import ColorAssigner from '../utils/ColorAssigner';
+import RollEngine from '../utils/RollEngine';
+import PlayerMovementHistory from './PlayerMovementHistory';
+
 
 export default class Player {
     /**
@@ -10,12 +12,14 @@ export default class Player {
      * @param {boolean} [isHost=false] - Indicates if the player is the host.
      * @param {string} [playerId] - Optional unique player ID. If not provided, it will be generated.
      */
-    constructor(peerId, nickname, isHost = false, playerId = null) {
+    constructor(peerId, nickname, isHost = false, playerId = null, isSpectator = false) {
         this.peerId = peerId;
         this.nickname = nickname;
         this.isHost = isHost;
         this.stats = {};
         this.playerId = playerId || this.generatePlayerId(); // Unique player ID
+        this.id = this.playerId; //Another name for playerId;
+        this.isSpectator = isSpectator;
 
         // Default to space 1 at the start
         this.currentSpaceId = 1;  // The space the player is currently on
@@ -29,6 +33,10 @@ export default class Player {
 
         // Track the number of turns the player has taken
         this.turnsTaken = 0;  // New attribute for tracking turns taken
+
+        //Movement history tracker
+        this.movementHistory = new PlayerMovementHistory();  // Initialize movement history
+
     }
 
     /**
@@ -49,6 +57,28 @@ export default class Player {
      */
     generateSeedFromId(playerId) {
         return playerId.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+    }
+
+
+    /**
+     * Setter for nickname to enforce a 32-character limit.
+     * @param {string} nickname - The player's nickname.
+    */
+    set nickname(nickname) {
+        if (nickname.length > 32) {
+            console.log(`Nickname "${nickname}" is too long. Truncating to 32 characters.`);
+            this._nickname = nickname.slice(0, 32);
+        } else {
+            this._nickname = nickname;
+        }
+    }
+
+    /**
+     * Getter for nickname.
+     * @returns {string} The player's nickname.
+     */
+    get nickname() {
+        return this._nickname;
     }
 
     /**
@@ -159,11 +189,13 @@ export default class Player {
             peerId: this.peerId,
             nickname: this.nickname,
             isHost: this.isHost,
+            isSpectator: this.isSpectator,
             stats: this.stats,
             playerId: this.playerId,
             currentSpaceId: this.currentSpaceId,
             rollEngine: this.rollEngine.toJSON(),  // Serialize the RollEngine
-            turnsTaken: this.turnsTaken            // Serialize the number of turns taken
+            turnsTaken: this.turnsTaken,            // Serialize the number of turns taken
+            movementHistory: this.movementHistory.toJSON()  // Serialize movement history
         };
     }
 
@@ -173,11 +205,12 @@ export default class Player {
      * @returns {Player} A new Player instance.
      */
     static fromJSON(json) {
-        const player = new Player(json.peerId, json.nickname, json.isHost, json.playerId);
+        const player = new Player(json.peerId, json.nickname, json.isHost, json.playerId, json.isSpectator);
         player.stats = json.stats;
         player.currentSpaceId = json.currentSpaceId;
         player.rollEngine = RollEngine.fromJSON(json.rollEngine);  // Rebuild the RollEngine from JSON
-        player.turnsTaken = json.turnsTaken;  // Rebuild the turns taken
+        player.turnsTaken = json.turnsTaken;                       // Rebuild the turns taken
+        player.movementHistory = PlayerMovementHistory.fromJSON(json.movementHistory);  // Rebuild movement history
         return player;
     }
 }

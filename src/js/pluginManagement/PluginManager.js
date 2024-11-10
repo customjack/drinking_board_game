@@ -1,11 +1,10 @@
 import Plugin from './Plugin'; // Import the Plugin interface
 
 export default class PluginManager {
-    constructor(eventBus, registryManager, isHost = false) {
+    constructor(eventBus, registryManager) {
         this.plugins = [];
         this.eventBus = eventBus;
         this.registryManager = registryManager;
-        this.isHost = isHost;
     }
 
     // Register a new plugin
@@ -14,7 +13,7 @@ export default class PluginManager {
             throw new Error('Plugin must extend the Plugin base class.');
         }
         this.plugins.push(plugin);
-        plugin.initialize(this.eventBus, this.registryManager, this.isHost);
+        plugin.initialize(this.eventBus, this.registryManager, this.peer, this.isHost);
     }
 
     // Initialize a plugin from a file
@@ -53,7 +52,15 @@ export default class PluginManager {
         return pluginConstructor;
     }
 
+    // Set the host status for all plugins
     setHost(isHost) {
         this.isHost = isHost;
+        this.plugins.forEach(plugin => plugin.setHost(isHost));
+    }
+
+    // Set the Peer instance for all plugins
+    setPeer(peer) {
+        this.peer = peer;
+        this.plugins.forEach(plugin => plugin.setPeer(peer));
     }
 }

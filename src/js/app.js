@@ -61,6 +61,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const joinButton = document.getElementById('joinButton');
         joinButton.disabled = true;
 
+        pluginManager.setHost(false);
         const clientEventHandler = new ClientEventHandler(registryManager, pluginManager, eventBus);
         clientEventHandler.init();
     });
