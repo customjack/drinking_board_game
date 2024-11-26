@@ -94,7 +94,6 @@ export default class GameState {
 
             for (const event of space.events) {
                 // Check if the event is in the READY state before checking the trigger
-                console.log(event);
                 if (event.checkTrigger(context)) {
                     // Include the space in the event for context
                     triggeredEvents.push({ event, space }); // Add the triggered event along with its space to the list

@@ -180,7 +180,6 @@ export default class GameEngine {
     
         // Get the array of events and their spaces
         this.gameEventsWithSpaces = this.gameState.determineTriggeredEvents(this.eventBus, this.peerId);
-        console.log(this.gameEventsWithSpaces);
     
         // Check if there are any events to process
         if (this.gameEventsWithSpaces.length === 0) {
@@ -200,7 +199,6 @@ export default class GameEngine {
 
     handleProcessingEvent() {
         const currentPlayer = this.gameState.getCurrentPlayer();
-        console.log(`Processing event for ${currentPlayer.nickname}'s action.`);
     
         // Get the array of events and their spaces
         // We have to redetermine the triggered events, because the old objects are no
@@ -415,6 +413,7 @@ export default class GameEngine {
         if (newTurnPhase) {
             this.gameState.setTurnPhase(newTurnPhase);
         }
+        console.log("Changing Phase to:", this.gameState.turnPhase, this.gameState.gamePhase, delay);
         this.proposeGameStateWrapper(delay);
     }
 

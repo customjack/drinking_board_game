@@ -1,4 +1,5 @@
 import ActionTypes from '../enums/ActionTypes';
+import TurnPhases from '../enums/TurnPhases';
 import { processStringToEnum } from '../utils/helpers';
 
 export default class Action {
@@ -49,8 +50,9 @@ export default class Action {
                 // Example action for the current player
                 if (this.payload && this.payload.message && peerId) {
                     console.log(`Prompting ${gameState.getCurrentPlayer().nickname}: ${this.payload.message}`);
-                    
-                    gameEngine.showPromptModal(this.payload.message)
+                    if (gameState.getCurrentPlayer().peerId == peerId) {
+                        gameEngine.showPromptModal(this.payload.message)
+                    }
                 } else {
                     const missingParams = [];
                     if (!this.payload) missingParams.push('payload');
@@ -59,6 +61,10 @@ export default class Action {
                 
                     console.warn(`PROMPT_CURRENT_PLAYER action missing parameters: ${missingParams.join(', ')}`);
                 }
+                break;
+            case ActionTypes.SET_CURRENT_PLAYER_TO_SPECTATOR:
+                gameState.getCurrentPlayer().isSpectator = true;
+                gameEngine.changePhase({ newTurnPhase: TurnPhases.PROCESSING_EVENTS, delay: 0 });
                 break;
             case ActionTypes.CUSTOM:
                 // Example for custom action

@@ -341,10 +341,48 @@
       },
       "connections": [
         {
-          "targetId": 1,
+          "targetId": 11,
           "drawConnection": true
         }
       ]
+    },
+    {
+      "id": 11,
+      "name": "Finish",
+      "type": "end",
+      "events": [
+        {
+          "trigger": {
+            "type": "ON_LAND"
+          },
+          "action": {
+            "type": "PROMPT_CURRENT_PLAYER",
+            "payload": {
+              "message": "Congratulations! You have finished the game, now finish your drink!"
+            }
+          }
+        },
+        {
+          "trigger": {
+            "type": "ON_LAND"
+          },
+          "action": {
+            "type": "SET_CURRENT_PLAYER_TO_SPECTATOR"
+          }
+        }
+      ],
+      "visualDetails": {
+        "x": 600,
+        "y": 400,
+        "size": 60,
+        "color": "#ffffcc",
+        "textColor": "#000000",
+        "font": "12px Arial",
+        "textAlign": "center",
+        "textBaseline": "middle"
+      },
+      "connections": []
     }
+    
   ]
 }

@@ -56,7 +56,13 @@ export default class Host extends BasePeer {
     }
 
     updateAndBroadcastGameState(newGameState) {
-        this.gameState = newGameState;
+        //Effectively sets the gamestate to a copy (not a reference)
+        //The client has to do similar to rebuild it's gamestate,
+        //so this is to make the host and client have similar behavior
+        const newGameStateJSON = newGameState.toJSON();
+        this.gameState = GameState.fromJSON(newGameStateJSON);
+
+
         this.broadcastGameState();
         this.eventHandler.updateGameState();
     }
