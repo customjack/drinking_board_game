@@ -356,10 +356,7 @@
             "type": "ON_LAND"
           },
           "action": {
-            "type": "PROMPT_CURRENT_PLAYER",
-            "payload": {
-              "message": "Congratulations! You have finished the game, now finish your drink!"
-            }
+            "type": "SET_CURRENT_PLAYER_TO_SPECTATOR"
           }
         },
         {
@@ -367,7 +364,10 @@
             "type": "ON_LAND"
           },
           "action": {
-            "type": "SET_CURRENT_PLAYER_TO_SPECTATOR"
+            "type": "PROMPT_CURRENT_PLAYER",
+            "payload": {
+              "message": "Congratulations! You have finished the game, now finish your drink!"
+            }
           }
         }
       ],

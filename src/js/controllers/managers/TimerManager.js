@@ -1,5 +1,3 @@
-// controllers/TimerManager.js
-
 export default class TimerManager {
     /**
      * Constructs the TimerManager instance.
@@ -28,9 +26,14 @@ export default class TimerManager {
     }
 
     /**
-     * Starts the timer.
+     * Starts the timer if enabled in the settings.
      */
     startTimer() {
+        if (!this.gameState.settings.isTurnTimerEnabled()) {
+            //console.log("Turn timer is disabled. Timer will not start.");
+            return;
+        }
+
         this.stopTimer(); // Stop any existing timer
 
         const duration = this.gameState.settings.getTurnTimer();
@@ -53,6 +56,11 @@ export default class TimerManager {
      * Pauses the timer and shows the "Game Paused" message.
      */
     pauseTimer() {
+        if (!this.gameState.settings.isTurnTimerEnabled()) {
+            //console.log("Turn timer is disabled. No pause action.");
+            return;
+        }
+
         this.animation.pause();
         this.showPausedMessage();
     }
@@ -61,6 +69,11 @@ export default class TimerManager {
      * Resumes the timer and hides the "Game Paused" message.
      */
     resumeTimer() {
+        if (!this.gameState.settings.isTurnTimerEnabled()) {
+            //console.log("Turn timer is disabled. No resume action.");
+            return;
+        }
+
         this.animation.resume();
         this.hidePausedMessage();
     }

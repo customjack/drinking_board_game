@@ -5,94 +5,159 @@ import { processStringToEnum } from '../utils/helpers';
 export default class Action {
     constructor(type, payload) {
         this.type = type;
-        this.payload = payload; // Allow payload to be undefined
+        this.payload = payload || null; // Default payload to null if undefined
     }
 
     // Executes the action based on the type and payload
     execute(gameEngine) {
+        const { gameState, eventBus, peerId } = gameEngine;
 
-        // Destructure necessary properties from the context
-        const { event: gameEvent, space: eventSpace } = gameEngine.gameEventWithSpace;
-        const gameState = gameEngine.gameState;
-        const space = eventSpace;
-        const eventBus = gameEngine.eventBus;
-        const peerId = gameEngine.peerId;
+        this.emitEvent(eventBus, 'beforeActionExecution', gameEngine);
 
-
-        // Emit an event before executing the action if the eventEmitter is provided
-        if (eventBus) {
-            eventBus.emit('beforeActionExecution', { action: this, gameState: gameState, space: space, peerId: peerId }); //peerId is probably redundant
+        const handler = this.getHandler();
+        if (handler) {
+            handler(gameEngine);
+        } else {
+            console.warn(`Action type "${this.type}" not recognized.`);
         }
 
-        switch (this.type) {
-            case ActionTypes.CODE:
-                if (this.payload) {
-                    eval(this.payload); // Execute custom JavaScript action if payload exists
-                } else {
-                    console.warn('No payload provided for CODE action.');
-                }
-                break;
-            case ActionTypes.PROMPT_ALL_PLAYERS:
-                // Example action for all players
-                if (this.payload && this.payload.message && peerId) {
-                    console.log(`Prompting all players: ${this.payload.message}`);
-                    gameEngine.showPromptModal(this.payload.message)
-                } else {
-                    const missingParams = [];
-                    if (!this.payload) missingParams.push('payload');
-                    if (this.payload && !this.payload.message) missingParams.push('payload.message');
-                    if (peerId) missingParams.push('peerId');
+        this.emitEvent(eventBus, 'afterActionExecution', gameEngine);
+    }
 
-                    console.warn(`PROMPT_ALL_PLAYERS action missing parameters: ${missingParams.join(', ')}`);
-                }
-                break;
-            case ActionTypes.PROMPT_CURRENT_PLAYER:
-                // Example action for the current player
-                if (this.payload && this.payload.message && peerId) {
-                    console.log(`Prompting ${gameState.getCurrentPlayer().nickname}: ${this.payload.message}`);
-                    if (gameState.getCurrentPlayer().peerId == peerId) {
-                        gameEngine.showPromptModal(this.payload.message)
-                    }
-                } else {
-                    const missingParams = [];
-                    if (!this.payload) missingParams.push('payload');
-                    if (this.payload && !this.payload.message) missingParams.push('payload.message');
-                    if (peerId) missingParams.push('peerId');
-                
-                    console.warn(`PROMPT_CURRENT_PLAYER action missing parameters: ${missingParams.join(', ')}`);
-                }
-                break;
-            case ActionTypes.SET_CURRENT_PLAYER_TO_SPECTATOR:
-                gameState.getCurrentPlayer().isSpectator = true;
-                gameEngine.changePhase({ newTurnPhase: TurnPhases.PROCESSING_EVENTS, delay: 0 });
-                break;
-            case ActionTypes.CUSTOM:
-                // Example for custom action
-                console.log("Executing custom action...");
-                break;
-            default:
-                console.log(`Action type ${this.type} not recognized.`);
-        }
-
-        // Emit an event after executing the action if the eventBus is provided
+    // Utility to emit events
+    emitEvent(eventBus, eventType, gameEngine) {
         if (eventBus) {
-            eventBus.emit('afterActionExecution', { action: this, gameState: gameState, space: space, peerId: peerId }); //peerId is probably redundant
+            eventBus.emit(eventType, {
+                action: this,
+                gameState: gameEngine.gameState,
+                space: gameEngine.gameEventWithSpace.space,
+                peerId: gameEngine.peerId,
+            });
         }
     }
 
+    // Map action types to their corresponding handlers
+    getHandler() {
+        const handlers = {
+            [ActionTypes.CODE]: this.handleCode.bind(this),
+            [ActionTypes.PROMPT_ALL_PLAYERS]: this.handlePromptAllPlayers.bind(this),
+            [ActionTypes.PROMPT_CURRENT_PLAYER]: this.handlePromptCurrentPlayer.bind(this),
+            [ActionTypes.SET_CURRENT_PLAYER_TO_SPECTATOR]: this.handleSetCurrentPlayerToSpectator.bind(this),
+            [ActionTypes.DISPLACE_PLAYER]: this.handleDisplacePlayer.bind(this),
+            [ActionTypes.CUSTOM]: this.handleCustom.bind(this),
+        };
+        return handlers[this.type];
+    }
+
+    // Individual handlers
+    handleCode(gameEngine) {
+        if (this.payload) {
+            eval(this.payload);
+        } else {
+            console.warn('No payload provided for CODE action.');
+        }
+    }
+
+    handlePromptAllPlayers(gameEngine) {
+        const { payload } = this;
+
+        if (payload?.message && gameEngine.peerId) {
+            console.log(`Prompting all players: ${payload.message}`);
+            gameEngine.showPromptModal(payload.message);
+        } else {
+            this.logMissingParams(['payload', 'payload.message', 'peerId']);
+        }
+    }
+
+    handlePromptCurrentPlayer(gameEngine) {
+        const { payload } = this;
+
+        if (payload?.message && gameEngine.peerId) {
+            const currentPlayer = gameEngine.gameState.getCurrentPlayer();
+            console.log(`Prompting ${currentPlayer.nickname}: ${payload.message}`);
+
+            if (currentPlayer.peerId === gameEngine.peerId) {
+                gameEngine.showPromptModal(payload.message);
+            }
+        } else {
+            this.logMissingParams(['payload', 'payload.message', 'peerId']);
+        }
+    }
+
+    handleSetCurrentPlayerToSpectator(gameEngine) {
+        gameEngine.gameState.getCurrentPlayer().isSpectator = true;
+        gameEngine.changePhase({ newTurnPhase: TurnPhases.PROCESSING_EVENTS, delay: 0 });
+    }
+
+    handleDisplacePlayer(gameEngine) {
+        const { steps } = this.payload || {};
+    
+        if (steps === undefined) {
+            this.logMissingParams(['payload.steps']);
+            return;
+        }
+    
+        const currentPlayer = gameEngine.gameState.getCurrentPlayer(); // Get the current player
+        if (!currentPlayer) {
+            console.warn(`No active player found in the game state.`);
+            return;
+        }
+    
+        if (steps > 0) {
+            // Positive displacement: Add steps to remaining moves
+            console.log(`Adding ${steps} moves to ${currentPlayer.nickname}'s remaining moves.`);
+            gameEngine.gameState.setRemainingMoves(gameState.remainingMoves + steps);
+    
+        } else if (steps < 0) {
+            // Negative displacement: Move back in movement history
+            const moveBackSteps = Math.abs(steps);
+    
+            // Get the player's movement history
+            const history = currentPlayer.movementHistory.getHistoryForTurn(gameState.getTurnNumber());
+            if (history.length === 0) {
+                console.warn(`${currentPlayer.nickname} has no movement history to move back.`);
+                return;
+            }
+    
+            // Determine the target index in the movement history
+            const targetIndex = Math.max(0, history.length - moveBackSteps - 1);
+    
+            // Update the player's current position
+            const targetPosition = history[targetIndex].spaceId;
+            console.log(
+                `Moving ${currentPlayer.nickname} back ${moveBackSteps} steps to position ${targetPosition}.`
+            );
+            currentPlayer.setCurrentSpaceId(targetPosition);
+    
+            // Truncate the movement history to reflect the new position
+            currentPlayer.movementHistory.history = history.slice(0, targetIndex + 1);
+
+            gameEngine.changePhase({ newTurnPhase: TurnPhases.PROCESSING_EVENTS, delay: 0 });
+        } else {
+            console.warn(`Displacement of 0 steps has no effect.`);
+        }
+    }    
+    
+
+    handleCustom() {
+        console.log('Executing custom action...');
+    }
+
+    // Log missing parameters for clarity
+    logMissingParams(params) {
+        console.warn(`Action "${this.type}" missing parameters: ${params.join(', ')}`);
+    }
 
     // Serialization
     toJSON() {
         return {
             type: this.type,
-            payload: this.payload || null // Ensure payload is present in JSON output
+            payload: this.payload,
         };
     }
 
     // Deserialize from JSON and map type to ActionTypes enum
     static fromJSON(json) {
-        const processedType = processStringToEnum(json.type);
-        const payload = json.payload !== undefined ? json.payload : null; // Default to null if payload is missing
-        return new Action(processedType, payload);
+        return new Action(processStringToEnum(json.type), json.payload || null);
     }
 }

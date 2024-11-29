@@ -31,6 +31,7 @@ export default class HostEventHandler extends BaseEventHandler {
         const totalPlayerLimitInput = document.getElementById('totalPlayerLimitHost');
         const turnTimerInput = document.getElementById('turnTimerHost');
         const moveDelayInput = document.getElementById('moveDelayHost');
+        const turnTimerEnabledCheckbox = document.getElementById('turnTimerEnabledHost');
     
         // Register listeners via ListenerRegistry if elements are defined
         if (startHostButton)
@@ -105,6 +106,9 @@ export default class HostEventHandler extends BaseEventHandler {
         }
         if (moveDelayInput) {
             addDelayedSettingsListener(moveDelayInput, () => this.onSettingsChanged());
+        }
+        if (turnTimerEnabledCheckbox) {
+            this.listenerRegistry.registerListener('turnTimerEnabledHost', 'change', () => this.onSettingsChanged());
         }
     }
     

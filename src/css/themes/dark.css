@@ -11,7 +11,7 @@
   --background-board: #141414;
   --border-color: #333333;
 
-  /* Replace these color variables */
+
   --color-primary: #2c3e50;
   --color-primary-hover: #34495e;
   --color-secondary: #2ecc71;
@@ -22,6 +22,8 @@
   --color-danger-hover: #a93226;
   --color-warning: #f39c12;
   --color-info: #3498db;
+  --color-disabled: #555555; /* Dim gray for disabled background */
+  --color-disabled-text: #888888; /* Lighter gray for disabled text */
 
   --input-bg: #1a1a1a;
   --input-text-color: #d0d0d0;

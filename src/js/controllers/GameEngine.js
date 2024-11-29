@@ -18,13 +18,15 @@ export default class GameEngine {
      * @param {String} peerId - The peer ID of the current player
      * @param {Function} proposeGameState - Function to propose a new game state to the host
      * @param {EventBus} eventBus - Event bus to emit events
+     * @param {RegistryManager} registryManager - The registry manager to handle various registries
      * @param {Boolean} isHost - Whether this peer is the host
      */
-    constructor(gameState, peerId, proposeGameState, eventBus, isHost = false) {
+    constructor(gameState, peerId, proposeGameState, eventBus, registryManager, isHost = false) {
         this.gameState = gameState;
         this.peerId = peerId;
         this.eventBus = eventBus;
         this.proposeGameState = proposeGameState;
+        this.registryManager = registryManager;
         this.isHost = isHost;
 
         //Dynamically populated game events
@@ -134,8 +136,9 @@ export default class GameEngine {
         this.eventBus.emit('changeTurn', { gamestate: this.gameState });
         
         if (this.isClientTurn()) {
-            
-            if (this.gameState.getCurrentPlayer().isSpecator) {
+            console.log(this.gameState.getCurrentPlayer());
+            console.log(this.gameState.getCurrentPlayer().isSpectator);
+            if (this.gameState.getCurrentPlayer().isSpectator) {
                 // Transition to END_TURN phase with no delay
                 this.changePhase({ newTurnPhase: TurnPhases.END_TURN, delay: 0});
             } else {
@@ -246,7 +249,7 @@ export default class GameEngine {
                 this.processSingleMove();
             } else {
                 // Transition to END_TURN phase
-                this.changePhase({ newTurnPhase: TurnPhases.END_TURN});
+                this.changePhase({ newTurnPhase: TurnPhases.END_TURN, delay: 0});
             }
         }
     }
@@ -258,13 +261,23 @@ export default class GameEngine {
         // Stop the timer for all players
         this.timerManager.stopTimer();
 
+        // Check if all players are spectators
+        const allSpectators = this.gameState.players.every(player => player.isSpectator);
+
+        if (allSpectators) {
+            console.log("All players are spectators. Ending the game.");
+            this.changePhase({ newGamePhase: GamePhases.GAME_ENDED, newTurnPhase: TurnPhases.CHANGE_TURN, delay: 0}); //End the game
+
+            return; // No need to proceed further
+        }
+
         if (this.isClientTurn()) {
 
             // Move to the next player's turn
             this.gameState.nextPlayerTurn();
             
             // Transition to CHANGE_TURN phase
-            this.changePhase({ newTurnPhase: TurnPhases.CHANGE_TURN});
+            this.changePhase({ newTurnPhase: TurnPhases.CHANGE_TURN, delay: 0});
         }
     }
 
@@ -392,10 +405,10 @@ export default class GameEngine {
 
     // Wrapper to propose the game state with delay
     proposeGameStateWrapper(customDelay = -1) {
-        const moveDelay = customDelay >= 0 ? customDelay : this.gameState.settings.getMoveDelay();  // Use custom delay if provided, otherwise default
+        const updateDelay = customDelay >= 0 ? customDelay : this.gameState.settings.getMoveDelay();  // Use custom delay if provided, otherwise default
         setTimeout(() => {
             this.proposeGameState(this.gameState);
-        }, moveDelay);  // Apply the move delay or custom delay
+        }, updateDelay);  // Apply the move delay or custom delay
     }
 
     /**

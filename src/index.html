@@ -117,6 +117,13 @@
                         <input class="input settings-input" id="turnTimerHost" type="number" value="30" min="5" max="300">
                     </div>
                     <div class="settings-row">
+                        <label class="settings-label" for="turnTimerEnabledHost">Enable Turn Timer:</label>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="turnTimerEnabledHost">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <div class="settings-row">
                         <label class="settings-label" for="moveDelayHost">Move Delay (milliseconds):</label>
                         <input class="input settings-input" id="moveDelayHost" type="number" value="500" min="100" max="5000">
                     </div>
@@ -139,10 +146,19 @@
                         <span class="settings-display" id="turnTimerClient">30</span>
                     </div>
                     <div class="settings-row">
+                        <label class="settings-label" for="turnTimerEnabledClient">Turn Timer Enabled:</label>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="turnTimerEnabledClient" disabled>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <div class="settings-row">
                         <label class="settings-label" for="moveDelayClient">Move Delay (milliseconds):</label>
                         <span class="settings-display" id="moveDelayClient">500</span>
                     </div>
                 </div>
+                
+                
         
                 <!-- Player List Section -->
                 <div id="lobbyPlayerListSection" class="compact-player-list">

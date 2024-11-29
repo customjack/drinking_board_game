@@ -37,7 +37,7 @@ export default class Client extends BasePeer {
 
     // Method to propose a new game state to the host
     proposeGameState(proposedGameState) {
-        console.log("Proposed game state (JSON): ", proposedGameState.toJSON());
+        //console.log("Proposed game state (JSON): ", proposedGameState.toJSON());
         // Only propose if connected to host
         if (this.conn && this.conn.open) {
             this.conn.send({
@@ -97,7 +97,7 @@ export default class Client extends BasePeer {
 
     handleGameStateUpdate(gameStateData) {
         this.gameState = GameState.fromJSON(gameStateData);  // Sync local game state with the host's state
-        console.log('Game state updated:', gameStateData);
+        //console.log('Game state updated:', gameStateData);
         this.eventHandler.updateGameState(); 
     }
 

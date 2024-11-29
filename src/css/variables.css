@@ -15,6 +15,10 @@
     --color-info: #17a2b8;
     --color-light: #f8f9fa;
     --color-dark: #343a40;
+
+    /* Disabled Colors */
+    --color-disabled: #e0e0e0; /* Light gray for disabled state */
+    --color-disabled-text: #b0b0b0; /* Slightly darker gray for disabled text */
   
     /* Background Colors */
     --background-body: var(--color-light);

@@ -1,4 +1,3 @@
-// Settings.js
 export default class Settings {
     /**
      * Constructs a new Settings instance.
@@ -6,12 +5,14 @@ export default class Settings {
      * @param {number} playerLimit - Limit on the total number of players.
      * @param {number} turnTimer - The maximum time allowed for each turn (in seconds).
      * @param {number} moveDelay - The delay between each move (in milliseconds).
+     * @param {boolean} turnTimerEnabled - Whether the turn timer is enabled or not.
      */
-    constructor(playerLimitPerPeer = 1, playerLimit = 8, turnTimer = 150, moveDelay = 300) {
+    constructor(playerLimitPerPeer = 1, playerLimit = 8, turnTimer = 150, moveDelay = 300, turnTimerEnabled = false) {
         this.playerLimitPerPeer = playerLimitPerPeer; // Limit the number of players per peer
         this.playerLimit = playerLimit; // Limit the number of total players
         this.turnTimer = turnTimer; // Time limit for each player's turn in seconds
         this.moveDelay = moveDelay; // Delay between individual player moves in milliseconds
+        this.turnTimerEnabled = turnTimerEnabled; // Whether the turn timer is enabled
     }
 
     /**
@@ -24,6 +25,7 @@ export default class Settings {
             playerLimit: this.playerLimit,
             turnTimer: this.turnTimer,
             moveDelay: this.moveDelay,
+            turnTimerEnabled: this.turnTimerEnabled,
         };
     }
 
@@ -33,7 +35,13 @@ export default class Settings {
      * @returns {Settings} A new Settings instance.
      */
     static fromJSON(json) {
-        return new Settings(json.playerLimitPerPeer, json.playerLimit, json.turnTimer, json.moveDelay);
+        return new Settings(
+            json.playerLimitPerPeer,
+            json.playerLimit,
+            json.turnTimer,
+            json.moveDelay,
+            json.turnTimerEnabled
+        );
     }
 
     /**
@@ -66,5 +74,21 @@ export default class Settings {
      */
     getMoveDelay() {
         return this.moveDelay;
+    }
+
+    /**
+     * Enables or disables the turn timer.
+     * @param {boolean} enabled - Whether the turn timer should be enabled.
+     */
+    setTurnTimerEnabled(enabled) {
+        this.turnTimerEnabled = enabled;
+    }
+
+    /**
+     * Checks if the turn timer is enabled.
+     * @returns {boolean} True if the turn timer is enabled, false otherwise.
+     */
+    isTurnTimerEnabled() {
+        return this.turnTimerEnabled;
     }
 }
