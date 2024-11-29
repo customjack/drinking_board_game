@@ -53,7 +53,13 @@ export default class HostEventHandler extends BaseEventHandler {
                 if (file) {
                     try {
                         await this.boardManager.loadBoardFromFile(file);
+                        this.peer.gameState.board = this.boardManager.board;
                         this.peer.broadcastGameState(); // Broadcast after loading the board
+                        this.updateGameBoard(true);
+                        this.updatePieces(true);
+
+                        // Reset the file input so it can be triggered again if the same file is selected
+                        event.target.value = ''; // Clear the file input field
                     } catch (error) {
                         alert(`Error loading board file: ${error.message}`);
                     }
