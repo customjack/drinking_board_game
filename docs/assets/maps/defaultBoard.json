@@ -1,0 +1,388 @@
+{
+  "metadata": {
+    "name": "Drinking Board Game",
+    "author": "Jack Carlton",
+    "description": "Game to drink with your friends while playing",
+    "createdDate": "2024-10-28T12:00:00Z"
+  },
+  "spaces": [
+    {
+      "id": 1,
+      "name": "Start",
+      "type": "start",
+      "events": [],
+      "visualDetails": {
+        "x": 300,
+        "y": 300,
+        "size": 60,
+        "color": "#ffcccc",
+        "textColor": "#000000",
+        "font": "12px Arial",
+        "textAlign": "center",
+        "textBaseline": "middle"
+      },
+      "connections": [
+        {
+          "targetId": 2,
+          "drawConnection": true
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "name": "Take a Drink",
+      "type": "action",
+      "events": [
+        {
+          "trigger": {
+            "type": "ON_ENTER"
+          },
+          "action": {
+            "type": "PROMPT_CURRENT_PLAYER",
+            "payload": {
+              "message": "You take a drink!"
+            }
+          }
+        }
+      ],
+      "visualDetails": {
+        "x": 400,
+        "y": 300,
+        "size": 60,
+        "color": "#ccffcc",
+        "textColor": "#000000",
+        "font": "12px Arial",
+        "textAlign": "center",
+        "textBaseline": "middle"
+      },
+      "connections": [
+        {
+          "targetId": 3,
+          "drawConnection": true
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "name": "Move Forward 2",
+      "type": "action",
+      "events": [
+        {
+          "trigger": {
+            "type": "ON_ENTER"
+          },
+          "action": {
+            "type": "PROMPT_CURRENT_PLAYER",
+            "payload": {
+              "message": "You can move forward 2 spaces!"
+            }
+          }
+        }
+      ],
+      "visualDetails": {
+        "x": 400,
+        "y": 200,
+        "size": 60,
+        "color": "#ccccff",
+        "textColor": "#000000",
+        "font": "12px Arial",
+        "textAlign": "center",
+        "textBaseline": "middle"
+      },
+      "connections": [
+        {
+          "targetId": 4,
+          "drawConnection": true
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "name": "Take Another Drink",
+      "type": "action",
+      "events": [
+        {
+          "trigger": {
+            "type": "ON_LAND"
+          },
+          "action": {
+            "type": "PROMPT_ALL_PLAYERS",
+            "payload": {
+              "message": "All players take another drink!"
+            }
+          }
+        }
+      ],
+      "visualDetails": {
+        "x": 300,
+        "y": 200,
+        "size": 60,
+        "color": "#ffcccc",
+        "textColor": "#000000",
+        "font": "12px Arial",
+        "textAlign": "center",
+        "textBaseline": "middle"
+      },
+      "connections": [
+        {
+          "targetId": 5,
+          "drawConnection": true
+        },
+        {
+          "targetId": 6,
+          "drawConnection": true
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "name": "Lose a Turn",
+      "type": "action",
+      "events": [
+        {
+          "trigger": {
+            "type": "ON_LAND"
+          },
+          "action": {
+            "type": "PROMPT_CURRENT_PLAYER",
+            "payload": {
+              "message": "You lose a turn!"
+            }
+          }
+        }
+      ],
+      "visualDetails": {
+        "x": 200,
+        "y": 200,
+        "size": 60,
+        "color": "#ffdddd",
+        "textColor": "#000000",
+        "font": "12px Arial",
+        "textAlign": "center",
+        "textBaseline": "middle"
+      },
+      "connections": [
+        {
+          "targetId": 6,
+          "drawConnection": true
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "name": "Move Back 1",
+      "type": "action",
+      "events": [
+        {
+          "trigger": {
+            "type": "ON_EXIT"
+          },
+          "action": {
+            "type": "PROMPT_CURRENT_PLAYER",
+            "payload": {
+              "message": "You move back 1 space!"
+            }
+          }
+        }
+      ],
+      "visualDetails": {
+        "x": 200,
+        "y": 300,
+        "size": 60,
+        "color": "#ccccff",
+        "textColor": "#000000",
+        "font": "12px Arial",
+        "textAlign": "center",
+        "textBaseline": "middle"
+      },
+      "connections": [
+        {
+          "targetId": 7,
+          "drawConnection": true
+        },
+        {
+          "targetId": 8,
+          "drawConnection": true
+        },
+        {
+          "targetId": 1,
+          "drawConnection": true
+        }
+      ]
+    },
+    {
+      "id": 7,
+      "name": "Skip a Drink",
+      "type": "action",
+      "events": [
+        {
+          "trigger": {
+            "type": "ON_ENTER"
+          },
+          "action": {
+            "type": "PROMPT_CURRENT_PLAYER",
+            "payload": {
+              "message": "You skip taking a drink this round."
+            }
+          }
+        }
+      ],
+      "visualDetails": {
+        "x": 200,
+        "y": 400,
+        "size": 60,
+        "color": "#ddffdd",
+        "textColor": "#000000",
+        "font": "12px Arial",
+        "textAlign": "center",
+        "textBaseline": "middle"
+      },
+      "connections": [
+        {
+          "targetId": 8,
+          "drawConnection": true
+        }
+      ]
+    },
+    {
+      "id": 8,
+      "name": "Move Forward 3",
+      "type": "action",
+      "events": [
+        {
+          "trigger": {
+            "type": "ON_ENTER"
+          },
+          "action": {
+            "type": "PROMPT_CURRENT_PLAYER",
+            "payload": {
+              "message": "You can move forward 3 spaces!"
+            }
+          }
+        }
+      ],
+      "visualDetails": {
+        "x": 300,
+        "y": 400,
+        "size": 60,
+        "color": "#ccffcc",
+        "textColor": "#000000",
+        "font": "12px Arial",
+        "textAlign": "center",
+        "textBaseline": "middle"
+      },
+      "connections": [
+        {
+          "targetId": 9,
+          "drawConnection": true
+        }
+      ]
+    },
+    {
+      "id": 9,
+      "name": "Double Drinks",
+      "type": "action",
+      "events": [
+        {
+          "trigger": {
+            "type": "ON_LAND"
+          },
+          "action": {
+            "type": "PROMPT_ALL_PLAYERS",
+            "payload": {
+              "message": "All players drink double!"
+            }
+          }
+        }
+      ],
+      "visualDetails": {
+        "x": 400,
+        "y": 400,
+        "size": 60,
+        "color": "#ffcccc",
+        "textColor": "#000000",
+        "font": "12px Arial",
+        "textAlign": "center",
+        "textBaseline": "middle"
+      },
+      "connections": [
+        {
+          "targetId": 10,
+          "drawConnection": true
+        }
+      ]
+    },
+    {
+      "id": 10,
+      "name": "Move Back 2",
+      "type": "action",
+      "events": [
+        {
+          "trigger": {
+            "type": "ON_EXIT"
+          },
+          "action": {
+            "type": "PROMPT_CURRENT_PLAYER",
+            "payload": {
+              "message": "You move back 2 spaces!"
+            }
+          }
+        }
+      ],
+      "visualDetails": {
+        "x": 500,
+        "y": 400,
+        "size": 60,
+        "color": "#ccccff",
+        "textColor": "#000000",
+        "font": "12px Arial",
+        "textAlign": "center",
+        "textBaseline": "middle"
+      },
+      "connections": [
+        {
+          "targetId": 11,
+          "drawConnection": true
+        }
+      ]
+    },
+    {
+      "id": 11,
+      "name": "Finish",
+      "type": "end",
+      "events": [
+        {
+          "trigger": {
+            "type": "ON_LAND"
+          },
+          "action": {
+            "type": "SET_CURRENT_PLAYER_TO_SPECTATOR"
+          }
+        },
+        {
+          "trigger": {
+            "type": "ON_LAND"
+          },
+          "action": {
+            "type": "PROMPT_CURRENT_PLAYER",
+            "payload": {
+              "message": "Congratulations! You have finished the game, now finish your drink!"
+            }
+          }
+        }
+      ],
+      "visualDetails": {
+        "x": 600,
+        "y": 400,
+        "size": 60,
+        "color": "#ffffcc",
+        "textColor": "#000000",
+        "font": "12px Arial",
+        "textAlign": "center",
+        "textBaseline": "middle"
+      },
+      "connections": []
+    }
+    
+  ]
+}

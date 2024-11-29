@@ -1,0 +1,2434 @@
+/* variables.css */
+
+/* Color Palette */
+:root {
+    /* Primary Colors */
+    --color-primary: #007bff;
+    --color-primary-hover: #0056b3;
+    --color-secondary: #6c757d;
+    --color-secondary-hover: #5a6268;
+    --color-success: #28a745;
+    --color-success-hover: #218838;
+    --color-danger: #dc3545;
+    --color-danger-hover: #c82333;
+    --color-warning: #ffc107;
+    --color-info: #17a2b8;
+    --color-light: #f8f9fa;
+    --color-dark: #343a40;
+
+    /* Disabled Colors */
+    --color-disabled: #e0e0e0; /* Light gray for disabled state */
+    --color-disabled-text: #b0b0b0; /* Slightly darker gray for disabled text */
+  
+    /* Background Colors */
+    --background-body: var(--color-light);
+    --background-sidebar: #f0f0f0;
+    --background-modal: var(--color-light);
+    --background-board: #f4f4f4;
+
+    /*Headers*/
+    --font-family-header: 'Arial', sans-serif; /* Default header font */
+    --header-color: #333; /* Default header color */
+    
+    /*Labels*/
+    --font-family-label: 'Arial', sans-serif; /* Default label font */
+    --label-color: #333; /* Default label color */
+  
+    /* Text Colors */
+    --text-color: #212529;
+    --text-color-light: #ffffff;
+
+    /* Input Background and Text */
+    --input-bg: #ffffff;
+    --input-text-color: #000000;
+    --input-border-color: #cccccc;
+
+    /* Box backgrounds */
+    --background-box: #f4f4f4;
+  
+    /* Borders */
+    --border-color: #cccccc;
+  
+    /* Fonts */
+    --font-family-base: 'Arial', sans-serif;
+    --font-size-base: 16px;
+  
+    /* Spacing */
+    --spacing-unit: 8px;
+  
+    /* Z-Index Levels */
+    --z-index-modal: 1000;
+    --z-index-tooltip: 1100;
+
+    /* Highlight */
+    --highlight-glow: rgba(255, 255, 0, 0.8); /* Default yellow glow */
+  }
+  
+/* variables.css */
+
+/* Color Palette */
+:root {
+    /* Primary Colors */
+    --color-primary: #007bff;
+    --color-primary-hover: #0056b3;
+    --color-secondary: #6c757d;
+    --color-secondary-hover: #5a6268;
+    --color-success: #28a745;
+    --color-success-hover: #218838;
+    --color-danger: #dc3545;
+    --color-danger-hover: #c82333;
+    --color-warning: #ffc107;
+    --color-info: #17a2b8;
+    --color-light: #f8f9fa;
+    --color-dark: #343a40;
+
+    /* Disabled Colors */
+    --color-disabled: #e0e0e0; /* Light gray for disabled state */
+    --color-disabled-text: #b0b0b0; /* Slightly darker gray for disabled text */
+  
+    /* Background Colors */
+    --background-body: var(--color-light);
+    --background-sidebar: #f0f0f0;
+    --background-modal: var(--color-light);
+    --background-board: #f4f4f4;
+
+    /*Headers*/
+    --font-family-header: 'Arial', sans-serif; /* Default header font */
+    --header-color: #333; /* Default header color */
+    
+    /*Labels*/
+    --font-family-label: 'Arial', sans-serif; /* Default label font */
+    --label-color: #333; /* Default label color */
+  
+    /* Text Colors */
+    --text-color: #212529;
+    --text-color-light: #ffffff;
+
+    /* Input Background and Text */
+    --input-bg: #ffffff;
+    --input-text-color: #000000;
+    --input-border-color: #cccccc;
+
+    /* Box backgrounds */
+    --background-box: #f4f4f4;
+  
+    /* Borders */
+    --border-color: #cccccc;
+  
+    /* Fonts */
+    --font-family-base: 'Arial', sans-serif;
+    --font-size-base: 16px;
+  
+    /* Spacing */
+    --spacing-unit: 8px;
+  
+    /* Z-Index Levels */
+    --z-index-modal: 1000;
+    --z-index-tooltip: 1100;
+
+    /* Highlight */
+    --highlight-glow: rgba(255, 255, 0, 0.8); /* Default yellow glow */
+  }
+  
+/* base.css */
+
+/* Import variables */
+
+/* Reset Styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Body Styles */
+body {
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-base);
+  background-color: var(--background-body);
+  color: var(--text-color);
+  text-align: center;
+  margin-top: 50px;
+}
+
+/* Headings */
+h1, h2, h3, h4, h5, h6 {
+  color: var(--text-color);
+  text-align: center;
+  font-family: var(--font-family-header, var(--font-family-base));
+  margin: calc(var(--spacing-unit) * 2) 0;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  position: relative;
+  padding-bottom: 10px;
+}
+
+h1::after, h2::after, h3::after, h4::after, h5::after, h6::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 50px;
+  height: 3px;
+  background: linear-gradient(to right, var(--color-primary), var(--color-secondary));
+}
+
+h1 {
+  font-size: 2.5em;
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+}
+
+h2 {
+  font-size: 2em;
+}
+
+h3 {
+  font-size: 1.75em;
+}
+
+h4 {
+  font-size: 1.5em;
+}
+
+h5 {
+  font-size: 1.25em;
+}
+
+h6 {
+  font-size: 1em;
+}
+
+/* Links */
+a {
+  color: var(--color-primary);
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+/* Input Fields */
+input, select, textarea {
+  font-family: inherit;
+  font-size: inherit;
+  padding: calc(var(--spacing-unit) * 1);
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Labels */
+label {
+  text-align: center; /* Center all labels by default */
+  display: block; /* Ensure label spans full width */
+  font-family: var(--font-family-label, var(--font-family-base)); /* Allow labels font family to be themed */
+  margin-bottom: calc(var(--spacing-unit) * 1); /* Add some margin below the label */
+  color: var(--label-color, var(--text-color)); /* Allow theme to customize label color */
+}
+
+/* List Styles */
+ul {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+li {
+  padding: 0; /* Ensure no padding inside list items */
+  margin: 0;  /* Ensure no margin for list items unless explicitly added */
+}
+
+/* Default Span */
+span {
+  font-family: var(--font-family-base); /* Use base font family */
+  font-size: var(--font-size-base); /* Use base font size */
+  color: var(--text-color); /* Use base text color */
+  display: inline; /* Default to inline element */
+  margin: 0; /* No default margin */
+  padding: 0; /* No default padding */
+}
+
+/* Buttons */
+button {
+  padding: calc(var(--spacing-unit) * 1.5) calc(var(--spacing-unit) * 2); /* Add more padding around buttons */
+  font-size: 1rem;
+  font-family: inherit;
+  background-color: var(--color-primary);
+  color: var(--text-color-light);
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-bottom: calc(var(--spacing-unit) * 1.5); /* Space below buttons */
+}
+
+button:hover {
+  background-color: var(--color-primary-hover);
+}
+
+/* General Sections and Containers */
+section, .container {
+  padding: calc(var(--spacing-unit) * 2); /* General container padding */
+  margin-bottom: calc(var(--spacing-unit) * 3); /* Space between sections */
+}
+
+/* Paragraphs */
+p, div {
+  margin-bottom: calc(var(--spacing-unit) * 2); /* Ensure space below paragraphs and divs */
+}
+
+/* utilities.css */
+
+/* Text Alignment */
+.text-center {
+    text-align: center;
+  }
+  
+  .text-left {
+    text-align: left;
+  }
+  
+  .text-right {
+    text-align: right;
+  }
+  
+  /* Margin Helpers */
+  .mt-1 { margin-top: calc(var(--spacing-unit) * 1); }
+  .mb-1 { margin-bottom: calc(var(--spacing-unit) * 1); }
+  .ml-1 { margin-left: calc(var(--spacing-unit) * 1); }
+  .mr-1 { margin-right: calc(var(--spacing-unit) * 1); }
+  .mx-1 { margin-left: calc(var(--spacing-unit) * 1); margin-right: calc(var(--spacing-unit) * 1); }
+  .my-1 { margin-top: calc(var(--spacing-unit) * 1); margin-bottom: calc(var(--spacing-unit) * 1); }
+  
+  /* Padding Helpers */
+  .pt-1 { padding-top: calc(var(--spacing-unit) * 1); }
+  .pb-1 { padding-bottom: calc(var(--spacing-unit) * 1); }
+  .pl-1 { padding-left: calc(var(--spacing-unit) * 1); }
+  .pr-1 { padding-right: calc(var(--spacing-unit) * 1); }
+  .px-1 { padding-left: calc(var(--spacing-unit) * 1); padding-right: calc(var(--spacing-unit) * 1); }
+  .py-1 { padding-top: calc(var(--spacing-unit) * 1); padding-bottom: calc(var(--spacing-unit) * 1); }
+  
+  /* Display Utilities */
+  .d-flex {
+    display: flex;
+  }
+  
+  .d-none {
+    display: none;
+  }
+
+  .highlight {
+    position: relative; /* Ensure the glow is positioned correctly */
+    z-index: 1; /* Bring the highlighted element above others */
+    transition: box-shadow 0.3s ease; /* Smooth transition for the glow effect */
+  }
+
+  .highlight::after {
+      content: ''; /* Empty content for the pseudo-element */
+      position: absolute; /* Position it relative to the parent */
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      border-radius: inherit; /* Match the parent's border-radius */
+      box-shadow: 0 0 20px var(--highlight-glow); /* Use the theme-dependent glow color */
+      opacity: 0.7; /* Semi-transparent glow */
+      pointer-events: none; /* Prevent interaction with the pseudo-element */
+      transition: opacity 0.3s ease; /* Smooth transition for the opacity */
+  }
+
+  /* Optional: Reduce opacity on hover to make it more dynamic */
+  .highlight:hover::after {
+      opacity: 1; /* Full glow on hover */
+  }
+
+
+  
+/* variables.css */
+
+/* Color Palette */
+:root {
+    /* Primary Colors */
+    --color-primary: #007bff;
+    --color-primary-hover: #0056b3;
+    --color-secondary: #6c757d;
+    --color-secondary-hover: #5a6268;
+    --color-success: #28a745;
+    --color-success-hover: #218838;
+    --color-danger: #dc3545;
+    --color-danger-hover: #c82333;
+    --color-warning: #ffc107;
+    --color-info: #17a2b8;
+    --color-light: #f8f9fa;
+    --color-dark: #343a40;
+
+    /* Disabled Colors */
+    --color-disabled: #e0e0e0; /* Light gray for disabled state */
+    --color-disabled-text: #b0b0b0; /* Slightly darker gray for disabled text */
+  
+    /* Background Colors */
+    --background-body: var(--color-light);
+    --background-sidebar: #f0f0f0;
+    --background-modal: var(--color-light);
+    --background-board: #f4f4f4;
+
+    /*Headers*/
+    --font-family-header: 'Arial', sans-serif; /* Default header font */
+    --header-color: #333; /* Default header color */
+    
+    /*Labels*/
+    --font-family-label: 'Arial', sans-serif; /* Default label font */
+    --label-color: #333; /* Default label color */
+  
+    /* Text Colors */
+    --text-color: #212529;
+    --text-color-light: #ffffff;
+
+    /* Input Background and Text */
+    --input-bg: #ffffff;
+    --input-text-color: #000000;
+    --input-border-color: #cccccc;
+
+    /* Box backgrounds */
+    --background-box: #f4f4f4;
+  
+    /* Borders */
+    --border-color: #cccccc;
+  
+    /* Fonts */
+    --font-family-base: 'Arial', sans-serif;
+    --font-size-base: 16px;
+  
+    /* Spacing */
+    --spacing-unit: 8px;
+  
+    /* Z-Index Levels */
+    --z-index-modal: 1000;
+    --z-index-tooltip: 1100;
+
+    /* Highlight */
+    --highlight-glow: rgba(255, 255, 0, 0.8); /* Default yellow glow */
+  }
+  
+/* layout.css */
+
+/* Import variables */
+
+/* Container Styles */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: calc(var(--spacing-unit) * 2);
+}
+
+/* Flex Layouts */
+.flex {
+  display: flex;
+}
+
+.flex-column {
+  flex-direction: column;
+}
+
+.flex-center {
+  justify-content: center;
+  align-items: center;
+}
+
+/* Header and Footer */
+.header, .footer {
+  background-color: var(--background-sidebar);
+  padding: calc(var(--spacing-unit) * 2);
+  text-align: center;
+}
+
+/* Main Content Area */
+.main-content {
+  padding: calc(var(--spacing-unit) * 2);
+}
+
+/* Sidebar */
+.sidebar {
+  background-color: var(--background-sidebar);
+  width: 250px;
+  padding: calc(var(--spacing-unit) * 2);
+  box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+  overflow-y: auto;
+}
+
+@media (max-width: 768px) {
+  .sidebar {
+    width: 100%;
+  }
+}
+
+/* Board Container */
+.board-container {
+  position: relative;
+  flex-grow: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: var(--background-board);
+  border: 1px solid var(--border-color);
+  overflow: auto;
+  height: 100%;
+}
+
+/* Game Container */
+.game-container {
+  display: flex;
+  flex-grow: 1;
+  overflow: hidden;
+}
+
+/* Board Wrapper */
+.board-wrapper {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  max-width: 1200px;
+  max-height: 900px;
+  aspect-ratio: 4 / 3;
+}
+
+/* Board Content */
+.board-content {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* Settings Row Styles */
+#settingsSectionHost .settings-row,
+#settingsSectionClient .settings-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: var(--spacing-unit);
+}
+
+#settingsSectionHost .settings-label,
+#settingsSectionClient .settings-label {
+    flex: 0 0 auto;
+    margin-right: var(--spacing-unit);
+    min-width: 200px; /* Adjust this value as needed */
+}
+
+#settingsSectionHost .settings-input,
+#settingsSectionClient .settings-display {
+    flex: 1 1 auto;
+    max-width: 100px;
+}
+
+/* Compact Settings Styles */
+.compact-settings {
+    background-color: var(--background-light);
+    border-radius: var(--border-radius);
+    padding: var(--spacing-unit);
+    margin-bottom: var(--spacing-unit);
+}
+
+.compact-settings h3 {
+    margin-top: 0;
+    margin-bottom: var(--spacing-unit);
+}
+
+/* components/box.css */
+
+/* General Box Container */
+.box-container {
+    padding: calc(var(--spacing-unit) * 1.5); /* Reduced padding */
+    background-color: var(--background-box);
+    border: 1px solid var(--border-color);
+    border-radius: 10px; /* Slightly smaller border radius */
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+    transition: box-shadow 0.3s ease, transform 0.3s ease;
+}
+
+.box-container:hover {
+    box-shadow: 0 5px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Invite Code Box */
+.invite-code-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 10px 20px; /* Reduced padding */
+    background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+    border-radius: 10px; /* Smaller border radius */
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+    border: 1px solid transparent;
+    transition: box-shadow 0.3s ease, transform 0.3s ease;
+}
+
+.invite-code-box:hover {
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+}
+
+/* Glassmorphism for invite code content */
+.invite-code-box-content {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(255, 255, 255, 0.2); /* Slightly stronger background */
+    padding: 10px 20px; /* Reduced padding */
+    border-radius: 40px; /* Smaller pill shape */
+    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.05);
+    backdrop-filter: blur(8px); /* Reduced blur */
+    margin-bottom: 10px;
+}
+
+/* Invite Code Text */
+#inviteCode {
+    font-size: 1.25rem; /* Reduced font size */
+    font-weight: bold;
+    letter-spacing: 1.5px; /* Reduced letter spacing */
+    color: var(--text-color-light);
+    font-family: 'Courier New', Courier, monospace;
+    text-align: center;
+}
+
+/* Combined Section */
+.combined-section {
+    display: flex;
+    justify-content: space-between;
+    background-color: var(--background-box); /* Theme-specific background */
+    border-radius: 10px;
+    padding: calc(var(--spacing-unit) * 2);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Standard box shadow */
+    width: 100%;
+    gap: calc(var(--spacing-unit) * 2); /* Add gap between the settings and player list */
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+
+/* Compact Settings */
+.compact-settings {
+    flex: 1;
+    padding: calc(var(--spacing-unit) * 2);
+    border-right: 3px solid var(--border-color); /* Theme-aware border */
+    text-align: left;
+    background-color: var(--background-sidebar); /* Theme-aware background */
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+
+/* Compact Player List Section */
+.compact-player-list {
+    flex: 2;
+    padding: calc(var(--spacing-unit) * 2);
+    background-color: var(--background-box); /* Theme-specific background */
+    border-radius: 10px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.compact-player-list h3 {
+    margin: 0 0 calc(var(--spacing-unit) * 1) 0;
+    font-size: 1.2em;
+    color: var(--text-color); /* Ensure it follows the theme’s text color */
+}
+
+
+
+
+
+/* variables.css */
+
+/* Color Palette */
+:root {
+    /* Primary Colors */
+    --color-primary: #007bff;
+    --color-primary-hover: #0056b3;
+    --color-secondary: #6c757d;
+    --color-secondary-hover: #5a6268;
+    --color-success: #28a745;
+    --color-success-hover: #218838;
+    --color-danger: #dc3545;
+    --color-danger-hover: #c82333;
+    --color-warning: #ffc107;
+    --color-info: #17a2b8;
+    --color-light: #f8f9fa;
+    --color-dark: #343a40;
+
+    /* Disabled Colors */
+    --color-disabled: #e0e0e0; /* Light gray for disabled state */
+    --color-disabled-text: #b0b0b0; /* Slightly darker gray for disabled text */
+  
+    /* Background Colors */
+    --background-body: var(--color-light);
+    --background-sidebar: #f0f0f0;
+    --background-modal: var(--color-light);
+    --background-board: #f4f4f4;
+
+    /*Headers*/
+    --font-family-header: 'Arial', sans-serif; /* Default header font */
+    --header-color: #333; /* Default header color */
+    
+    /*Labels*/
+    --font-family-label: 'Arial', sans-serif; /* Default label font */
+    --label-color: #333; /* Default label color */
+  
+    /* Text Colors */
+    --text-color: #212529;
+    --text-color-light: #ffffff;
+
+    /* Input Background and Text */
+    --input-bg: #ffffff;
+    --input-text-color: #000000;
+    --input-border-color: #cccccc;
+
+    /* Box backgrounds */
+    --background-box: #f4f4f4;
+  
+    /* Borders */
+    --border-color: #cccccc;
+  
+    /* Fonts */
+    --font-family-base: 'Arial', sans-serif;
+    --font-size-base: 16px;
+  
+    /* Spacing */
+    --spacing-unit: 8px;
+  
+    /* Z-Index Levels */
+    --z-index-modal: 1000;
+    --z-index-tooltip: 1100;
+
+    /* Highlight */
+    --highlight-glow: rgba(255, 255, 0, 0.8); /* Default yellow glow */
+  }
+  
+/* components/button.css */
+
+/* Import variables */
+
+/* Base Button Styles */
+.button {
+  display: inline-block;
+  font-weight: 400;
+  text-align: center;
+  color: var(--text-color-light);
+  background-color: var(--color-primary);
+  border: 1px solid var(--color-primary);
+  padding: calc(var(--spacing-unit) * 1) calc(var(--spacing-unit) * 2);
+  font-size: 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.button:hover {
+  background-color: var(--color-primary-hover);
+}
+
+/* Secondary Button */
+.button-secondary {
+  background-color: var(--color-secondary);
+  border-color: var(--color-secondary);
+}
+
+.button-secondary:hover {
+  background-color: var(--color-secondary-hover);
+}
+
+/* Success Button */
+.button-success {
+  background-color: var(--color-success);
+  border-color: var(--color-success);
+}
+
+.button-success:hover {
+  background-color: var(--color-success-hover);
+}
+
+/* Danger Button */
+.button-danger {
+  background-color: var(--color-danger);
+  border-color: var(--color-danger);
+}
+
+.button-danger:hover {
+  background-color: var(--color-danger-hover);
+}
+
+/* Disabled State */
+.button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Roll Button */
+.button-roll {
+    /* Styles specific to the roll button */
+    background-color: #555;
+    color: #aaa;
+    padding: 20px 40px;
+    font-size: 24px;
+    border: none;
+    border-radius: 12px;
+    cursor: not-allowed;
+    opacity: 0.6;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .button-roll.active {
+    background: linear-gradient(135deg, #ff416c, #ff4b2b);
+    background-size: 200% 200%;
+    color: #fff;
+    cursor: pointer;
+    opacity: 1;
+    animation: gradientShift 5s ease infinite, pulseGlow 2s infinite;
+  }
+  
+  .button-roll.active:hover {
+    box-shadow: 0 0 25px rgba(255, 75, 43, 0.8), inset 0 0 25px rgba(255, 75, 43, 0.8);
+  }
+  
+  .button-roll.active::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -75%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(
+      to right,
+      rgba(255, 255, 255, 0) 0%,
+      rgba(255, 255, 255, 0.3) 50%,
+      rgba(255, 255, 255, 0) 100%
+    );
+    transform: rotate(25deg);
+    animation: shine 3s ease-in-out infinite;
+  }
+  
+  .button-roll:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    animation: none;
+    background-color: #555;
+    box-shadow: none;
+  }
+  
+  /* Pause Button Styles */
+  .button-pause {
+    /* Styles as defined earlier */
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: transparent;
+    border: none;
+    color: var(--text-color);
+    font-size: 30px;
+    width: 50px;
+    height: 50px;
+    cursor: pointer;
+    border-radius: 50%;
+    transition: background-color 0.2s ease, opacity 0.2s ease;
+    z-index: 2;
+    opacity: 0.8;
+  }
+  
+  .button-pause:hover  {
+    background-color: rgba(0, 0, 0, 0.1);
+    opacity: 1;
+  }
+  
+  .button-pause:focus {
+    outline: none;
+  }
+
+/* Gear Button */
+.gear-button {
+    position: fixed;
+    top: 10px;
+    left: 10px;
+    width: 50px;
+    height: 50px;
+    padding: 10px;
+    background-color: rgba(255, 255, 255, 0.3);  /* Increased opacity for better visibility */
+    border: none;
+    cursor: pointer;
+    border-radius: 50%;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    z-index: 1000;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);  /* Add a default subtle shadow */
+}
+
+/* Image within the gear button */
+.gear-button img {
+    width: 30px;
+    height: 30px;
+}
+
+/* Hover Effect - Make the background more prominent */
+.gear-button:hover {
+    background-color: rgba(255, 255, 255, 0.6); /* Brighter on hover for better visibility */
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.5);  /* Stronger shadow for added contrast */
+}
+
+/* Active/Pressed State */
+.gear-button:active {
+    transform: scale(0.95);
+    background-color: rgba(255, 255, 255, 0.7); /* Slightly darker when pressed */
+}
+
+/* Focus outline for accessibility */
+.gear-button:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.5);  /* Visible focus outline */
+}
+
+/* Copy Button */
+.button-invite-code {
+    background-color: rgba(0, 0, 0, 0.7); /* Dark background for better contrast */
+    color: #fff; /* White text */
+    border: none;
+    border-radius: 40px; /* Smaller pill shape */
+    padding: 8px 20px; /* Reduced padding */
+    font-weight: bold;
+    font-size: 0.9rem; /* Reduced font size */
+    cursor: pointer;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
+}
+
+.button-invite-code:hover {
+    background-color: rgba(0, 0, 0, 0.9); /* Slightly darker hover */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+    transform: translateY(-2px); /* Slight lift */
+}
+
+/* variables.css */
+
+/* Color Palette */
+:root {
+    /* Primary Colors */
+    --color-primary: #007bff;
+    --color-primary-hover: #0056b3;
+    --color-secondary: #6c757d;
+    --color-secondary-hover: #5a6268;
+    --color-success: #28a745;
+    --color-success-hover: #218838;
+    --color-danger: #dc3545;
+    --color-danger-hover: #c82333;
+    --color-warning: #ffc107;
+    --color-info: #17a2b8;
+    --color-light: #f8f9fa;
+    --color-dark: #343a40;
+
+    /* Disabled Colors */
+    --color-disabled: #e0e0e0; /* Light gray for disabled state */
+    --color-disabled-text: #b0b0b0; /* Slightly darker gray for disabled text */
+  
+    /* Background Colors */
+    --background-body: var(--color-light);
+    --background-sidebar: #f0f0f0;
+    --background-modal: var(--color-light);
+    --background-board: #f4f4f4;
+
+    /*Headers*/
+    --font-family-header: 'Arial', sans-serif; /* Default header font */
+    --header-color: #333; /* Default header color */
+    
+    /*Labels*/
+    --font-family-label: 'Arial', sans-serif; /* Default label font */
+    --label-color: #333; /* Default label color */
+  
+    /* Text Colors */
+    --text-color: #212529;
+    --text-color-light: #ffffff;
+
+    /* Input Background and Text */
+    --input-bg: #ffffff;
+    --input-text-color: #000000;
+    --input-border-color: #cccccc;
+
+    /* Box backgrounds */
+    --background-box: #f4f4f4;
+  
+    /* Borders */
+    --border-color: #cccccc;
+  
+    /* Fonts */
+    --font-family-base: 'Arial', sans-serif;
+    --font-size-base: 16px;
+  
+    /* Spacing */
+    --spacing-unit: 8px;
+  
+    /* Z-Index Levels */
+    --z-index-modal: 1000;
+    --z-index-tooltip: 1100;
+
+    /* Highlight */
+    --highlight-glow: rgba(255, 255, 0, 0.8); /* Default yellow glow */
+  }
+  
+/* components/form.css */
+
+/* Import variables */
+
+/* Form Group */
+.form-group {
+  margin-bottom: calc(var(--spacing-unit) * 2);
+}
+
+/* Input Fields */
+.form-group input,
+.form-group select,
+.form-group textarea {
+  width: 80%;
+  max-width: 300px;
+  padding: calc(var(--spacing-unit) * 1);
+  margin: calc(var(--spacing-unit) * 1) 0;
+  border-radius: 5px;
+  border: 1px solid var(--border-color);
+  font-size: 16px;
+  text-align: center;
+}
+
+/* Labels */
+.form-group label {
+  display: block;
+  width: 100%;
+  text-align: center;
+  margin-bottom: 5px;
+}
+
+/* Centering */
+.form-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+
+/* components/icon.css */
+
+/* Pause Icon */
+.pause-icon::before {
+    content: '';
+    display: inline-block;
+    width: 12px;
+    height: 18px;
+    border-left: 5px solid black;
+    border-right: 5px solid black;
+}
+
+/* Play Icon */
+.play-icon::before {
+    content: '';
+    display: inline-block;
+    width: 0;
+    height: 0;
+    border-top: 10px solid transparent;
+    border-bottom: 10px solid transparent;
+    border-left: 15px solid black;
+}
+/* variables.css */
+
+/* Color Palette */
+:root {
+    /* Primary Colors */
+    --color-primary: #007bff;
+    --color-primary-hover: #0056b3;
+    --color-secondary: #6c757d;
+    --color-secondary-hover: #5a6268;
+    --color-success: #28a745;
+    --color-success-hover: #218838;
+    --color-danger: #dc3545;
+    --color-danger-hover: #c82333;
+    --color-warning: #ffc107;
+    --color-info: #17a2b8;
+    --color-light: #f8f9fa;
+    --color-dark: #343a40;
+
+    /* Disabled Colors */
+    --color-disabled: #e0e0e0; /* Light gray for disabled state */
+    --color-disabled-text: #b0b0b0; /* Slightly darker gray for disabled text */
+  
+    /* Background Colors */
+    --background-body: var(--color-light);
+    --background-sidebar: #f0f0f0;
+    --background-modal: var(--color-light);
+    --background-board: #f4f4f4;
+
+    /*Headers*/
+    --font-family-header: 'Arial', sans-serif; /* Default header font */
+    --header-color: #333; /* Default header color */
+    
+    /*Labels*/
+    --font-family-label: 'Arial', sans-serif; /* Default label font */
+    --label-color: #333; /* Default label color */
+  
+    /* Text Colors */
+    --text-color: #212529;
+    --text-color-light: #ffffff;
+
+    /* Input Background and Text */
+    --input-bg: #ffffff;
+    --input-text-color: #000000;
+    --input-border-color: #cccccc;
+
+    /* Box backgrounds */
+    --background-box: #f4f4f4;
+  
+    /* Borders */
+    --border-color: #cccccc;
+  
+    /* Fonts */
+    --font-family-base: 'Arial', sans-serif;
+    --font-size-base: 16px;
+  
+    /* Spacing */
+    --spacing-unit: 8px;
+  
+    /* Z-Index Levels */
+    --z-index-modal: 1000;
+    --z-index-tooltip: 1100;
+
+    /* Highlight */
+    --highlight-glow: rgba(255, 255, 0, 0.8); /* Default yellow glow */
+  }
+  
+/* components/input.css */
+
+/* Import variables */
+
+/* Base Input Styles */
+.input {
+    width: 100%;
+    max-width: 300px;
+    padding: calc(var(--spacing-unit) * 1);
+    font-size: 16px;
+    border-radius: 4px;
+    border: 1px solid var(--border-color);
+    color: var(--text-color);
+    background-color: var(--input-background);
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    box-sizing: border-box;
+}
+
+/* Input Focused State */
+.input:focus {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
+    outline: none;
+}
+
+/* Disabled State */
+.input:disabled {
+    background-color: var(--background-disabled);
+    color: var(--text-color-disabled);
+    cursor: not-allowed;
+}
+
+/* Hover Effect */
+.input:hover {
+    border-color: var(--color-primary-hover);
+}
+
+/* Checkbox/Radio Inputs */
+.input-checkbox,
+.input-radio {
+    width: auto;
+    margin-right: 8px;
+}
+
+/* Range Slider */
+.input-range {
+    width: 100%;
+    -webkit-appearance: none;
+    height: 6px;
+    background-color: var(--input-background);
+    border-radius: 3px;
+    outline: none;
+    transition: background 0.3s ease;
+}
+
+.input-range::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    background-color: var(--color-primary);
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+.input-range::-moz-range-thumb {
+    width: 16px;
+    height: 16px;
+    background-color: var(--color-primary);
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+/* Slider on hover/focus */
+.input-range:hover {
+    background-color: var(--input-background-hover);
+}
+
+.input-range:focus::-webkit-slider-thumb,
+.input-range:focus::-moz-range-thumb {
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
+}
+
+/* Textarea */
+.input-textarea {
+    resize: vertical;
+    min-height: 100px;
+}
+
+.settings-input {
+    width: 60px; /* Adjust input width */
+    padding: 5px;
+    font-size: 0.9em;
+    border-radius: 4px;
+    text-align: right; /* Align text inside the input to the right */
+}
+
+/* variables.css */
+
+/* Color Palette */
+:root {
+    /* Primary Colors */
+    --color-primary: #007bff;
+    --color-primary-hover: #0056b3;
+    --color-secondary: #6c757d;
+    --color-secondary-hover: #5a6268;
+    --color-success: #28a745;
+    --color-success-hover: #218838;
+    --color-danger: #dc3545;
+    --color-danger-hover: #c82333;
+    --color-warning: #ffc107;
+    --color-info: #17a2b8;
+    --color-light: #f8f9fa;
+    --color-dark: #343a40;
+
+    /* Disabled Colors */
+    --color-disabled: #e0e0e0; /* Light gray for disabled state */
+    --color-disabled-text: #b0b0b0; /* Slightly darker gray for disabled text */
+  
+    /* Background Colors */
+    --background-body: var(--color-light);
+    --background-sidebar: #f0f0f0;
+    --background-modal: var(--color-light);
+    --background-board: #f4f4f4;
+
+    /*Headers*/
+    --font-family-header: 'Arial', sans-serif; /* Default header font */
+    --header-color: #333; /* Default header color */
+    
+    /*Labels*/
+    --font-family-label: 'Arial', sans-serif; /* Default label font */
+    --label-color: #333; /* Default label color */
+  
+    /* Text Colors */
+    --text-color: #212529;
+    --text-color-light: #ffffff;
+
+    /* Input Background and Text */
+    --input-bg: #ffffff;
+    --input-text-color: #000000;
+    --input-border-color: #cccccc;
+
+    /* Box backgrounds */
+    --background-box: #f4f4f4;
+  
+    /* Borders */
+    --border-color: #cccccc;
+  
+    /* Fonts */
+    --font-family-base: 'Arial', sans-serif;
+    --font-size-base: 16px;
+  
+    /* Spacing */
+    --spacing-unit: 8px;
+  
+    /* Z-Index Levels */
+    --z-index-modal: 1000;
+    --z-index-tooltip: 1100;
+
+    /* Highlight */
+    --highlight-glow: rgba(255, 255, 0, 0.8); /* Default yellow glow */
+  }
+  
+/* Import variables */
+
+/* Base Label Styles */
+.label {
+  display: block;
+  font-size: 1rem;
+  color: var(--label-color);
+  margin-bottom: calc(var(--spacing-unit) * 1);
+  text-align: center; /* Centering by default */
+  font-family: var(--font-family-label);
+  transition: color 0.3s ease;
+}
+
+/* Larger Labels */
+.label-lg {
+  font-size: 1.25rem;
+  font-weight: bold;
+}
+S
+/* Smaller Labels */
+.label-sm {
+  font-size: 0.875rem;
+  font-weight: normal;
+}
+
+/* Hover Effect for Labels (Optional) */
+.label:hover {
+  color: var(--color-primary);
+}
+
+/* Label Alignment Utilities */
+.label-left {
+  text-align: left;
+}
+
+.label-right {
+  text-align: right;
+}
+
+.label-center {
+  text-align: center;
+}
+
+/* Ensure the label is aligned to the left */
+.settings-label {
+    width: 200px; /* Fixed width for consistent alignment */
+    font-size: 0.9em;
+    text-align: left;
+    margin-right: 10px; /* Space between label and input */
+}
+
+/* Responsive Adjustment */
+@media (max-width: 768px) {
+  .label {
+    font-size: 0.875rem; /* Adjust label size on smaller screens */
+  }
+}
+
+/* variables.css */
+
+/* Color Palette */
+:root {
+    /* Primary Colors */
+    --color-primary: #007bff;
+    --color-primary-hover: #0056b3;
+    --color-secondary: #6c757d;
+    --color-secondary-hover: #5a6268;
+    --color-success: #28a745;
+    --color-success-hover: #218838;
+    --color-danger: #dc3545;
+    --color-danger-hover: #c82333;
+    --color-warning: #ffc107;
+    --color-info: #17a2b8;
+    --color-light: #f8f9fa;
+    --color-dark: #343a40;
+
+    /* Disabled Colors */
+    --color-disabled: #e0e0e0; /* Light gray for disabled state */
+    --color-disabled-text: #b0b0b0; /* Slightly darker gray for disabled text */
+  
+    /* Background Colors */
+    --background-body: var(--color-light);
+    --background-sidebar: #f0f0f0;
+    --background-modal: var(--color-light);
+    --background-board: #f4f4f4;
+
+    /*Headers*/
+    --font-family-header: 'Arial', sans-serif; /* Default header font */
+    --header-color: #333; /* Default header color */
+    
+    /*Labels*/
+    --font-family-label: 'Arial', sans-serif; /* Default label font */
+    --label-color: #333; /* Default label color */
+  
+    /* Text Colors */
+    --text-color: #212529;
+    --text-color-light: #ffffff;
+
+    /* Input Background and Text */
+    --input-bg: #ffffff;
+    --input-text-color: #000000;
+    --input-border-color: #cccccc;
+
+    /* Box backgrounds */
+    --background-box: #f4f4f4;
+  
+    /* Borders */
+    --border-color: #cccccc;
+  
+    /* Fonts */
+    --font-family-base: 'Arial', sans-serif;
+    --font-size-base: 16px;
+  
+    /* Spacing */
+    --spacing-unit: 8px;
+  
+    /* Z-Index Levels */
+    --z-index-modal: 1000;
+    --z-index-tooltip: 1100;
+
+    /* Highlight */
+    --highlight-glow: rgba(255, 255, 0, 0.8); /* Default yellow glow */
+  }
+  
+/* components/modal.css */
+
+/* Import variables */
+
+/* Modal Styles */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: var(--z-index-modal);
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.modal-content {
+  background-color: var(--background-modal);
+  margin: 5% auto;
+  padding: calc(var(--spacing-unit) * 2);
+  border: 1px solid var(--border-color);
+  width: 90%;
+  max-width: 500px;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.close-button {
+  margin-top: calc(var(--spacing-unit) * 2);
+}
+
+/* variables.css */
+
+/* Color Palette */
+:root {
+    /* Primary Colors */
+    --color-primary: #007bff;
+    --color-primary-hover: #0056b3;
+    --color-secondary: #6c757d;
+    --color-secondary-hover: #5a6268;
+    --color-success: #28a745;
+    --color-success-hover: #218838;
+    --color-danger: #dc3545;
+    --color-danger-hover: #c82333;
+    --color-warning: #ffc107;
+    --color-info: #17a2b8;
+    --color-light: #f8f9fa;
+    --color-dark: #343a40;
+
+    /* Disabled Colors */
+    --color-disabled: #e0e0e0; /* Light gray for disabled state */
+    --color-disabled-text: #b0b0b0; /* Slightly darker gray for disabled text */
+  
+    /* Background Colors */
+    --background-body: var(--color-light);
+    --background-sidebar: #f0f0f0;
+    --background-modal: var(--color-light);
+    --background-board: #f4f4f4;
+
+    /*Headers*/
+    --font-family-header: 'Arial', sans-serif; /* Default header font */
+    --header-color: #333; /* Default header color */
+    
+    /*Labels*/
+    --font-family-label: 'Arial', sans-serif; /* Default label font */
+    --label-color: #333; /* Default label color */
+  
+    /* Text Colors */
+    --text-color: #212529;
+    --text-color-light: #ffffff;
+
+    /* Input Background and Text */
+    --input-bg: #ffffff;
+    --input-text-color: #000000;
+    --input-border-color: #cccccc;
+
+    /* Box backgrounds */
+    --background-box: #f4f4f4;
+  
+    /* Borders */
+    --border-color: #cccccc;
+  
+    /* Fonts */
+    --font-family-base: 'Arial', sans-serif;
+    --font-size-base: 16px;
+  
+    /* Spacing */
+    --spacing-unit: 8px;
+  
+    /* Z-Index Levels */
+    --z-index-modal: 1000;
+    --z-index-tooltip: 1100;
+
+    /* Highlight */
+    --highlight-glow: rgba(255, 255, 0, 0.8); /* Default yellow glow */
+  }
+  
+/* components/navbar.css */
+
+/* Import variables */
+
+/* Navbar */
+.navbar {
+  background-color: var(--background-sidebar);
+  padding: calc(var(--spacing-unit) * 2);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.navbar-brand {
+  font-size: 1.5rem;
+  color: var(--text-color);
+}
+
+.navbar-menu {
+  display: flex;
+  gap: calc(var(--spacing-unit) * 2);
+}
+
+.navbar-item {
+  color: var(--text-color);
+  text-decoration: none;
+  font-size: 1rem;
+}
+
+.navbar-item:hover {
+  color: var(--color-primary);
+}
+
+/* Player Container */
+.player-container {
+  display: flex;
+  align-items: center; /* Vertically center the items */
+  justify-content: space-between;
+  padding: calc(var(--spacing-unit) * 1.5);
+  background-color: var(--background-modal);
+  border-radius: 5px;
+  border: 1px solid var(--border-color);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  height: 50px; /* Set a fixed height to ensure equal size */
+  margin-bottom: calc(var(--spacing-unit) * 1); /* Add space between list items */
+}
+
+/* Player Name and Badges */
+.player-name-badges {
+  display: flex;
+  align-items: center; /* Vertically center the badges and name */
+  justify-content: center; /* Center horizontally */
+  gap: calc(var(--spacing-unit) * 0.5); /* Space between name and badges */
+  flex-grow: 1; /* Allow this container to take up available space */
+}
+
+/* Player Buttons */
+.player-buttons {
+  display: flex;
+  align-items: center; /* Ensure buttons are vertically centered */
+  justify-content: flex-end; /* Align buttons to the right */
+  gap: calc(var(--spacing-unit) * 0.5); /* Add space between buttons */
+}
+
+/* Reset margins and paddings */
+.player-container,
+.player-name-badges,
+.player-buttons,
+.player-name {
+  margin: 0;
+  padding: 0;
+}
+
+/* Ensure consistent line height */
+.player-name {
+  line-height: 1; /* Set line height to reduce extra space */
+}
+
+/* Buttons */
+.edit-button,
+.kick-button,
+.remove-button {
+  background: none;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+  width: 24px;  /* Define a fixed width */
+  height: 24px; /* Define a fixed height */
+  color: var(--color-primary);
+  transition: color 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center; /* Center the button content */
+  padding: 0; /* Reset padding */
+}
+
+.edit-button:hover {
+  color: var(--color-primary-hover);
+}
+
+.kick-button:hover,
+.remove-button:hover {
+  color: var(--color-danger-hover);
+}
+
+/* Ensure consistent height for list items */
+#lobbyPlayerList li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 50px; /* Apply a fixed height to all list items */
+  padding: calc(var(--spacing-unit) * 0.5); /* Add some internal padding */
+  margin: 0;
+  background-color: var(--background-modal);
+  border-radius: 5px;
+  border: 1px solid var(--border-color);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-bottom: calc(var(--spacing-unit) * 1); /* Add spacing between items */
+}
+
+/* Badges */
+.host-badge,
+.you-badge {
+  background-color: var(--color-primary);
+  color: var(--text-color-light);
+  padding: 2px 6px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: bold;
+  display: inline-flex;
+  align-items: center; /* Ensure badge text is centered vertically */
+  justify-content: center; /* Center the content horizontally */
+}
+
+/* Specific colors for success badge */
+.you-badge {
+  background-color: var(--color-success);
+}
+
+/* Box sizing */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+/* variables.css */
+
+/* Color Palette */
+:root {
+    /* Primary Colors */
+    --color-primary: #007bff;
+    --color-primary-hover: #0056b3;
+    --color-secondary: #6c757d;
+    --color-secondary-hover: #5a6268;
+    --color-success: #28a745;
+    --color-success-hover: #218838;
+    --color-danger: #dc3545;
+    --color-danger-hover: #c82333;
+    --color-warning: #ffc107;
+    --color-info: #17a2b8;
+    --color-light: #f8f9fa;
+    --color-dark: #343a40;
+
+    /* Disabled Colors */
+    --color-disabled: #e0e0e0; /* Light gray for disabled state */
+    --color-disabled-text: #b0b0b0; /* Slightly darker gray for disabled text */
+  
+    /* Background Colors */
+    --background-body: var(--color-light);
+    --background-sidebar: #f0f0f0;
+    --background-modal: var(--color-light);
+    --background-board: #f4f4f4;
+
+    /*Headers*/
+    --font-family-header: 'Arial', sans-serif; /* Default header font */
+    --header-color: #333; /* Default header color */
+    
+    /*Labels*/
+    --font-family-label: 'Arial', sans-serif; /* Default label font */
+    --label-color: #333; /* Default label color */
+  
+    /* Text Colors */
+    --text-color: #212529;
+    --text-color-light: #ffffff;
+
+    /* Input Background and Text */
+    --input-bg: #ffffff;
+    --input-text-color: #000000;
+    --input-border-color: #cccccc;
+
+    /* Box backgrounds */
+    --background-box: #f4f4f4;
+  
+    /* Borders */
+    --border-color: #cccccc;
+  
+    /* Fonts */
+    --font-family-base: 'Arial', sans-serif;
+    --font-size-base: 16px;
+  
+    /* Spacing */
+    --spacing-unit: 8px;
+  
+    /* Z-Index Levels */
+    --z-index-modal: 1000;
+    --z-index-tooltip: 1100;
+
+    /* Highlight */
+    --highlight-glow: rgba(255, 255, 0, 0.8); /* Default yellow glow */
+  }
+  
+/* Import variables */
+
+/* Base Select Styles */
+.select {
+  width: 100%;
+  max-width: 300px;
+  padding: calc(var(--spacing-unit) * 1);
+  margin: calc(var(--spacing-unit) * 1) 0;
+  font-size: 16px;
+  color: var(--input-text-color);
+  background-color: var(--input-bg);
+  border: 1px solid var(--input-border-color);
+  border-radius: 4px;
+  appearance: none; /* Hide default OS-specific dropdown arrow */
+  background-image: url("data:image/svg+xml;utf8,<svg fill=\"%23333\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\" xmlns=\"http://www.w3.org/2000/svg\"><path d=\"M7 10l5 5 5-5z\"/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 16px;
+  cursor: pointer;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.select:hover {
+  border-color: var(--color-primary-hover);
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.3);
+}
+
+.select:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 8px rgba(0, 123, 255, 0.5);
+}
+
+/* Disabled State */
+.select:disabled {
+  background-color: var(--input-bg-disabled);
+  color: var(--input-text-color-disabled);
+  border-color: var(--input-border-color-disabled);
+  cursor: not-allowed;
+}
+
+/* Adjusting width for narrow layouts */
+@media (max-width: 768px) {
+  .select {
+    max-width: 100%;
+  }
+}
+
+/* variables.css */
+
+/* Color Palette */
+:root {
+    /* Primary Colors */
+    --color-primary: #007bff;
+    --color-primary-hover: #0056b3;
+    --color-secondary: #6c757d;
+    --color-secondary-hover: #5a6268;
+    --color-success: #28a745;
+    --color-success-hover: #218838;
+    --color-danger: #dc3545;
+    --color-danger-hover: #c82333;
+    --color-warning: #ffc107;
+    --color-info: #17a2b8;
+    --color-light: #f8f9fa;
+    --color-dark: #343a40;
+
+    /* Disabled Colors */
+    --color-disabled: #e0e0e0; /* Light gray for disabled state */
+    --color-disabled-text: #b0b0b0; /* Slightly darker gray for disabled text */
+  
+    /* Background Colors */
+    --background-body: var(--color-light);
+    --background-sidebar: #f0f0f0;
+    --background-modal: var(--color-light);
+    --background-board: #f4f4f4;
+
+    /*Headers*/
+    --font-family-header: 'Arial', sans-serif; /* Default header font */
+    --header-color: #333; /* Default header color */
+    
+    /*Labels*/
+    --font-family-label: 'Arial', sans-serif; /* Default label font */
+    --label-color: #333; /* Default label color */
+  
+    /* Text Colors */
+    --text-color: #212529;
+    --text-color-light: #ffffff;
+
+    /* Input Background and Text */
+    --input-bg: #ffffff;
+    --input-text-color: #000000;
+    --input-border-color: #cccccc;
+
+    /* Box backgrounds */
+    --background-box: #f4f4f4;
+  
+    /* Borders */
+    --border-color: #cccccc;
+  
+    /* Fonts */
+    --font-family-base: 'Arial', sans-serif;
+    --font-size-base: 16px;
+  
+    /* Spacing */
+    --spacing-unit: 8px;
+  
+    /* Z-Index Levels */
+    --z-index-modal: 1000;
+    --z-index-tooltip: 1100;
+
+    /* Highlight */
+    --highlight-glow: rgba(255, 255, 0, 0.8); /* Default yellow glow */
+  }
+  
+/* components/span.css */
+
+/* Import variables */
+
+.settings-display {
+    display: inline-block;
+    padding: 5px 10px;
+    
+    /* Background and border colors should be theme-aware */
+    background-color: var(--input-bg);  /* Use theme-specific input background */
+    color: var(--input-text-color);     /* Use theme-specific input text color */
+    border: 1px solid var(--input-border-color); /* Use theme-specific input border color */
+    
+    border-radius: 4px;         /* Rounded corners */
+    min-width: 50px;            /* Minimum width to give enough space */
+    text-align: center;         /* Center the text */
+    font-size: 0.9em;
+    
+    margin-left: 10px;          /* Space between label and value */
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease; /* Smooth transition */
+}
+
+/* variables.css */
+
+/* Color Palette */
+:root {
+    /* Primary Colors */
+    --color-primary: #007bff;
+    --color-primary-hover: #0056b3;
+    --color-secondary: #6c757d;
+    --color-secondary-hover: #5a6268;
+    --color-success: #28a745;
+    --color-success-hover: #218838;
+    --color-danger: #dc3545;
+    --color-danger-hover: #c82333;
+    --color-warning: #ffc107;
+    --color-info: #17a2b8;
+    --color-light: #f8f9fa;
+    --color-dark: #343a40;
+
+    /* Disabled Colors */
+    --color-disabled: #e0e0e0; /* Light gray for disabled state */
+    --color-disabled-text: #b0b0b0; /* Slightly darker gray for disabled text */
+  
+    /* Background Colors */
+    --background-body: var(--color-light);
+    --background-sidebar: #f0f0f0;
+    --background-modal: var(--color-light);
+    --background-board: #f4f4f4;
+
+    /*Headers*/
+    --font-family-header: 'Arial', sans-serif; /* Default header font */
+    --header-color: #333; /* Default header color */
+    
+    /*Labels*/
+    --font-family-label: 'Arial', sans-serif; /* Default label font */
+    --label-color: #333; /* Default label color */
+  
+    /* Text Colors */
+    --text-color: #212529;
+    --text-color-light: #ffffff;
+
+    /* Input Background and Text */
+    --input-bg: #ffffff;
+    --input-text-color: #000000;
+    --input-border-color: #cccccc;
+
+    /* Box backgrounds */
+    --background-box: #f4f4f4;
+  
+    /* Borders */
+    --border-color: #cccccc;
+  
+    /* Fonts */
+    --font-family-base: 'Arial', sans-serif;
+    --font-size-base: 16px;
+  
+    /* Spacing */
+    --spacing-unit: 8px;
+  
+    /* Z-Index Levels */
+    --z-index-modal: 1000;
+    --z-index-tooltip: 1100;
+
+    /* Highlight */
+    --highlight-glow: rgba(255, 255, 0, 0.8); /* Default yellow glow */
+  }
+  
+/* components/toggle-switch.css */
+
+/* Import variables */
+
+/* Toggle Switch Container */
+.toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 50px; /* Default width */
+    height: 24px; /* Default height */
+}
+
+/* Hide the default checkbox */
+.toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+/* Slider (background) */
+.toggle-switch .slider {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: var(--background-box); /* Use box background as default */
+    border-radius: 24px;
+    transition: background-color 0.3s ease;
+    border: 1px solid var(--border-color); /* Match input border */
+}
+
+/* When the input is checked, change the slider color */
+.toggle-switch input:checked + .slider {
+    background-color: var(--color-success); /* Success green for active state */
+}
+
+/* Slider's Knob */
+.toggle-switch .slider:before {
+    position: absolute;
+    content: "";
+    height: 16px; /* Slightly smaller than the height */
+    width: 16px;
+    left: 4px;
+    bottom: 4px;
+    background-color: var(--text-color);
+    border-radius: 50%;
+    transition: transform 0.3s ease, background-color 0.3s ease;
+}
+
+/* When checked, move the knob */
+.toggle-switch input:checked + .slider:before {
+    transform: translateX(26px); /* Moves the knob to the right */
+}
+
+/* Add the transition for disabled state as well */
+.toggle-switch input:disabled:checked + .slider:before {
+    transform: translateX(26px); /* Knob still moves even when disabled */
+}
+
+/* Disabled State */
+.toggle-switch input:disabled + .slider {
+    background-color: var(--color-disabled); /* Soft disabled background */
+    cursor: not-allowed;
+}
+
+.toggle-switch input:disabled + .slider:before {
+    background-color: var(--color-disabled-text); /* Disabled knob color */
+}
+
+/* Optional focus state for accessibility */
+.toggle-switch input:focus + .slider {
+    box-shadow: 0 0 3px var(--highlight-glow); /* Highlight for focus */
+}
+
+/* variables.css */
+
+/* Color Palette */
+:root {
+    /* Primary Colors */
+    --color-primary: #007bff;
+    --color-primary-hover: #0056b3;
+    --color-secondary: #6c757d;
+    --color-secondary-hover: #5a6268;
+    --color-success: #28a745;
+    --color-success-hover: #218838;
+    --color-danger: #dc3545;
+    --color-danger-hover: #c82333;
+    --color-warning: #ffc107;
+    --color-info: #17a2b8;
+    --color-light: #f8f9fa;
+    --color-dark: #343a40;
+
+    /* Disabled Colors */
+    --color-disabled: #e0e0e0; /* Light gray for disabled state */
+    --color-disabled-text: #b0b0b0; /* Slightly darker gray for disabled text */
+  
+    /* Background Colors */
+    --background-body: var(--color-light);
+    --background-sidebar: #f0f0f0;
+    --background-modal: var(--color-light);
+    --background-board: #f4f4f4;
+
+    /*Headers*/
+    --font-family-header: 'Arial', sans-serif; /* Default header font */
+    --header-color: #333; /* Default header color */
+    
+    /*Labels*/
+    --font-family-label: 'Arial', sans-serif; /* Default label font */
+    --label-color: #333; /* Default label color */
+  
+    /* Text Colors */
+    --text-color: #212529;
+    --text-color-light: #ffffff;
+
+    /* Input Background and Text */
+    --input-bg: #ffffff;
+    --input-text-color: #000000;
+    --input-border-color: #cccccc;
+
+    /* Box backgrounds */
+    --background-box: #f4f4f4;
+  
+    /* Borders */
+    --border-color: #cccccc;
+  
+    /* Fonts */
+    --font-family-base: 'Arial', sans-serif;
+    --font-size-base: 16px;
+  
+    /* Spacing */
+    --spacing-unit: 8px;
+  
+    /* Z-Index Levels */
+    --z-index-modal: 1000;
+    --z-index-tooltip: 1100;
+
+    /* Highlight */
+    --highlight-glow: rgba(255, 255, 0, 0.8); /* Default yellow glow */
+  }
+  
+/* animations.css */
+
+/* Import variables */
+
+/* Spinner Animation */
+.spinner {
+  margin: 100px auto 20px auto;
+  width: 50px;
+  height: 50px;
+  border: 6px solid var(--border-color);
+  border-top-color: var(--color-primary);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Gradient Shift Animation */
+@keyframes gradientShift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* Pulse Glow Animation */
+@keyframes pulseGlow {
+  0% {
+    box-shadow: 0 0 10px rgba(255, 75, 43, 0.5), inset 0 0 10px rgba(255, 75, 43, 0.5);
+    transform: scale(1);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(255, 65, 108, 0.7), inset 0 0 20px rgba(255, 65, 108, 0.7);
+    transform: scale(1.05);
+  }
+  100% {
+    box-shadow: 0 0 10px rgba(255, 75, 43, 0.5), inset 0 0 10px rgba(255, 75, 43, 0.5);
+    transform: scale(1);
+  }
+}
+
+/* Shine Animation */
+@keyframes shine {
+  0% {
+    transform: rotate(25deg) translateX(-100%);
+  }
+  100% {
+    transform: rotate(25deg) translateX(100%);
+  }
+}
+
+/* Rainbow Border Animation */
+@keyframes rainbowBorder {
+  0% {
+    background-position: 0% 50%;
+  }
+  100% {
+    background-position: 100% 50%;
+  }
+}
+
+/* variables.css */
+
+/* Color Palette */
+:root {
+    /* Primary Colors */
+    --color-primary: #007bff;
+    --color-primary-hover: #0056b3;
+    --color-secondary: #6c757d;
+    --color-secondary-hover: #5a6268;
+    --color-success: #28a745;
+    --color-success-hover: #218838;
+    --color-danger: #dc3545;
+    --color-danger-hover: #c82333;
+    --color-warning: #ffc107;
+    --color-info: #17a2b8;
+    --color-light: #f8f9fa;
+    --color-dark: #343a40;
+
+    /* Disabled Colors */
+    --color-disabled: #e0e0e0; /* Light gray for disabled state */
+    --color-disabled-text: #b0b0b0; /* Slightly darker gray for disabled text */
+  
+    /* Background Colors */
+    --background-body: var(--color-light);
+    --background-sidebar: #f0f0f0;
+    --background-modal: var(--color-light);
+    --background-board: #f4f4f4;
+
+    /*Headers*/
+    --font-family-header: 'Arial', sans-serif; /* Default header font */
+    --header-color: #333; /* Default header color */
+    
+    /*Labels*/
+    --font-family-label: 'Arial', sans-serif; /* Default label font */
+    --label-color: #333; /* Default label color */
+  
+    /* Text Colors */
+    --text-color: #212529;
+    --text-color-light: #ffffff;
+
+    /* Input Background and Text */
+    --input-bg: #ffffff;
+    --input-text-color: #000000;
+    --input-border-color: #cccccc;
+
+    /* Box backgrounds */
+    --background-box: #f4f4f4;
+  
+    /* Borders */
+    --border-color: #cccccc;
+  
+    /* Fonts */
+    --font-family-base: 'Arial', sans-serif;
+    --font-size-base: 16px;
+  
+    /* Spacing */
+    --spacing-unit: 8px;
+  
+    /* Z-Index Levels */
+    --z-index-modal: 1000;
+    --z-index-tooltip: 1100;
+
+    /* Highlight */
+    --highlight-glow: rgba(255, 255, 0, 0.8); /* Default yellow glow */
+  }
+  
+/* themes/light.css */
+
+/* Import variables */
+
+/* Since the default variables are for the light theme, no overrides are necessary. */
+
+/* variables.css */
+
+/* Color Palette */
+:root {
+    /* Primary Colors */
+    --color-primary: #007bff;
+    --color-primary-hover: #0056b3;
+    --color-secondary: #6c757d;
+    --color-secondary-hover: #5a6268;
+    --color-success: #28a745;
+    --color-success-hover: #218838;
+    --color-danger: #dc3545;
+    --color-danger-hover: #c82333;
+    --color-warning: #ffc107;
+    --color-info: #17a2b8;
+    --color-light: #f8f9fa;
+    --color-dark: #343a40;
+
+    /* Disabled Colors */
+    --color-disabled: #e0e0e0; /* Light gray for disabled state */
+    --color-disabled-text: #b0b0b0; /* Slightly darker gray for disabled text */
+  
+    /* Background Colors */
+    --background-body: var(--color-light);
+    --background-sidebar: #f0f0f0;
+    --background-modal: var(--color-light);
+    --background-board: #f4f4f4;
+
+    /*Headers*/
+    --font-family-header: 'Arial', sans-serif; /* Default header font */
+    --header-color: #333; /* Default header color */
+    
+    /*Labels*/
+    --font-family-label: 'Arial', sans-serif; /* Default label font */
+    --label-color: #333; /* Default label color */
+  
+    /* Text Colors */
+    --text-color: #212529;
+    --text-color-light: #ffffff;
+
+    /* Input Background and Text */
+    --input-bg: #ffffff;
+    --input-text-color: #000000;
+    --input-border-color: #cccccc;
+
+    /* Box backgrounds */
+    --background-box: #f4f4f4;
+  
+    /* Borders */
+    --border-color: #cccccc;
+  
+    /* Fonts */
+    --font-family-base: 'Arial', sans-serif;
+    --font-size-base: 16px;
+  
+    /* Spacing */
+    --spacing-unit: 8px;
+  
+    /* Z-Index Levels */
+    --z-index-modal: 1000;
+    --z-index-tooltip: 1100;
+
+    /* Highlight */
+    --highlight-glow: rgba(255, 255, 0, 0.8); /* Default yellow glow */
+  }
+  
+/* Import variables */
+
+/* Override variables for dark theme */
+.dark-theme {
+  --background-body: #0a0a0a;
+  --background-box: #1a1a1a;
+  --text-color: #d0d0d0;
+  --background-sidebar: #141414;
+  --background-modal: #141414;
+  --background-board: #141414;
+  --border-color: #333333;
+
+
+  --color-primary: #2c3e50;
+  --color-primary-hover: #34495e;
+  --color-secondary: #2ecc71;
+  --color-secondary-hover: #27ae60;
+  --color-success: #27ae60;
+  --color-success-hover: #219a52;
+  --color-danger: #c0392b;
+  --color-danger-hover: #a93226;
+  --color-warning: #f39c12;
+  --color-info: #3498db;
+  --color-disabled: #555555; /* Dim gray for disabled background */
+  --color-disabled-text: #888888; /* Lighter gray for disabled text */
+
+  --input-bg: #1a1a1a;
+  --input-text-color: #d0d0d0;
+  --input-border-color: #333333;
+
+  --text-color-light: #e0e0e0;
+
+  /* Headers and Labels */
+  --font-family-header: 'Arial', sans-serif;
+  --header-color: #d0d0d0;
+
+  --font-family-label: 'Arial', sans-serif;
+  --label-color: #a0a0a0;
+
+  --highlight-glow: rgba(144, 238, 144, 0.8);
+}
+
+/* Additional styles for dark theme */
+body {
+  background-color: var(--background-body);
+  color: var(--text-color);
+}
+
+/* Scrollbars */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: var(--color-primary);
+  border-radius: 4px;
+}
+
+/* variables.css */
+
+/* Color Palette */
+:root {
+    /* Primary Colors */
+    --color-primary: #007bff;
+    --color-primary-hover: #0056b3;
+    --color-secondary: #6c757d;
+    --color-secondary-hover: #5a6268;
+    --color-success: #28a745;
+    --color-success-hover: #218838;
+    --color-danger: #dc3545;
+    --color-danger-hover: #c82333;
+    --color-warning: #ffc107;
+    --color-info: #17a2b8;
+    --color-light: #f8f9fa;
+    --color-dark: #343a40;
+
+    /* Disabled Colors */
+    --color-disabled: #e0e0e0; /* Light gray for disabled state */
+    --color-disabled-text: #b0b0b0; /* Slightly darker gray for disabled text */
+  
+    /* Background Colors */
+    --background-body: var(--color-light);
+    --background-sidebar: #f0f0f0;
+    --background-modal: var(--color-light);
+    --background-board: #f4f4f4;
+
+    /*Headers*/
+    --font-family-header: 'Arial', sans-serif; /* Default header font */
+    --header-color: #333; /* Default header color */
+    
+    /*Labels*/
+    --font-family-label: 'Arial', sans-serif; /* Default label font */
+    --label-color: #333; /* Default label color */
+  
+    /* Text Colors */
+    --text-color: #212529;
+    --text-color-light: #ffffff;
+
+    /* Input Background and Text */
+    --input-bg: #ffffff;
+    --input-text-color: #000000;
+    --input-border-color: #cccccc;
+
+    /* Box backgrounds */
+    --background-box: #f4f4f4;
+  
+    /* Borders */
+    --border-color: #cccccc;
+  
+    /* Fonts */
+    --font-family-base: 'Arial', sans-serif;
+    --font-size-base: 16px;
+  
+    /* Spacing */
+    --spacing-unit: 8px;
+  
+    /* Z-Index Levels */
+    --z-index-modal: 1000;
+    --z-index-tooltip: 1100;
+
+    /* Highlight */
+    --highlight-glow: rgba(255, 255, 0, 0.8); /* Default yellow glow */
+  }
+  
+/* Import variables */
+
+/* Override variables for retro theme */
+.retro-theme {
+  --background-body: #f4ecd8;
+  --background-box: #f0e4d8;
+  --text-color: #5c5b5a;
+  --background-sidebar: #fff0d4;
+  --background-modal: #fff0d4;
+  --background-board: #ffcc5c;
+  --border-color: #e6be8a;
+
+  --color-primary: #e6be8a;
+  --color-primary-hover: #d4a572;
+  --color-secondary: #d4a572;
+  --color-secondary-hover: #c0935f;
+  --color-success: #c97b63;
+  --color-success-hover: #b76553;
+  --color-danger: #b76553;
+  --color-danger-hover: #a35245;
+  --color-warning: #ffc107;
+  --color-info: #17a2b8;
+  --color-disabled: #d0b37a;
+  --color-disabled-text: #9e9e9e;
+
+  --input-bg: #ffcc5c;
+  --input-text-color: #5c5b5a;
+  --input-border-color: #e6be8a;
+
+  --text-color-light: #333333;
+
+  /* Headers and Labels */
+  --font-family-header: 'Courier New', Courier, monospace;
+  --header-color: #5c5b5a;
+
+  --font-family-label: 'Courier New', Courier, monospace;
+  --label-color: #5c5b5a;
+
+  --highlight-glow: rgba(255, 0, 255, 0.8); /* Pink glow for retro theme */
+}
+
+/* Additional styles for retro theme */
+body {
+  background-color: var(--background-body);
+  color: var(--text-color);
+  font-family: var(--font-family-base);
+}
+
+/* Optional Background Texture */
+/*
+body {
+  background-image: url('../assets/images/retro-pattern.png');
+  background-size: cover;
+  background-attachment: fixed;
+}
+*/
+
+/* In your main CSS file, include all themes */
+/* styles.scss */
+
+/* Import all themes */
+
