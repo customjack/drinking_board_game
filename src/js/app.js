@@ -10,7 +10,7 @@ import RegistryManager from './registries/RegistryManager';
 import EventBus from './events/EventBus';
 import PluginManager from './pluginManagement/PluginManager';
 
-import { randomNumber, randomWord, randomColor } from './utils/PlaceholderFunctions';
+import { randomNumber, randomWord, randomColor, randomSong } from './utils/PlaceholderFunctions';
 
 // Initialize personal settings
 const personalSettings = new PersonalSettings();
@@ -37,9 +37,10 @@ pageRegistry.registerPage('hostPage');
 pageRegistry.registerPage('loadingPage');
 
 //Register placeholders
-placeholderRegistry.register('randomNumber', randomNumber);
-placeholderRegistry.register('randomWord', randomWord);
-placeholderRegistry.register('randomColor', randomColor);
+placeholderRegistry.register('RANDOM_NUMBER', randomNumber);
+placeholderRegistry.register('RANDOM_WORD', randomWord);
+placeholderRegistry.register('RANDOM_COLOR', randomColor);
+placeholderRegistry.register('RANDOM_SONG', randomSong);
 
 // Initialize the EventBus and PluginManager
 const eventBus = new EventBus();

@@ -1,16 +1,27 @@
+// Import the JSON data
+import randomColors from '../../assets/random_samples/random_colors.json';
+import randomSongs from '../../assets/random_samples/random_songs.json';
+import randomWords from '../../assets/random_samples/random_words.json';
+
 // Generates a random number between min and max (inclusive)
 export function randomNumber(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-// Returns a random word from a predefined list of words
+// Returns a random word from the randomWords array loaded from JSON
 export function randomWord() {
-    const words = ['apple', 'banana', 'orange', 'pear', 'grape', 'plum'];
-    return words[Math.floor(Math.random() * words.length)];
+    return randomWords[Math.floor(Math.random() * randomWords.length)];
 }
 
-// Returns a random color from a predefined list of colors
+// Returns a random color from the randomColors array loaded from JSON
+// I really don't know what I thought the purpose of this one would be
 export function randomColor() {
-    const colors = ['#FF5733', '#33FF57', '#3357FF', '#F3FF33', '#33F3FF', '#FF33F3'];
-    return colors[Math.floor(Math.random() * colors.length)];
+    return randomColors[Math.floor(Math.random() * randomColors.length)];
 }
+
+// Returns the track name of a random song from the randomSongs array
+export function randomSong() {
+    const song = randomSongs[Math.floor(Math.random() * randomSongs.length)];
+    return song.track_name;  // Return the track name of the random song
+}
+

@@ -139,6 +139,7 @@ export default class HostEventHandler extends BaseEventHandler {
             this.peer.peer.id,
             (proposedGameState) => this.peer.updateAndBroadcastGameState(proposedGameState),
             this.eventBus,
+            this.registryManager,
             true  // isHost = true
         );
         this.gameEngine.init();

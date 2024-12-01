@@ -60,22 +60,58 @@ export default class Action {
 
     handlePromptAllPlayers(gameEngine) {
         const { payload } = this;
-
+    
         if (payload?.message && gameEngine.peerId) {
+            // Get the PlaceholderRegistry from the game engine
+            const placeholderRegistry = gameEngine.registryManager.getRegistry('placeholderRegistry');
+    
+            if (placeholderRegistry) {
+                // Temporarily add the CURRENT_PLAYER_NAME placeholder if needed
+                placeholderRegistry.register('CURRENT_PLAYER_NAME', (gameEngine) => {
+                    const currentPlayer = gameEngine.gameState.getCurrentPlayer();
+                    return currentPlayer ? currentPlayer.nickname : 'Unknown Player';
+                });
+    
+                // Replace placeholders in the message and pass gameEngine as context
+                payload.message = placeholderRegistry.replacePlaceholders(payload.message, gameEngine);
+    
+                // After message editing, unregister CURRENT_PLAYER_NAME to prevent future use
+                placeholderRegistry.unregister('CURRENT_PLAYER_NAME');
+            }
+    
             console.log(`Prompting all players: ${payload.message}`);
             gameEngine.showPromptModal(payload.message);
         } else {
             this.logMissingParams(['payload', 'payload.message', 'peerId']);
         }
     }
-
+    
     handlePromptCurrentPlayer(gameEngine) {
         const { payload } = this;
-
+    
         if (payload?.message && gameEngine.peerId) {
             const currentPlayer = gameEngine.gameState.getCurrentPlayer();
+            
+            // Get the PlaceholderRegistry from the game engine
+            console.log(gameEngine);
+            const placeholderRegistry = gameEngine.registryManager.getRegistry('placeholderRegistry');
+            
+            if (placeholderRegistry) {
+                // Temporarily add the CURRENT_PLAYER_NAME placeholder if needed
+                placeholderRegistry.register('CURRENT_PLAYER_NAME', (gameEngine) => {
+                    const currentPlayer = gameEngine.gameState.getCurrentPlayer();
+                    return currentPlayer ? currentPlayer.nickname : 'Unknown Player';
+                });
+    
+                // Replace placeholders in the message and pass gameEngine as context
+                payload.message = placeholderRegistry.replacePlaceholders(payload.message, gameEngine);
+    
+                // After message editing, unregister CURRENT_PLAYER_NAME to prevent future use
+                placeholderRegistry.unregister('CURRENT_PLAYER_NAME');
+            }
+    
             console.log(`Prompting ${currentPlayer.nickname}: ${payload.message}`);
-
+    
             if (currentPlayer.peerId === gameEngine.peerId) {
                 gameEngine.showPromptModal(payload.message);
             }
@@ -83,6 +119,8 @@ export default class Action {
             this.logMissingParams(['payload', 'payload.message', 'peerId']);
         }
     }
+    
+    
 
     handleSetCurrentPlayerToSpectator(gameEngine) {
         gameEngine.gameState.getCurrentPlayer().isSpectator = true;
