@@ -72,15 +72,18 @@ export default class Action {
                     return currentPlayer ? currentPlayer.nickname : 'Unknown Player';
                 });
     
+                // Create a copy of payload.message for processing
+                let processed_message = payload.message;
+    
                 // Replace placeholders in the message and pass gameEngine as context
-                payload.message = placeholderRegistry.replacePlaceholders(payload.message, gameEngine);
+                processed_message = placeholderRegistry.replacePlaceholders(processed_message, gameEngine);
     
                 // After message editing, unregister CURRENT_PLAYER_NAME to prevent future use
                 placeholderRegistry.unregister('CURRENT_PLAYER_NAME');
-            }
     
-            console.log(`Prompting all players: ${payload.message}`);
-            gameEngine.showPromptModal(payload.message);
+                console.log(`Prompting all players: ${processed_message}`);
+                gameEngine.showPromptModal(processed_message);
+            }
         } else {
             this.logMissingParams(['payload', 'payload.message', 'peerId']);
         }
@@ -93,7 +96,6 @@ export default class Action {
             const currentPlayer = gameEngine.gameState.getCurrentPlayer();
             
             // Get the PlaceholderRegistry from the game engine
-            console.log(gameEngine);
             const placeholderRegistry = gameEngine.registryManager.getRegistry('placeholderRegistry');
             
             if (placeholderRegistry) {
@@ -103,17 +105,20 @@ export default class Action {
                     return currentPlayer ? currentPlayer.nickname : 'Unknown Player';
                 });
     
+                // Create a copy of payload.message for processing
+                let processed_message = payload.message;
+    
                 // Replace placeholders in the message and pass gameEngine as context
-                payload.message = placeholderRegistry.replacePlaceholders(payload.message, gameEngine);
+                processed_message = placeholderRegistry.replacePlaceholders(processed_message, gameEngine);
     
                 // After message editing, unregister CURRENT_PLAYER_NAME to prevent future use
                 placeholderRegistry.unregister('CURRENT_PLAYER_NAME');
-            }
     
-            console.log(`Prompting ${currentPlayer.nickname}: ${payload.message}`);
+                console.log(`Prompting ${currentPlayer.nickname}: ${processed_message}`);
     
-            if (currentPlayer.peerId === gameEngine.peerId) {
-                gameEngine.showPromptModal(payload.message);
+                if (currentPlayer.peerId === gameEngine.peerId) {
+                    gameEngine.showPromptModal(processed_message);
+                }
             }
         } else {
             this.logMissingParams(['payload', 'payload.message', 'peerId']);
@@ -129,52 +134,67 @@ export default class Action {
 
     handleDisplacePlayer(gameEngine) {
         const { steps } = this.payload || {};
-    
+        
         if (steps === undefined) {
             this.logMissingParams(['payload.steps']);
             return;
         }
-    
+        
         const currentPlayer = gameEngine.gameState.getCurrentPlayer(); // Get the current player
         if (!currentPlayer) {
             console.warn(`No active player found in the game state.`);
             return;
         }
-    
+        
         if (steps > 0) {
             // Positive displacement: Add steps to remaining moves
             console.log(`Adding ${steps} moves to ${currentPlayer.nickname}'s remaining moves.`);
-            gameEngine.gameState.setRemainingMoves(gameState.remainingMoves + steps);
-    
+            gameEngine.gameState.setRemainingMoves(gameEngine.gameState.remainingMoves + steps);
+        
         } else if (steps < 0) {
             // Negative displacement: Move back in movement history
             const moveBackSteps = Math.abs(steps);
-    
-            // Get the player's movement history
-            const history = currentPlayer.movementHistory.getHistoryForTurn(gameState.getTurnNumber());
-            if (history.length === 0) {
+        
+            if (currentPlayer.movementHistory.flattenHistory().length === 0) {
                 console.warn(`${currentPlayer.nickname} has no movement history to move back.`);
                 return;
             }
     
-            // Determine the target index in the movement history
-            const targetIndex = Math.max(0, history.length - moveBackSteps - 1);
-    
+        
+            // Flatten the history and filter out backtracked moves
+            const flatHistory = currentPlayer.movementHistory.flattenHistory().filter(move => !move.isBacktracked);
+        
+            // Calculate the target index after moving back the specified steps
+            const targetIndex = Math.max(0, flatHistory.length - moveBackSteps - 1);
+        
+            // Get the target move (the move we want to go back to)
+            const targetMove = flatHistory[targetIndex];
+        
+            if (!targetMove) {
+                console.warn(`Cannot move ${currentPlayer.nickname} back ${moveBackSteps} steps as there aren't enough previous moves.`);
+                return;
+            }
+        
             // Update the player's current position
-            const targetPosition = history[targetIndex].spaceId;
+            const targetPosition = targetMove.spaceId;
             console.log(
                 `Moving ${currentPlayer.nickname} back ${moveBackSteps} steps to position ${targetPosition}.`
             );
             currentPlayer.setCurrentSpaceId(targetPosition);
-    
-            // Truncate the movement history to reflect the new position
-            currentPlayer.movementHistory.history = history.slice(0, targetIndex + 1);
-
-            gameEngine.changePhase({ newTurnPhase: TurnPhases.PROCESSING_EVENTS, delay: 0 });
+        
+            // Mark the moves as backtracked
+            for (let i = targetIndex + 1; i < currentPlayer.movementHistory.flattenHistory().length; i++) {
+                const move = currentPlayer.movementHistory.flattenHistory()[i];
+                move.markAsBacktracked();
+            }
+        
         } else {
             console.warn(`Displacement of 0 steps has no effect.`);
         }
-    }    
+        
+        gameEngine.changePhase({ newTurnPhase: TurnPhases.PROCESSING_EVENTS, delay: 0 });
+    }
+     
     
 
     handleCustom() {

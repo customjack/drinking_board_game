@@ -46,6 +46,7 @@ export default class ClientEventHandler extends BaseEventHandler {
             this.peer.peer.id,
             (proposedGameState) => this.peer.proposeGameState(proposedGameState),
             this.eventBus,
+            this.registryManager,
             false  // isHost = false
         );
         this.gameEngine.init();

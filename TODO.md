@@ -1,5 +1,11 @@
 # TODO - Features to Implement
 
+## PlayerState class
+- has SPECTATOR
+- has COMPLETED_GAME
+- has SKIP_TURNS
+- etc...
+
 ## Force Stop at Space
 - **Thwamp**: Make the player stop their turn at a specific space (circle) and do an action.  
   - Action type: `FORCE_STOP`
@@ -30,6 +36,7 @@
 
 - **Double Turn**: The player gets an additional immediate turn.  
   - Action type: `DOUBLE_TURN`
+  - **Consideration**: Better to just make it so they get to roll again, a double turn would mess with turn history and the turns taken tracking. Makes dynamically joining a in progress game much more confusing to have players have indepdent number of turns. Alternatively, more logic could be added to track the total number of turns for the game, and players could have an independent number of turns. 
 
 - **Freeze Player**: Choose another player to freeze, making them skip their turn.  
   - Action type: `FREEZE_PLAYER`

@@ -159,21 +159,29 @@ export default class GameState {
         const currentPlayer = playerId 
             ? this.players.find(player => player.playerId === playerId) 
             : this.getCurrentPlayer();
-
+    
         if (!currentPlayer) {
             console.error(`No player found with ID: ${playerId}`);
             return;
         }
-
+    
+        // If the player has no movement history (first time moving), add their initial space
+        if (currentPlayer.movementHistory.isEmpty()) {
+            console.log(`${currentPlayer.nickname} starts at space ${spaceId}`);
+            currentPlayer.movementHistory.addMove(this.getTurnNumber(), currentPlayer.currentSpaceId, this.remainingMoves);
+        }
+    
         // Move the player to the specified space
         currentPlayer.setCurrentSpaceId(spaceId);
 
-        // Track the movement history
-        currentPlayer.movementHistory.addMove(this.getTurnNumber(), spaceId, this.remainingMoves);
-
         // Decrement the remaining moves
         this.decrementMoves(movesDecremented);
+    
+        // Track the movement history for subsequent moves
+        currentPlayer.movementHistory.addMove(this.getTurnNumber(), spaceId, this.remainingMoves);
+    
     }
+    
 
 
     // Check if the current player has any remaining moves

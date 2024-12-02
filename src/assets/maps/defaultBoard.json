@@ -64,7 +64,7 @@
     },
     {
       "id": 3,
-      "name": "Move Forward 2",
+      "name": "Displace Player",
       "type": "action",
       "events": [
         {
@@ -74,7 +74,18 @@
           "action": {
             "type": "PROMPT_CURRENT_PLAYER",
             "payload": {
-              "message": "You can move forward 2 spaces!"
+              "message": "You move back 2 spaces!"
+            }
+          }
+        },
+        {
+          "trigger": {
+            "type": "ON_ENTER"
+          },
+          "action": {
+            "type": "DISPLACE_PLAYER",
+            "payload": {
+              "steps": -2
             }
           }
         }
@@ -83,7 +94,7 @@
         "x": 400,
         "y": 200,
         "size": 60,
-        "color": "#ccccff",
+        "color": "#ffcccc",
         "textColor": "#000000",
         "font": "12px Arial",
         "textAlign": "center",
@@ -95,7 +106,7 @@
           "drawConnection": true
         }
       ]
-    },
+    },    
     {
       "id": 4,
       "name": "Take Another Drink",

@@ -27,16 +27,15 @@ export default class Trigger {
                 }
                 break;
             case TriggerTypes.ON_ENTER:
-                isTriggered = player.currentSpaceId === space.id;
+                const hasMovedThisTurn = player.movementHistory.getHistoryForTurn(gameState.getTurnNumber()).length > 0;
+                isTriggered = hasMovedThisTurn && player.currentSpaceId === space.id;
                 break;
             case TriggerTypes.ON_LAND:
                 isTriggered = player.currentSpaceId === space.id && !gameState.hasMovesLeft();
                 break;
             case TriggerTypes.ON_EXIT:
                 // Check if the player exited from the space by looking up their movement history
-                const movementHistory = player.movementHistory.getFullHistory();
-                const allMoves = Object.values(movementHistory).flat(); // Flatten the history into a single array
-                const lastMove = allMoves[allMoves.length - 2]; // Get the second most recent move (most recent is current)
+                const lastMove = player.movementHistory.getPreviousMove(1); // Get the second most recent move
                 isTriggered = lastMove && lastMove.spaceId === space.id; // Check if it matches the space ID
                 break;
             default:
