@@ -6,6 +6,17 @@
 - has SKIP_TURNS
 - etc...
 
+## Make pause button not invisible when the timer is disabled
+- Also increase timer bounds while we're at it
+
+## Remaining moves dislayed on UI
+- Need a "game info bar" above the board
+
+## Log of what happened displayed on UI
+- Need a "game log" to the right of the board
+- Gamelog would have to be a new serializable class attached to the gamestate
+- much like player list, board, etc it would need it's own update logic.
+
 ## Force Stop at Space
 - **Thwamp**: Make the player stop their turn at a specific space (circle) and do an action.  
   - Action type: `FORCE_STOP`
@@ -41,3 +52,8 @@
 - **Freeze Player**: Choose another player to freeze, making them skip their turn.  
   - Action type: `FREEZE_PLAYER`
   - **Consideration**: Is this the same as `SKIP_TURN` for
+
+## End conditions
+- Add ability to specify end conditions in the board json file (ex. all players in COMPLETED_GAME state, all but one player in ELIMINATED state, a custom option that acts as a placeholder for plugins to put in their own end conditions)
+
+## Robust handling of stats and stat displays

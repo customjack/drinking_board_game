@@ -1,4 +1,5 @@
 import ActionTypes from '../enums/ActionTypes';
+import PlayerStates from '../enums/PlayerStates';
 import TurnPhases from '../enums/TurnPhases';
 import { processStringToEnum } from '../utils/helpers';
 
@@ -42,7 +43,7 @@ export default class Action {
             [ActionTypes.CODE]: this.handleCode.bind(this),
             [ActionTypes.PROMPT_ALL_PLAYERS]: this.handlePromptAllPlayers.bind(this),
             [ActionTypes.PROMPT_CURRENT_PLAYER]: this.handlePromptCurrentPlayer.bind(this),
-            [ActionTypes.SET_CURRENT_PLAYER_TO_SPECTATOR]: this.handleSetCurrentPlayerToSpectator.bind(this),
+            [ActionTypes.SET_PLAYER_STATE]: this.handleSetPlayerState.bind(this),
             [ActionTypes.DISPLACE_PLAYER]: this.handleDisplacePlayer.bind(this),
             [ActionTypes.CUSTOM]: this.handleCustom.bind(this),
         };
@@ -127,8 +128,27 @@ export default class Action {
     
     
 
-    handleSetCurrentPlayerToSpectator(gameEngine) {
-        gameEngine.gameState.getCurrentPlayer().isSpectator = true;
+    handleSetPlayerState(gameEngine) {
+        const { state } = this.payload || {};
+        
+        if (!state) {
+            this.logMissingParams(['payload.state']);
+            return;
+        }
+    
+        const currentPlayer = gameEngine.gameState.getCurrentPlayer();
+        if (currentPlayer) {
+            try {
+                currentPlayer.setState(state); // Use the setter method for proper state assignment
+                console.log(`Set ${currentPlayer.nickname}'s state to ${state}.`);
+            } catch (error) {
+                console.error(`Failed to set player state: ${error.message}`);
+            }
+        } else {
+            console.warn('No current player found to set state.');
+        }
+        console.log(currentPlayer.getState());
+    
         gameEngine.changePhase({ newTurnPhase: TurnPhases.PROCESSING_EVENTS, delay: 0 });
     }
 

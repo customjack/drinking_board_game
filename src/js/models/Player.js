@@ -2,7 +2,7 @@ import { v4 as uuidv4 } from 'uuid';
 import ColorAssigner from '../utils/ColorAssigner';
 import RollEngine from '../utils/RollEngine';
 import PlayerMovementHistory from './PlayerMovementHistory';
-
+import PlayerStates from '../enums/PlayerStates';
 
 export default class Player {
     /**
@@ -11,32 +11,27 @@ export default class Player {
      * @param {string} nickname - The display name of the player.
      * @param {boolean} [isHost=false] - Indicates if the player is the host.
      * @param {string} [playerId] - Optional unique player ID. If not provided, it will be generated.
+     * @param {string} [initialState=PlayerStates.WAITING] - The initial state of the player.
      */
-    constructor(peerId, nickname, isHost = false, playerId = null, isSpectator = false) {
+    constructor(peerId, nickname, isHost = false, playerId = null, initialState = PlayerStates.WAITING) {
         this.peerId = peerId;
         this.nickname = nickname;
         this.isHost = isHost;
         this.stats = {};
-        this.playerId = playerId || this.generatePlayerId(); // Unique player ID
-        this.id = this.playerId; //Another name for playerId;
-        this.isSpectator = isSpectator;
+        this.playerId = playerId || this.generatePlayerId();
+        this.id = this.playerId;
+        this.state = initialState; // Use PlayerStates instead of isSpectator
 
         // Default to space 1 at the start
-        this.currentSpaceId = 1;  // The space the player is currently on
+        this.currentSpaceId = 1;
 
-        // Initialize player and peer colors
-        this.playerColor = (new ColorAssigner()).assignColor(this.playerId);  // Assign a unique color using ColorAssigner based on playerId
-        this.peerColor   = (new ColorAssigner()).assignColor(this.peerId);    // Assign a unique color using ColorAssigner based on peerId
+        this.playerColor = (new ColorAssigner()).assignColor(this.playerId);
+        this.peerColor = (new ColorAssigner()).assignColor(this.peerId);
 
-        // Initialize RollEngine with a seed based on the player's unique ID
         this.rollEngine = new RollEngine(this.generateSeedFromId(this.playerId));
+        this.turnsTaken = 0;
 
-        // Track the number of turns the player has taken
-        this.turnsTaken = 0;  // New attribute for tracking turns taken
-
-        //Movement history tracker
-        this.movementHistory = new PlayerMovementHistory();  // Initialize movement history
-
+        this.movementHistory = new PlayerMovementHistory();
     }
 
     /**
@@ -150,6 +145,25 @@ export default class Player {
     }
 
     /**
+     * Sets the player's state.
+     * @param {string} newState - The new state for the player. Must be a valid PlayerStates value.
+     */
+    setState(newState) {
+        if (!Object.values(PlayerStates).includes(newState)) {
+            throw new Error(`Invalid player state: ${newState}`);
+        }
+        this.state = newState;
+    }
+
+    /**
+     * Gets the player's current state.
+     * @returns {string} The player's current state.
+     */
+    getState() {
+        return this.state;
+    }
+
+    /**
      * Sets the player's current space ID.
      * @param {number} spaceId - The ID of the space the player is moving to.
      */
@@ -189,7 +203,7 @@ export default class Player {
             peerId: this.peerId,
             nickname: this.nickname,
             isHost: this.isHost,
-            isSpectator: this.isSpectator,
+            state: this.state,
             stats: this.stats,
             playerId: this.playerId,
             currentSpaceId: this.currentSpaceId,
@@ -204,8 +218,14 @@ export default class Player {
      * @param {Object} json - The JSON object containing player data.
      * @returns {Player} A new Player instance.
      */
-    static fromJSON(json) {
-        const player = new Player(json.peerId, json.nickname, json.isHost, json.playerId, json.isSpectator);
+    static fromJSON(json) {    
+        const player = new Player(
+            json.peerId,
+            json.nickname,
+            json.isHost,
+            json.playerId,
+            json.state
+        );
         player.stats = json.stats;
         player.currentSpaceId = json.currentSpaceId;
         player.rollEngine = RollEngine.fromJSON(json.rollEngine);  // Rebuild the RollEngine from JSON

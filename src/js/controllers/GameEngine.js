@@ -4,6 +4,7 @@ import GameState from '../models/GameState';
 import GameEvent from '../models/GameEvent';
 import TurnPhases from '../enums/TurnPhases';
 import GamePhases from '../enums/GamePhases';
+import PlayerStates from '../enums/PlayerStates';
 import ParticleAnimation from '../animations/ParticleAnimation';
 import RollButtonManager from './managers/RollButtonManager';
 import TimerManager from './managers/TimerManager';
@@ -136,11 +137,10 @@ export default class GameEngine {
         this.eventBus.emit('changeTurn', { gamestate: this.gameState });
         
         if (this.isClientTurn()) {
-            console.log(this.gameState.getCurrentPlayer());
-            console.log(this.gameState.getCurrentPlayer().isSpectator);
-            if (this.gameState.getCurrentPlayer().isSpectator) {
+            console.log(this.gameState.getCurrentPlayer().getState());
+            if ( [PlayerStates.COMPLETED_GAME, PlayerStates.SPECTATING, PlayerStates.DISCONNECTED].includes(this.gameState.getCurrentPlayer().getState()) ) {
                 // Transition to END_TURN phase with no delay
-                this.changePhase({ newTurnPhase: TurnPhases.END_TURN, delay: 0});
+                this.changePhase({ newTurnPhase: TurnPhases.END_TURN, delay: 0 });
             } else {
                 // Transition to WAITING_FOR_MOVE phase with no delay
                 this.changePhase({ newTurnPhase: TurnPhases.BEGIN_TURN, delay: 0});
@@ -262,9 +262,9 @@ export default class GameEngine {
         this.timerManager.stopTimer();
 
         // Check if all players are spectators
-        const allSpectators = this.gameState.players.every(player => player.isSpectator);
+        const allCompletedGame = this.gameState.players.every(player => player.getState() === PlayerStates.COMPLETED_GAME);
 
-        if (allSpectators) {
+        if (allCompletedGame) {
             console.log("All players are spectators. Ending the game.");
             this.changePhase({ newGamePhase: GamePhases.GAME_ENDED, newTurnPhase: TurnPhases.CHANGE_TURN, delay: 0}); //End the game
 

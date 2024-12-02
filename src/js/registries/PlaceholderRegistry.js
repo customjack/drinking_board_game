@@ -32,7 +32,6 @@ export default class PlaceholderRegistry extends BaseRegistry {
             const [name, argsString] = this._parseExpression(expression);
             const upperCaseName = name.toUpperCase();  // Convert name to uppercase
             const generator = this.registry[upperCaseName];  // Access the registry using the uppercase name
-            console.log(upperCaseName,generator);
 
             if (!generator) {
                 console.warn(`No generator found for placeholder: ${upperCaseName}`);

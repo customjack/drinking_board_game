@@ -38,7 +38,7 @@
             "type": "ON_ENTER"
           },
           "action": {
-            "type": "PROMPT_CURRENT_PLAYER",
+            "type": "PROMPT_ALL_PLAYERS",
             "payload": {
               "message": "You take a drink! {{CURRENT_PLAYER_NAME}}. Your random word is {{RANDOM_WORD}}, your random color is {{RANDOM_COLOR}}, your random number between 1 and 10 is {{RANDOM_NUMBER(1,10)}} and the song you should play is {{RANDOM_SONG}}."
             }
@@ -69,7 +69,7 @@
       "events": [
         {
           "trigger": {
-            "type": "ON_ENTER"
+            "type": "ON_LAND"
           },
           "action": {
             "type": "PROMPT_CURRENT_PLAYER",
@@ -80,7 +80,7 @@
         },
         {
           "trigger": {
-            "type": "ON_ENTER"
+            "type": "ON_LAND"
           },
           "action": {
             "type": "DISPLACE_PLAYER",
@@ -367,7 +367,10 @@
             "type": "ON_LAND"
           },
           "action": {
-            "type": "SET_CURRENT_PLAYER_TO_SPECTATOR"
+            "type": "SET_PLAYER_STATE",
+            "payload": {
+              "state": "COMPLETED_GAME"
+            }
           }
         },
         {
