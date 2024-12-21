@@ -4,11 +4,12 @@ import PieceManager from '../controllers/managers/PieceManager';
 import SettingsManager from '../controllers/managers/SettingsManager';
 
 export default class BaseEventHandler {
-    constructor(isHost, registryManager, pluginManager, eventBus) {
+    constructor(isHost, registryManager, pluginManager, factoryManager, eventBus) {
         this.registryManager = registryManager;
         this.pageRegistry = registryManager.getPageRegistry();
         this.listenerRegistry = registryManager.getListenerRegistry();
         this.pluginManager = pluginManager;
+        this.factoryManager = factoryManager;
         this.eventBus = eventBus;
         this.isHost = isHost;
 

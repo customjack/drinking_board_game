@@ -5,15 +5,18 @@ export default class SkipTurnEffect extends PlayerEffect {
         super("SkipTurn", duration);
     }
 
+    // Implementation of the 'apply' method, determining how this effect affects the game
+    apply(gameEngine) {
+        // Example: Skips the turn for all players in a specific game condition
+        console.log(`Applying SkipTurn effect for ${this.duration} turns.`);
+    }
+
     enact(gameEngine) {
-        gameEngine.currentPlayer.skipTurn = true;
-        console.log(`Player's turn skipped for ${this.duration} turns.`);
+        console.log(`Enacting SkipTurn effect for ${this.duration} turns.`);
+        // Implement the logic that actually skips the player's turn
     }
 
     static fromJSON(json) {
         return new SkipTurnEffect(json.duration);
     }
 }
-
-// Register the subclass for deserialization
-PlayerEffect.registerEffect(SkipTurnEffect);

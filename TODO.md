@@ -1,10 +1,6 @@
 # TODO - Features to Implement
 
-## PlayerState class
-- has SPECTATOR
-- has COMPLETED_GAME
-- has SKIP_TURNS
-- etc...
+## Give Player Class acccess to factory manager for creating classes
 
 ## Make pause button not invisible when the timer is disabled
 - Also increase timer bounds while we're at it
@@ -17,6 +13,7 @@
 - Gamelog would have to be a new serializable class attached to the gamestate
 - much like player list, board, etc it would need it's own update logic.
 
+
 ## Force Stop at Space
 - **Thwamp**: Make the player stop their turn at a specific space (circle) and do an action.  
   - Action type: `FORCE_STOP`
@@ -27,9 +24,6 @@
   - **Consideration**: Need a way to select the target player (prompt or UI selection)
 
 ## Other Actions
-- **Skip Turn**: Skip the player's turn for a round.  
-  - Action type: `SKIP_TURN`
-  
 - **Swap Places**: Swap positions of two players on the board.  
   - Action type: `SWAP_PLACES`
 
@@ -49,9 +43,22 @@
   - Action type: `DOUBLE_TURN`
   - **Consideration**: Better to just make it so they get to roll again, a double turn would mess with turn history and the turns taken tracking. Makes dynamically joining a in progress game much more confusing to have players have indepdent number of turns. Alternatively, more logic could be added to track the total number of turns for the game, and players could have an independent number of turns. 
 
-- **Freeze Player**: Choose another player to freeze, making them skip their turn.  
-  - Action type: `FREEZE_PLAYER`
-  - **Consideration**: Is this the same as `SKIP_TURN` for
+- **Set Stat**
+
+- **Incriment Stat**
+
+- **Randomize positions**
+
+
+## Effects
+- **Skip Turn**:
+- **Dice Roll changes**
+- **Stat modifiers**
+- **Reverse direction**
+- **Random movement (cannot choose direction)**
+- **Lay traps**
+
+
 
 ## End conditions
 - Add ability to specify end conditions in the board json file (ex. all players in COMPLETED_GAME state, all but one player in ELIMINATED state, a custom option that acts as a placeholder for plugins to put in their own end conditions)

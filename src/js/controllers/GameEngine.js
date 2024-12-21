@@ -20,18 +20,20 @@ export default class GameEngine {
      * @param {Function} proposeGameState - Function to propose a new game state to the host
      * @param {EventBus} eventBus - Event bus to emit events
      * @param {RegistryManager} registryManager - The registry manager to handle various registries
+     * @param {FactoryManager} factoryManager - The manager to handle effect and object creation
      * @param {Boolean} isHost - Whether this peer is the host
      */
-    constructor(gameState, peerId, proposeGameState, eventBus, registryManager, isHost = false) {
+    constructor(gameState, peerId, proposeGameState, eventBus, registryManager, factoryManager, isHost = false) {
         this.gameState = gameState;
         this.peerId = peerId;
         this.eventBus = eventBus;
         this.proposeGameState = proposeGameState;
         this.registryManager = registryManager;
+        this.factoryManager = factoryManager; // Initialize FactoryManager
         this.isHost = isHost;
 
-        //Dynamically populated game events
-        this.gameEventsWithSpaces = null; 
+        // Dynamically populated game events
+        this.gameEventsWithSpaces = null;
         this.gameEVentWithSpace = null;
 
         // Initialize the roll button manager
@@ -67,6 +69,7 @@ export default class GameEngine {
             [TurnPhases.END_TURN]: this.handleEndTurn.bind(this),
         };
     }
+
 
     // Initialize the GameEngine
     init() {

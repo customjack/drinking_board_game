@@ -4,6 +4,12 @@ export default class PlayerEffect {
         this.duration = duration;
     }
 
+    // Abstract 'apply' method - to be implemented by subclasses
+    apply(gameEngine) {
+        throw new Error("apply method must be implemented by subclasses");
+    }
+
+    // 'Enact' method that does the effect's main work
     enact(gameEngine) {
         throw new Error("enact method must be implemented by subclasses");
     }
@@ -17,23 +23,6 @@ export default class PlayerEffect {
     }
 
     static fromJSON(json) {
-        if (!json.type) {
-            throw new Error("JSON does not contain a type field");
-        }
-
-        // Check if the type exists in the mapping and construct the correct class
-        const EffectClass = PlayerEffect.effectMapping[json.type];
-        if (!EffectClass) {
-            throw new Error(`Unknown effect type: ${json.type}`);
-        }
-        return EffectClass.fromJSON(json);
-    }
-
-    // Register subclasses for deserialization
-    static registerEffect(effectClass) {
-        if (!PlayerEffect.effectMapping) {
-            PlayerEffect.effectMapping = {};
-        }
-        PlayerEffect.effectMapping[effectClass.name] = effectClass;
+        throw new Error("fromJSON must be implemented by subclasses");
     }
 }

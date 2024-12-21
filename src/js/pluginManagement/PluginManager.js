@@ -1,10 +1,11 @@
 import Plugin from './Plugin'; // Import the Plugin interface
 
 export default class PluginManager {
-    constructor(eventBus, registryManager) {
+    constructor(eventBus, registryManager, factoryManager) {
         this.plugins = [];
         this.eventBus = eventBus;
         this.registryManager = registryManager;
+        this.factoryManager = factoryManager;
     }
 
     // Register a new plugin
@@ -13,7 +14,7 @@ export default class PluginManager {
             throw new Error('Plugin must extend the Plugin base class.');
         }
         this.plugins.push(plugin);
-        plugin.initialize(this.eventBus, this.registryManager, this.peer, this.isHost);
+        plugin.initialize(this.eventBus, this.registryManager, this.factoryManager);
     }
 
     // Initialize a plugin from a file

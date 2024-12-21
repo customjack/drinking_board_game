@@ -45,6 +45,8 @@ export default class Action {
             [ActionTypes.PROMPT_CURRENT_PLAYER]: this.handlePromptCurrentPlayer.bind(this),
             [ActionTypes.SET_PLAYER_STATE]: this.handleSetPlayerState.bind(this),
             [ActionTypes.DISPLACE_PLAYER]: this.handleDisplacePlayer.bind(this),
+            [ActionTypes.APPLY_EFFECT]: this.handleApplyEffect.bind(this),
+            [ActionTypes.SET_PLAYER_SPACE]: this.handleSetPlayerSpace.bind(this),
             [ActionTypes.CUSTOM]: this.handleCustom.bind(this),
         };
         return handlers[this.type];
@@ -125,8 +127,6 @@ export default class Action {
             this.logMissingParams(['payload', 'payload.message', 'peerId']);
         }
     }
-    
-    
 
     handleSetPlayerState(gameEngine) {
         const { state } = this.payload || {};
@@ -215,6 +215,54 @@ export default class Action {
         gameEngine.changePhase({ newTurnPhase: TurnPhases.PROCESSING_EVENTS, delay: 0 });
     }
      
+    handleApplyEffect(gameEngine) {
+        const { effect } = this.payload || {};
+        
+        if (!effect) {
+            this.logMissingParams(['payload.effect']);
+            return;
+        }
+        
+        try {
+            // Apply the effect to the game or player
+            const effectInstance = gameEngine.factoryManager.getFactory("EffectFactory").createEffectFromJSON(effect);
+            
+            if (effectInstance) {
+                effectInstance.apply(gameEngine); // Enact the effect on the game engine
+                console.log(`Applied effect: ${effect.name}`);
+            } else {
+                console.warn(`Effect "${effect.name}" not recognized.`);
+            }
+        } catch (error) {
+            console.error(`Failed to apply effect: ${error.message}`);
+        }
+
+        gameEngine.changePhase({ newTurnPhase: TurnPhases.PROCESSING_EVENTS, delay: 0 });
+    }
+
+    handleSetPlayerSpace(gameEngine) {
+        console.log("triggered this!")
+        const { spaceId } = this.payload || {};
+        
+        if (spaceId === undefined) {
+            this.logMissingParams(['payload.spaceId']);
+            return;
+        }
+
+        const currentPlayer = gameEngine.gameState.getCurrentPlayer();
+        if (currentPlayer) {
+            try {
+                gameEngine.gameState.movePlayer(spaceId);
+                console.log(`Set ${currentPlayer.nickname}'s space to ${spaceId}.`);
+            } catch (error) {
+                console.error(`Failed to set player space: ${error.message}`);
+            }
+        } else {
+            console.warn('No current player found to set space.');
+        }
+
+        gameEngine.changePhase({ newTurnPhase: TurnPhases.PROCESSING_EVENTS, delay: 0 });
+    }
     
 
     handleCustom() {

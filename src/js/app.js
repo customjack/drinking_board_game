@@ -9,74 +9,166 @@ import PlaceholderRegistry from './registries/PlaceholderRegistry';
 import RegistryManager from './registries/RegistryManager';
 import EventBus from './events/EventBus';
 import PluginManager from './pluginManagement/PluginManager';
+import FactoryManager from './factories/FactoryManager';
+import EffectFactory from './factories/EffectFactory';
+import SkipTurnEffect from './models/PlayerEffects/SkipTurnEffect';
 
 import { randomNumber, randomWord, randomColor, randomSong } from './utils/PlaceholderFunctions';
 
 // Initialize personal settings
-const personalSettings = new PersonalSettings();
-const personalSettingsMenu = new PersonalSettingsMenu('settingsModal', personalSettings);
+function initializePersonalSettings() {
+    const personalSettings = new PersonalSettings();
+    const personalSettingsMenu = new PersonalSettingsMenu('settingsModal', personalSettings);
+    return { personalSettings, personalSettingsMenu };
+}
 
-// Initialize the registry manager
-const registryManager = new RegistryManager();
+// Initialize registries and registry manager
+function initializeRegistryManager() {
+    const registryManager = new RegistryManager();
 
-// Create and add registries to the manager
-const pageRegistry = new PageRegistry();
-const listenerRegistry = new ListenerRegistry();
-const placeholderRegistry = new PlaceholderRegistry();
+    // Create and add registries
+    const pageRegistry = new PageRegistry();
+    const listenerRegistry = new ListenerRegistry();
+    const placeholderRegistry = new PlaceholderRegistry();
 
-registryManager.addRegistry('pageRegistry', pageRegistry);
-registryManager.addRegistry('listenerRegistry', listenerRegistry);
-registryManager.addRegistry('placeholderRegistry', placeholderRegistry);
+    registryManager.addRegistry('pageRegistry', pageRegistry);
+    registryManager.addRegistry('listenerRegistry', listenerRegistry);
+    registryManager.addRegistry('placeholderRegistry', placeholderRegistry);
 
-// Register common pages (only needs to happen once)
-pageRegistry.registerPage('homePage');
-pageRegistry.registerPage('joinPage');
-pageRegistry.registerPage('lobbyPage');
-pageRegistry.registerPage('gamePage');
-pageRegistry.registerPage('hostPage');
-pageRegistry.registerPage('loadingPage');
+    return { registryManager, pageRegistry, listenerRegistry, placeholderRegistry };
+}
 
-//Register placeholders
-placeholderRegistry.register('RANDOM_NUMBER', randomNumber);
-placeholderRegistry.register('RANDOM_WORD', randomWord);
-placeholderRegistry.register('RANDOM_COLOR', randomColor);
-placeholderRegistry.register('RANDOM_SONG', randomSong);
+// Register pages in the PageRegistry
+function registerPages(pageRegistry) {
+    const pages = [
+        'homePage',
+        'joinPage',
+        'lobbyPage',
+        'gamePage',
+        'hostPage',
+        'loadingPage',
+    ];
+    pages.forEach((page) => pageRegistry.registerPage(page));
+}
+
+// Register placeholders
+function registerPlaceholders(placeholderRegistry) {
+    const placeholders = {
+        RANDOM_NUMBER: randomNumber,
+        RANDOM_WORD: randomWord,
+        RANDOM_COLOR: randomColor,
+        RANDOM_SONG: randomSong,
+    };
+
+    Object.entries(placeholders).forEach(([key, value]) => {
+        placeholderRegistry.register(key, value);
+    });
+}
 
 // Initialize the EventBus and PluginManager
-const eventBus = new EventBus();
-const pluginManager = new PluginManager(eventBus, registryManager);
+function initializePluginManager(eventBus, registryManager, factoryManager) {
+    const pluginManager = new PluginManager(eventBus, registryManager, factoryManager);
 
-// Register all plugins in the src/plugins folder
-const requirePlugin = require.context('./plugins', true, /\.js$/);
-requirePlugin.keys().forEach((fileName) => {
-    const pluginModule = requirePlugin(fileName);
-    const plugin = pluginModule.default || pluginModule; // Use default export or the module itself
-    if (plugin && typeof plugin === 'function') {
-        const pluginInstance = new plugin(); // Create an instance of the plugin
-        pluginManager.registerPlugin(pluginInstance); // Register the plugin
-    }
-});
+    // Register plugins
+    const requirePlugin = require.context('./plugins', true, /\.js$/);
+    requirePlugin.keys().forEach((fileName) => {
+        const pluginModule = requirePlugin(fileName);
+        const plugin = pluginModule.default || pluginModule; // Use default export or the module itself
+        if (plugin && typeof plugin === 'function') {
+            const pluginInstance = new plugin(); // Create an instance of the plugin
+            pluginManager.registerPlugin(pluginInstance); // Register the plugin
+        }
+    });
 
-// Register event listeners using ListenerRegistry
-listenerRegistry.registerListener('hostButton', 'click', () => {
-    const hostButton = document.getElementById('hostButton');
-    hostButton.disabled = true;
+    return pluginManager;
+}
 
-    pluginManager.setHost(true);
-    const hostEventHandler = new HostEventHandler(registryManager, pluginManager, eventBus);
-    hostEventHandler.init();
-});
+// Initialize the FactoryManager and register effects
+function initializeFactories() {
+    const factoryManager = new FactoryManager();
 
-listenerRegistry.registerListener('joinButton', 'click', () => {
-    const joinButton = document.getElementById('joinButton');
-    joinButton.disabled = true;
+    // Create and add the EffectFactory
+    const effectFactory = new EffectFactory();
+    factoryManager.registerFactory('EffectFactory', effectFactory);
 
-    pluginManager.setHost(false);
-    const clientEventHandler = new ClientEventHandler(registryManager, pluginManager, eventBus);
-    clientEventHandler.init();
-});
+    // Register effects in the EffectFactory
+    effectFactory.register('SkipTurnEffect', SkipTurnEffect);
 
-// Personal settings button can also use the listener registry if needed
-listenerRegistry.registerListener('gearButton', 'click', () => {
-    personalSettingsMenu.show();
-});
+    return factoryManager;
+}
+
+// Register listeners using ListenerRegistry
+function registerListeners(
+    listenerRegistry,
+    personalSettingsMenu,
+    registryManager,
+    pluginManager,
+    factoryManager,
+    eventBus
+) {
+    listenerRegistry.registerListener('hostButton', 'click', () => {
+        const hostButton = document.getElementById('hostButton');
+        hostButton.disabled = true;
+
+        pluginManager.setHost(true);
+        const hostEventHandler = new HostEventHandler(
+            registryManager,
+            pluginManager,
+            factoryManager,
+            eventBus
+        );
+        hostEventHandler.init();
+    });
+
+    listenerRegistry.registerListener('joinButton', 'click', () => {
+        const joinButton = document.getElementById('joinButton');
+        joinButton.disabled = true;
+
+        pluginManager.setHost(false);
+        const clientEventHandler = new ClientEventHandler(
+            registryManager,
+            pluginManager,
+            factoryManager,
+            eventBus
+        );
+        clientEventHandler.init();
+    });
+
+    listenerRegistry.registerListener('gearButton', 'click', () => {
+        personalSettingsMenu.show();
+    });
+}
+
+// Main application initialization function
+function initializeApp() {
+    // Personal settings
+    const { personalSettingsMenu } = initializePersonalSettings();
+
+    // Registries and manager
+    const { registryManager, pageRegistry, listenerRegistry, placeholderRegistry } =
+        initializeRegistryManager();
+
+    // Factories and manager
+    const factoryManager = initializeFactories();
+
+    // Register pages and placeholders
+    registerPages(pageRegistry);
+    registerPlaceholders(placeholderRegistry);
+
+    // EventBus and PluginManager
+    const eventBus = new EventBus();
+    const pluginManager = initializePluginManager(eventBus, registryManager, factoryManager);
+
+    // Register listeners
+    registerListeners(
+        listenerRegistry,
+        personalSettingsMenu,
+        registryManager,
+        pluginManager,
+        factoryManager,
+        eventBus
+    );
+}
+
+// Run the application
+initializeApp();

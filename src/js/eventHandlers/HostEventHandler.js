@@ -3,8 +3,8 @@ import Host from '../networking/Host';
 import GameEngine from '../controllers/GameEngine';
 
 export default class HostEventHandler extends BaseEventHandler {
-    constructor(registryManager,pluginManager,eventBus) {
-        super(true, registryManager,pluginManager,eventBus);  // Initialize as host (isHost = true), peerId and hostPeerId will be set later
+    constructor(registryManager,pluginManager,factoryManager, eventBus) {
+        super(true, registryManager,pluginManager,factoryManager, eventBus);  // Initialize as host (isHost = true), peerId and hostPeerId will be set later
     }
 
     init() {
@@ -140,6 +140,7 @@ export default class HostEventHandler extends BaseEventHandler {
             (proposedGameState) => this.peer.updateAndBroadcastGameState(proposedGameState),
             this.eventBus,
             this.registryManager,
+            this.factoryManager,
             true  // isHost = true
         );
         this.gameEngine.init();

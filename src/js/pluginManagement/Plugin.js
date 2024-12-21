@@ -5,7 +5,7 @@ export default class Plugin {
      * @param {EventBus} eventBus - The event bus instance.
      * @param {RegistryManager} registryManager - The registry manager instance.
      */
-    initialize(eventBus, registryManager) {
+    initialize(eventBus, registryManager, factoryManager) {
         throw new Error('initialize() method must be implemented by the plugin.');
     }
 

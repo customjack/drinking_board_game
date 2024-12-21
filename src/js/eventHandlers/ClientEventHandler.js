@@ -3,8 +3,8 @@ import Client from '../networking/Client';
 import GameEngine from '../controllers/GameEngine';
 
 export default class ClientEventHandler extends BaseEventHandler {
-    constructor(registryManager,pluginManager,eventBus) {
-        super(false, registryManager,pluginManager,eventBus);
+    constructor(registryManager,pluginManager,factoryManager, eventBus) {
+        super(false, registryManager,pluginManager,factoryManager, eventBus);
     }
 
     init() {

@@ -35,6 +35,7 @@ export default class Space {
         };
     }
 
+
     // First pass: Deserialize spaces without resolving connections
     static fromJSON(json) {
         const events = json.events.map(eventData => GameEvent.fromJSON(eventData));
