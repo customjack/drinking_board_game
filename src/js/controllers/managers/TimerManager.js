@@ -17,6 +17,10 @@ export default class TimerManager {
      * @param {Function} pauseCallback - Function to call when the pause button is clicked.
      */
     init(onTimerEndCallback, pauseCallback = null) {
+        if (!this.gameState.settings.isTurnTimerEnabled()) {
+            //console.log("Turn timer is disabled. Timer will not init.");
+            return;
+        }
         this.onTimerEndCallback = onTimerEndCallback;
         this.animation.init(pauseCallback);
         this.createPausedMessage();

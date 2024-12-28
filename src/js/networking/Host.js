@@ -188,7 +188,6 @@ export default class Host extends BasePeer {
 
         const newPlayer = this.addPlayer(newPlayerData.peerId, newPlayerData.nickname);
         this.broadcastGameState();
-        console.log(newPlayer);
         console.log(`Player added successfully for peerId ${peerId}. Player ID: ${newPlayer.playerId}`);
     }
 

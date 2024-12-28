@@ -1,9 +1,7 @@
 # TODO - Features to Implement
 
-## Give Player Class acccess to factory manager for creating classes
-
-## Make pause button not invisible when the timer is disabled
-- Also increase timer bounds while we're at it
+## BUG:
+  - Displace Player failing sometimes (after multiple applications?); Issue seems to occur when the same event (other than prompts(?)) are triggered in the same game.
 
 ## Remaining moves dislayed on UI
 - Need a "game info bar" above the board

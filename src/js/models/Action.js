@@ -10,14 +10,14 @@ export default class Action {
     }
 
     // Executes the action based on the type and payload
-    execute(gameEngine) {
+    execute(gameEngine, postExecutionCallback) {
         const { gameState, eventBus, peerId } = gameEngine;
 
         this.emitEvent(eventBus, 'beforeActionExecution', gameEngine);
 
         const handler = this.getHandler();
         if (handler) {
-            handler(gameEngine);
+            handler(gameEngine, postExecutionCallback);
         } else {
             console.warn(`Action type "${this.type}" not recognized.`);
         }
@@ -61,7 +61,7 @@ export default class Action {
         }
     }
 
-    handlePromptAllPlayers(gameEngine) {
+    handlePromptAllPlayers(gameEngine, postExecutionCallback) {
         const { payload } = this;
     
         if (payload?.message && gameEngine.peerId) {
@@ -85,14 +85,14 @@ export default class Action {
                 placeholderRegistry.unregister('CURRENT_PLAYER_NAME');
     
                 console.log(`Prompting all players: ${processed_message}`);
-                gameEngine.showPromptModal(processed_message);
+                gameEngine.showPromptModal(processed_message, postExecutionCallback);
             }
         } else {
             this.logMissingParams(['payload', 'payload.message', 'peerId']);
         }
     }
     
-    handlePromptCurrentPlayer(gameEngine) {
+    handlePromptCurrentPlayer(gameEngine, postExecutionCallback) {
         const { payload } = this;
     
         if (payload?.message && gameEngine.peerId) {
@@ -120,7 +120,7 @@ export default class Action {
                 console.log(`Prompting ${currentPlayer.nickname}: ${processed_message}`);
     
                 if (currentPlayer.peerId === gameEngine.peerId) {
-                    gameEngine.showPromptModal(processed_message);
+                    gameEngine.showPromptModal(processed_message, postExecutionCallback);
                 }
             }
         } else {
@@ -128,7 +128,7 @@ export default class Action {
         }
     }
 
-    handleSetPlayerState(gameEngine) {
+    handleSetPlayerState(gameEngine, postExecutionCallback) {
         const { state } = this.payload || {};
         
         if (!state) {
@@ -148,11 +148,11 @@ export default class Action {
             console.warn('No current player found to set state.');
         }
         console.log(currentPlayer.getState());
-    
-        gameEngine.changePhase({ newTurnPhase: TurnPhases.PROCESSING_EVENTS, delay: 0 });
+        
+        postExecutionCallback();
     }
 
-    handleDisplacePlayer(gameEngine) {
+    handleDisplacePlayer(gameEngine, postExecutionCallback) {
         const { steps } = this.payload || {};
         
         if (steps === undefined) {
@@ -212,10 +212,10 @@ export default class Action {
             console.warn(`Displacement of 0 steps has no effect.`);
         }
         
-        gameEngine.changePhase({ newTurnPhase: TurnPhases.PROCESSING_EVENTS, delay: 0 });
+        postExecutionCallback();
     }
      
-    handleApplyEffect(gameEngine) {
+    handleApplyEffect(gameEngine, postExecutionCallback) {
         const { effect } = this.payload || {};
         
         if (!effect) {
@@ -228,8 +228,8 @@ export default class Action {
             const effectInstance = gameEngine.factoryManager.getFactory("EffectFactory").createEffectFromJSON(effect);
             
             if (effectInstance) {
+                console.log("Effect to apply:", effectInstance);
                 effectInstance.apply(gameEngine); // Enact the effect on the game engine
-                console.log(`Applied effect: ${effect.name}`);
             } else {
                 console.warn(`Effect "${effect.name}" not recognized.`);
             }
@@ -237,10 +237,10 @@ export default class Action {
             console.error(`Failed to apply effect: ${error.message}`);
         }
 
-        gameEngine.changePhase({ newTurnPhase: TurnPhases.PROCESSING_EVENTS, delay: 0 });
+        postExecutionCallback();
     }
 
-    handleSetPlayerSpace(gameEngine) {
+    handleSetPlayerSpace(gameEngine, postExecutionCallback) {
         console.log("triggered this!")
         const { spaceId } = this.payload || {};
         
@@ -261,7 +261,7 @@ export default class Action {
             console.warn('No current player found to set space.');
         }
 
-        gameEngine.changePhase({ newTurnPhase: TurnPhases.PROCESSING_EVENTS, delay: 0 });
+        postExecutionCallback();
     }
     
 

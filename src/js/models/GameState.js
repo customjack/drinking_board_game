@@ -118,6 +118,7 @@ export default class GameState {
             };
 
             for (const event of space.events) {
+                //console.log("Space and event:", space, event);
                 // Check if the event is in the READY state before checking the trigger
                 if (event.checkTrigger(context)) {
                     // Include the space in the event for context

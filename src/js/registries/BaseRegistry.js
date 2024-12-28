@@ -16,7 +16,7 @@ export default class BaseRegistry {
     unregister(id) {
         if (this.registry[id]) {
             delete this.registry[id];
-            console.log(`Item with ID ${id} unregistered.`);
+            //console.log(`Item with ID ${id} unregistered.`);
         } else {
             console.warn(`Item with ID ${id} not found.`);
         }

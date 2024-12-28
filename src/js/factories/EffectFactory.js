@@ -18,11 +18,10 @@ export default class EffectFactory extends BaseFactory {
 
     // Custom method for creating effects from JSON
     createEffectFromJSON(json) {
-        const { name, args } = json;
-        
+        const { type, args } = json;     
         // Convert the array of objects into an array of values, preserving the order
         const resolvedArgs = args.map(argObj => Object.values(argObj)[0]);
 
-        return this.create(name, ...resolvedArgs); // Spread the arguments in the correct order
+        return this.create(type, ...resolvedArgs); // Spread the arguments in the correct order
     }
 }

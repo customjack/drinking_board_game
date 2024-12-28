@@ -44,11 +44,6 @@ export default class GameEngine {
         const timerAnimation = new TimerAnimation(this.isHost);
         this.timerManager = new TimerManager(timerAnimation, this.gameState);
 
-        // Initialize PauseButtonManager (only for host)
-        if (isHost) {
-            this.pauseButtonManager = new PauseButtonManager();
-        }
-
         // Bind state handlers for game phases
         this.stateHandlers = {
             [GamePhases.IN_LOBBY]: this.handleInLobby.bind(this),
@@ -85,13 +80,6 @@ export default class GameEngine {
             () => this.handleTimerEnd(),
             this.isHost ? () => this.togglePauseGame() : null // Pause callback only for host
         );
-
-        /*
-        if (this.isHost) {
-            const existingPauseButton = document.getElementById('pauseButton');
-            this.pauseButtonManager.init(existingPauseButton, () => this.togglePauseGame())
-        }
-            */
     }
 
     // Main method to update the game state
@@ -119,6 +107,7 @@ export default class GameEngine {
         // Handle turn phases within the in-game phase
         const turnPhaseHandler = this.turnPhaseHandlers[this.gameState.turnPhase];
         if (turnPhaseHandler) {
+            this.enactAllEffects(); // Enact all player effects before handling turn phases
             this.timerManager.resumeTimer(); //Resumes timer if paused (does nothing otherwise)
             turnPhaseHandler();
         } else {
@@ -138,10 +127,14 @@ export default class GameEngine {
 
     handleChangeTurn() {
         this.eventBus.emit('changeTurn', { gamestate: this.gameState });
-        
-        if (this.isClientTurn()) {
-            console.log(this.gameState.getCurrentPlayer().getState());
-            if ( [PlayerStates.COMPLETED_GAME, PlayerStates.SPECTATING, PlayerStates.DISCONNECTED].includes(this.gameState.getCurrentPlayer().getState()) ) {
+        const currentPlayer = this.gameState.getCurrentPlayer();
+        console.log(`Current Player State: ${currentPlayer.getState()}, 
+                    Nickname: ${currentPlayer.nickname}, 
+                    Player ID: ${currentPlayer.playerId}, 
+                    Effects: ${currentPlayer.effects.length}, 
+                    Turns Taken: ${currentPlayer.turnsTaken}`);   
+        if (this.isClientTurn()) {         
+            if ( [PlayerStates.COMPLETED_GAME, PlayerStates.SKIPPING_TURN, PlayerStates.SPECTATING, PlayerStates.DISCONNECTED].includes(this.gameState.getCurrentPlayer().getState()) ) {
                 // Transition to END_TURN phase with no delay
                 this.changePhase({ newTurnPhase: TurnPhases.END_TURN, delay: 0 });
             } else {
@@ -193,7 +186,7 @@ export default class GameEngine {
             this.gameState.resetEvents(); // Reset events for the next move
             if (this.isClientTurn()) {
                 // Move on to PROCESSING_MOVE phase
-                this.changePhase({ newTurnPhase: TurnPhases.PROCESSING_MOVE, delay: 0 });
+                this.changePhase({ newTurnPhase: TurnPhases.PROCESSING_MOVE });
             }
         } else {
             if (this.isClientTurn()) {
@@ -323,7 +316,7 @@ export default class GameEngine {
         // Update remaining moves and transition to the next phase
         this.gameState.setRemainingMoves(rollResult);
         this.eventBus.emit('playerRoll', { gamestate: this.gameState});
-        this.changePhase({ newTurnPhase: TurnPhases.PROCESSING_EVENTS}); // Transition back to PROCESSING_EVENTS phase
+        this.changePhase({ newTurnPhase: TurnPhases.PROCESSING_EVENTS, delay: 0}); // Transition back to PROCESSING_EVENTS phase
     }
 
     processSingleMove() {
@@ -335,14 +328,14 @@ export default class GameEngine {
         const connections = currentSpace.connections;
         if (connections.length === 0) {
             this.gameState.setRemainingMoves(0); //No where to move, so they have to land there
-            this.changePhase({ newTurnPhase: TurnPhases.PROCESSING_EVENTS}); // Transition back to PROCESSING_EVENTS phase
+            this.changePhase({ newTurnPhase: TurnPhases.PROCESSING_EVENTS, delay: 0}); // Transition back to PROCESSING_EVENTS phase
         }
         else if (connections.length === 1) {
             // Move the player automatically if there's only one connection
             const targetSpace = connections[0].target;
             this.gameState.movePlayer(targetSpace.id);
             console.log(`${currentPlayer.nickname} moved to space ${targetSpace.id}`);
-            this.changePhase({ newTurnPhase: TurnPhases.PROCESSING_EVENTS}); // Transition back to PROCESSING_EVENTS phase
+            this.changePhase({ newTurnPhase: TurnPhases.PROCESSING_EVENTS, delay: 0}); // Transition back to PROCESSING_EVENTS phase
         } else if (connections.length > 1) {
             // Set a flag indicating the player is choosing a connection
             this.changePhase({ newTurnPhase: TurnPhases.PLAYER_CHOOSING_DESTINATION, delay: 0}); // Transition back to PLAYER_CHOOSING_DESTINATION phase immediately
@@ -409,10 +402,16 @@ export default class GameEngine {
     // Wrapper to propose the game state with delay
     proposeGameStateWrapper(customDelay = -1) {
         const updateDelay = customDelay >= 0 ? customDelay : this.gameState.settings.getMoveDelay();  // Use custom delay if provided, otherwise default
-        setTimeout(() => {
-            this.proposeGameState(this.gameState);
-        }, updateDelay);  // Apply the move delay or custom delay
+
+        if (updateDelay > 0) {
+            setTimeout(() => {
+                this.proposeGameState(this.gameState);
+            }, updateDelay);  // Apply the move delay or custom delay
+        } else {
+            this.proposeGameState(this.gameState);  // Directly call if no delay
+        }
     }
+
 
     /**
      * Changes the game phase or turn phase and proposes the game state.
@@ -438,7 +437,7 @@ export default class GameEngine {
         return currentPlayer.peerId === this.peerId
     }
 
-    showPromptModal(message) {
+    showPromptModal(message, callback) {
         const modal = document.getElementById('gamePromptModal');
         const modalMessage = document.getElementById('gamePromptModalMessage');
         const dismissButton = document.getElementById('gamePromptModalDismissButton');
@@ -455,11 +454,37 @@ export default class GameEngine {
                 // Close the modal for all players
                 modal.style.display = 'none';
     
-                // Call the gameStateCallback to update the game state
-                this.changePhase({ newTurnPhase: TurnPhases.PROCESSING_EVENTS, delay: 0 });
+                // Call the callback and update the game state
+                callback();           
             };
         } else {
             dismissButton.style.display = 'none'; // Hide the dismiss button if it's not the client's turn
         }
+    }
+
+    /**
+     * Enacts all effects for all players.
+     */
+    enactAllEffects() {
+        this.gameState.players.forEach(player => {
+            // Remove effects marked for removal before enacting
+            const initialEffectCount = player.effects.length;
+            player.effects = player.effects.filter(effect => !effect.toRemove);
+            const removedBeforeCount = initialEffectCount - player.effects.length;
+            if (removedBeforeCount > 0) {
+                console.log(`Removed ${removedBeforeCount} effects before enacting for player ${player.nickname}`);
+            }
+    
+            // Enact remaining effects
+            player.effects.forEach(effect => effect.enact(this));
+    
+            // Remove effects marked for removal after enacting
+            const effectCountAfterEnact = player.effects.length;
+            player.effects = player.effects.filter(effect => !effect.toRemove);
+            const removedAfterCount = effectCountAfterEnact - player.effects.length;
+            if (removedAfterCount > 0) {
+                console.log(`Removed ${removedAfterCount} effects after enacting for player ${player.nickname}`);
+            }
+        });
     }
 }

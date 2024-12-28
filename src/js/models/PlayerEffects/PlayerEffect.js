@@ -1,7 +1,12 @@
 export default class PlayerEffect {
-    constructor(name, duration) {
-        this.name = name;
+    constructor(id, duration, toRemove = false) {
+        this.id = id;
         this.duration = duration;
+        this.toRemove = toRemove;
+    }
+
+    markForRemoval() {
+        this.toRemove = true;
     }
 
     // Abstract 'apply' method - to be implemented by subclasses
@@ -17,12 +22,11 @@ export default class PlayerEffect {
     toJSON() {
         return {
             type: this.constructor.name, // To identify the effect type during deserialization
-            name: this.name,
-            duration: this.duration,
+            args: [
+                {id: this.id},
+                {duration: this.duration},
+                {toRemove: this.toRemove}
+            ]
         };
-    }
-
-    static fromJSON(json) {
-        throw new Error("fromJSON must be implemented by subclasses");
     }
 }

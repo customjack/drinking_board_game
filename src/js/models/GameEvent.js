@@ -2,6 +2,7 @@ import Trigger from './Trigger.js';
 import Action from './Action.js';
 import { PriorityLevels } from '../enums/PriorityLevels.js';
 import { processStringToEnum } from '../utils/helpers.js';
+import TurnPhases from '../enums/TurnPhases';
 import GameEventState from '../enums/GameEventState.js'; // Import the new enum
 
 export default class GameEvent {
@@ -40,9 +41,12 @@ export default class GameEvent {
         }
         if (this.state === GameEventState.TRIGGERED) {
             this.state = GameEventState.PROCESSING_ACTION; // Update state before execution
-            this.action.execute(gameEngine);
-            this.state = GameEventState.COMPLETED_ACTION; // Update state after execution
-        }
+
+            const completeActionCallback = () => {
+                this.state = GameEventState.COMPLETED_ACTION; // Update state after execution
+                gameEngine.changePhase({ newTurnPhase: TurnPhases.PROCESSING_EVENTS, delay: 0 });
+            };
+            this.action.execute(gameEngine, completeActionCallback);        }
     }
 
     // Set the state of the GameEvent with validation

@@ -109,7 +109,7 @@
       },    
       {
         "id": 4,
-        "name": "Take Another Drink",
+        "name": "Skip a turn",
         "type": "action",
         "events": [
           {
@@ -117,9 +117,26 @@
               "type": "ON_LAND"
             },
             "action": {
-              "type": "PROMPT_ALL_PLAYERS",
+              "type": "PROMPT_CURRENT_PLAYER",
               "payload": {
-                "message": "All players take another drink!"
+                "message": "Your next turn will be skipped!"
+              }
+            }
+          },
+          {
+            "trigger": {
+              "type": "ON_LAND"
+            },
+            "action": {
+              "type": "APPLY_EFFECT",
+              "payload": {
+                "effect": {
+                  "type": "SkipTurnEffect",
+                  "args": [
+                    { "id": "SkipTurnEffect_1" },
+                    { "duration": 1 }
+                  ]
+                }
               }
             }
           }
@@ -147,17 +164,28 @@
       },
       {
         "id": 5,
-        "name": "Lose a Turn",
+        "name": "Teleport to Space 10",
         "type": "action",
         "events": [
           {
             "trigger": {
-              "type": "ON_LAND"
+              "type": "ON_ENTER"
             },
             "action": {
               "type": "PROMPT_CURRENT_PLAYER",
               "payload": {
-                "message": "You lose a turn!"
+                "message": "You have been teleported to space 10!"
+              }
+            }
+          },
+          {
+            "trigger": {
+              "type": "ON_ENTER"
+            },
+            "action": {
+              "type": "SET_PLAYER_SPACE",
+              "payload": {
+                "spaceId": 10
               }
             }
           }

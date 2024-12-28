@@ -33,6 +33,8 @@ export default class Player {
         this.turnsTaken = 0;
 
         this.movementHistory = new PlayerMovementHistory();
+        
+        this.effects = []; // Initialize the effects list
     }
 
     /**
@@ -85,8 +87,8 @@ export default class Player {
      * @returns {number} The result of the roll.
      */
     rollDice(min = 1, max = 6, distributionFn = null) {
-        //return this.rollEngine.roll(3, 3, distributionFn);
-        return this.rollEngine.roll(min, max, distributionFn);
+        return this.rollEngine.roll(3, 3, distributionFn);
+        //return this.rollEngine.roll(min, max, distributionFn);
     }
 
     /**
@@ -158,6 +160,14 @@ export default class Player {
     }
 
     /**
+     * Adds an effect to the player.
+     * @param {PlayerEffect} effect - The effect to add.
+     */
+    addEffect(effect) {
+        this.effects.push(effect);
+    }
+
+    /**
      * Gets the player's current state.
      * @returns {string} The player's current state.
      */
@@ -211,16 +221,18 @@ export default class Player {
             currentSpaceId: this.currentSpaceId,
             rollEngine: this.rollEngine.toJSON(),  // Serialize the RollEngine
             turnsTaken: this.turnsTaken,            // Serialize the number of turns taken
-            movementHistory: this.movementHistory.toJSON()  // Serialize movement history
+            movementHistory: this.movementHistory.toJSON(),  // Serialize movement history
+            effects: this.effects.map(effect => effect.toJSON()) // Serialize effects
         };
     }
 
     /**
      * Deserializes player data from JSON.
      * @param {Object} json - The JSON object containing player data.
+     * @param {EffectFactory} effectFactory - The factory to create effects.
      * @returns {Player} A new Player instance.
      */
-    static fromJSON(json, factoryManager) {    
+    static fromJSON(json, factoryManager) {
         const player = new Player(
             json.peerId,
             json.nickname,
@@ -234,6 +246,10 @@ export default class Player {
         player.rollEngine = RollEngine.fromJSON(json.rollEngine);  // Rebuild the RollEngine from JSON
         player.turnsTaken = json.turnsTaken;                       // Rebuild the turns taken
         player.movementHistory = PlayerMovementHistory.fromJSON(json.movementHistory);  // Rebuild movement history
+        player.effects = json.effects.map(effectJson => {
+            //console.log('Deserializing effect:', effectJson);
+            return factoryManager.getFactory('EffectFactory').createEffectFromJSON(effectJson);
+        }); // Rebuild effects        
         return player;
     }
 }
