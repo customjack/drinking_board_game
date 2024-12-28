@@ -137,8 +137,7 @@ export default class ClientEventHandler extends BaseEventHandler {
     addNewOwnedPlayer() {
         const newName = prompt('Enter a new player name:');
         if (newName && newName.trim() !== "") {
-            const newPlayer = new Player(this.peer.peer.id, newName);
-            this.peer.addOwnedPlayer(newPlayer);
+            this.peer.addNewOwnedPlayer(newName);
         }
     }
 }

@@ -20,8 +20,7 @@ export default class Client extends BasePeer {
 
         await this.initializeGameState();
 
-        const player = new Player(id, this.originalName);
-        this.addPlayer(player);
+        this.addPlayer(id, this.originalName);
 
         this.connectToHost();
     }
@@ -34,6 +33,30 @@ export default class Client extends BasePeer {
         this.conn.on('close', () => this.handleDisconnection());
         this.conn.on('error', (err) => this.handleConnectionError(err));
     }
+
+    addNewOwnedPlayer(playerName) {
+        const totalPlayers = this.gameState.players.length;
+        if (totalPlayers >= this.gameState.settings.playerLimit) {
+            alert(`Cannot add more players. The maximum limit of ${this.gameState.settings.playerLimit} players has been reached.`);
+            return;
+        }
+
+        const totalOwnedPlayers = this.ownedPlayers.length;
+        if (totalOwnedPlayers >= this.gameState.settings.playerLimitPerPeer) {
+            alert(`Cannot add more players. The maximum limit of ${this.gameState.settings.playerLimitPerPeer} players for this peer has been reached.`);
+            return;
+        }
+
+        // Propose to the host to add the new player
+        this.conn.send({
+            type: 'proposeAddPlayer',
+            player: {
+                peerId: this.peer.id,
+                nickname: playerName
+            }
+        });
+    }
+
 
     // Method to propose a new game state to the host
     proposeGameState(proposedGameState) {
@@ -86,7 +109,7 @@ export default class Client extends BasePeer {
     }
 
     handleConnectionPackage(gameStateData) {
-        this.gameState = GameState.fromJSON(gameStateData);  // Sync local game state with the host's state
+        this.gameState = GameState.fromJSON(gameStateData, this.eventHandler.factoryManager);  // Sync local game state with the host's state
         console.log('Game state updated:', this.gameState);
         if(this.gameState.isGameStarted()) {
             this.eventHandler.showGamePage();
@@ -96,7 +119,7 @@ export default class Client extends BasePeer {
     }
 
     handleGameStateUpdate(gameStateData) {
-        this.gameState = GameState.fromJSON(gameStateData);  // Sync local game state with the host's state
+        this.gameState = GameState.fromJSON(gameStateData, this.eventHandler.factoryManager);  // Sync local game state with the host's state
         //console.log('Game state updated:', gameStateData);
         this.eventHandler.updateGameState(); 
     }

@@ -19,8 +19,7 @@ export default class Host extends BasePeer {
         this.eventHandler.initManagers(id,id);
         await this.initializeGameState();
         this.setupUI();
-        const hostPlayer = new Player(id, this.originalName, true);
-        this.addPlayer(hostPlayer);
+        this.addPlayer(id, this.originalName, true);
 
         // Set up event listeners
         this.peer.on('connection', (conn) => this.handleConnection(conn));
@@ -60,7 +59,7 @@ export default class Host extends BasePeer {
         //The client has to do similar to rebuild it's gamestate,
         //so this is to make the host and client have similar behavior
         const newGameStateJSON = newGameState.toJSON();
-        this.gameState = GameState.fromJSON(newGameStateJSON);
+        this.gameState = GameState.fromJSON(newGameStateJSON, this.eventHandler.factoryManager);
 
 
         this.broadcastGameState();
@@ -92,7 +91,7 @@ export default class Host extends BasePeer {
     }
 
     handleProposedGameState(conn, proposedGameStateData) {
-        const proposedGameState = GameState.fromJSON(proposedGameStateData);
+        const proposedGameState = GameState.fromJSON(proposedGameStateData, this.eventHandler.factoryManager);
 
         // Validate the proposed game state
         if (this.validateProposedGameState(conn.peer, proposedGameState)) {
@@ -131,8 +130,18 @@ export default class Host extends BasePeer {
         }
 
         players.forEach(playerData => {
-            const newPlayer = new Player.fromJSON(playerData);
-            this.addPlayer(newPlayer);
+            // Check if playerData contains the necessary properties
+            if (!playerData.peerId || !playerData.nickname) {
+                conn.send({
+                    type: 'joinRejected',
+                    reason: 'Invalid player data. Both peerId and nickname are required.',
+                });
+                console.log('Join request rejected due to missing player data:', playerData);
+                return; // Skip the current player and continue processing other players
+            }
+    
+            // Add the player to the game state if data is valid
+            this.addPlayer(playerData.peerId, playerData.nickname);
         });
 
         this.broadcastGameState();
@@ -177,9 +186,9 @@ export default class Host extends BasePeer {
             return;
         }
 
-        const newPlayer = Player.fromJSON(newPlayerData);
-        this.addPlayer(newPlayer);
+        const newPlayer = this.addPlayer(newPlayerData.peerId, newPlayerData.nickname);
         this.broadcastGameState();
+        console.log(newPlayer);
         console.log(`Player added successfully for peerId ${peerId}. Player ID: ${newPlayer.playerId}`);
     }
 
@@ -235,8 +244,7 @@ export default class Host extends BasePeer {
             return;
         }
 
-        const newPlayer = new Player(this.peer.id, playerName, false);
-        this.addPlayer(newPlayer);
+        this.addPlayer(this.peer.id, playerName);
         this.eventHandler.updateGameState();
         this.broadcastGameState();
     }

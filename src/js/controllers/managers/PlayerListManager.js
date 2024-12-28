@@ -20,11 +20,14 @@ export default class PlayerListManager {
     setIsHost(isHost) {
         this.isHost = isHost;
     }
-AC
+
     // Update the game state and refresh the player list UI
     setGameState(gameState) {
         // Create a deep copy of the gameState by serializing and deserializing
-        const gameStateCopy = GameState.fromJSON(gameState.toJSON());
+        // It's okay to use the gameState's factory MAnager because it's a reference
+        // I.e. everything in the game state copy gets deep copied except the factory manager
+        // The factory manager should never be copied to begin with, it's effectively a singleton
+        const gameStateCopy = GameState.fromJSON(gameState.toJSON(), gameState.factoryManager);
         
         // Set the copied game state
         this.gameState = gameStateCopy;

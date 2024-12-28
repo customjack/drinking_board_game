@@ -32,21 +32,23 @@ export default class BasePeer {
     async initializeGameState() {
         const boardManager = new BoardManager();
         await boardManager.loadDefaultBoard();
-        this.gameState = new GameState(boardManager.board);
+        this.gameState = new GameState(boardManager.board, this.eventHandler.factoryManagert);
         console.log("GameState initialized", this.gameState);
     }
 
-    addPlayer(player) {
-        if (!this.gameState.players.some(p => p.playerId === player.playerId)) {
-            player.setTurnsTaken(this.gameState.getTurnNumber()-1); //Ensure they don't get a bunch of turns when they first join.
-            this.gameState.addPlayer(player);
-            if (player.peerId === this.peer.id) {
-                this.ownedPlayers.push(player);
-            }
-            this.eventHandler.updateGameState();
-        } else {
-            console.log('Player already exists:', player);
+    addPlayer(peerId, nickname, isHost = false, playerId = null) {
+        // Add player to the gameState (now GameState handles the creation)
+        const newPlayer = this.gameState.addPlayer(peerId, nickname, isHost, playerId);
+
+        // If this is the local player (owned by this peer), add them to the ownedPlayers list
+        if (this.peer.id === peerId) {
+            this.ownedPlayers = this.gameState.getPlayersByPeerId(peerId);
         }
+
+        // Call event handler to update the game state
+        this.eventHandler.updateGameState();
+
+        return newPlayer;
     }
 
     removePlayer(playerId) {

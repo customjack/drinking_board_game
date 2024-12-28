@@ -6,10 +6,11 @@ import GameEventState from '../enums/GameEventState.js'; // Import the new enum
 import Settings from './Settings'; // Import the Settings class
 
 export default class GameState {
-    constructor(board, players = [], settings = new Settings()) {
+    constructor(board, factoryManager, players = [], settings = new Settings()) {
 
         //Serialized Data
         this.board = board; // Game board
+        this.factoryManager = factoryManager; // Factory manager for creating game objects
         this.players = players; // List of players
         this.remainingMoves = 0; // Remaining moves for the current player
         this.turnPhase = TurnPhases.BEGIN_TURN; // Start with the beginning turn phase
@@ -47,6 +48,19 @@ export default class GameState {
         this.players.push(player);
     }
 
+    addPlayer(peerId, nickname, isHost = false, playerId = null) {
+        // Create a new Player instance and initialize it
+        const player = new Player(peerId, nickname, this.factoryManager, isHost, playerId);
+
+        // Ensure the player doesn't get extra turns upon joining
+        player.setTurnsTaken(this.getTurnNumber() - 1);
+
+        // Add the player to the game state
+        this.players.push(player);
+        
+        return player; //It is otherwise tedious to get the player you just created
+    }
+
     // Remove a player from the game
     removePlayer(playerId) {
         this.players = this.players.filter(player => player.playerId !== playerId);
@@ -56,6 +70,17 @@ export default class GameState {
     removeClient(peerId) {
         this.players = this.players.filter(player => player.peerId !== peerId);
     }
+
+    // Get a player by their playerId (returns exactly one player)
+    getPlayerByPlayerId(playerId) {
+        return player = this.players.find(player => player.playerId === playerId);
+    }
+
+    // Get a list of players by their peerId (returns an array of players)
+    getPlayersByPeerId(peerId) {
+        return this.players.filter(player => player.peerId === peerId);
+    }
+
 
     // Get the current player (based on the fewest turns taken)
     getCurrentPlayer() {
@@ -222,11 +247,11 @@ export default class GameState {
     }
 
     // Deserialize the game state from JSON (for initializing or syncing with clients)
-    static fromJSON(json) {
+    static fromJSON(json, factoryManager) {
         const board = Board.fromJSON(json.board);
-        const players = json.players.map(playerData => Player.fromJSON(playerData));
+        const players = json.players.map(playerData => Player.fromJSON(playerData, factoryManager));
         const settings = Settings.fromJSON(json.settings); // Create settings from JSON
-        const gameState = new GameState(board, players, settings);
+        const gameState = new GameState(board, factoryManager, players, settings);
         gameState.remainingMoves = json.remainingMoves;
         gameState.turnPhase = json.turnPhase;
         gameState.gamePhase = json.gamePhase;

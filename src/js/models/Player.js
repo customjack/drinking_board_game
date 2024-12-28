@@ -13,9 +13,10 @@ export default class Player {
      * @param {string} [playerId] - Optional unique player ID. If not provided, it will be generated.
      * @param {string} [initialState=PlayerStates.WAITING] - The initial state of the player.
      */
-    constructor(peerId, nickname, isHost = false, playerId = null, initialState = PlayerStates.WAITING) {
+    constructor(peerId, nickname, factoryManager, isHost = false, playerId = null, initialState = PlayerStates.WAITING) {
         this.peerId = peerId;
         this.nickname = nickname;
+        this.factoryManager = factoryManager;
         this.isHost = isHost;
         this.stats = {};
         this.playerId = playerId || this.generatePlayerId();
@@ -219,10 +220,11 @@ export default class Player {
      * @param {Object} json - The JSON object containing player data.
      * @returns {Player} A new Player instance.
      */
-    static fromJSON(json) {    
+    static fromJSON(json, factoryManager) {    
         const player = new Player(
             json.peerId,
             json.nickname,
+            factoryManager,
             json.isHost,
             json.playerId,
             json.state

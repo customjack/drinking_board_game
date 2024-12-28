@@ -86,7 +86,7 @@ export default class PieceManager {
 
             // If a matching piece is found, update the piece's player object with a deep copy
             if (matchingPiece) {
-                const playerCopy = Player.fromJSON(gameStatePlayer.toJSON());
+                const playerCopy = Player.fromJSON(gameStatePlayer.toJSON(), gameState.factoryManager);
                 matchingPiece.player = playerCopy;
             }
         });
@@ -117,7 +117,7 @@ export default class PieceManager {
             const existingPiece = this.pieces.find(p => p.player.playerId === player.playerId);
             if (!existingPiece) {
                 // Create a deep copy of the player using toJSON and fromJSON
-                const playerCopy = Player.fromJSON(player.toJSON());
+                const playerCopy = Player.fromJSON(player.toJSON(), gameState.factoryManager);
                 const newPiece = new Piece(playerCopy);
                 this.pieces.push(newPiece);
             }
