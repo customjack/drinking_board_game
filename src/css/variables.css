@@ -62,5 +62,6 @@
 
     /* Highlight */
     --highlight-glow: rgba(255, 255, 0, 0.8); /* Default yellow glow */
+    --highlight-glow-rgb: 255, 255, 0;
   }
   

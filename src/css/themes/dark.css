@@ -39,6 +39,7 @@
   --label-color: #a0a0a0;
 
   --highlight-glow: rgba(144, 238, 144, 0.8);
+  --highlight-glow-rgb: 144, 238, 144;
 }
 
 /* Additional styles for dark theme */

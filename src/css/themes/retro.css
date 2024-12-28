@@ -38,6 +38,7 @@
   --label-color: #5c5b5a;
 
   --highlight-glow: rgba(255, 0, 255, 0.8); /* Pink glow for retro theme */
+  --highlight-glow-rgb: 255, 0, 255;
 }
 
 /* Additional styles for retro theme */
