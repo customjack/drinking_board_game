@@ -32,4 +32,9 @@ export default class BaseRegistry {
     get(id) {
         return this.registry[id] || null;
     }
+
+    // Get the entire registry of listeners
+    getRegistry() {
+        return this.registry;
+    }
 }

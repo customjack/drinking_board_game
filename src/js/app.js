@@ -6,6 +6,7 @@ import PersonalSettingsMenu from './controllers/menus/PersonalSettingsMenu';
 import PageRegistry from './registries/PageRegistry';
 import ListenerRegistry from './registries/ListenerRegistry';
 import PlaceholderRegistry from './registries/PlaceholderRegistry';
+import WindowListenerRegistry from './registries/WindowListenerRegistry';
 import RegistryManager from './registries/RegistryManager';
 import EventBus from './events/EventBus';
 import PluginManager from './pluginManagement/PluginManager';
@@ -30,12 +31,14 @@ function initializeRegistryManager() {
     const pageRegistry = new PageRegistry();
     const listenerRegistry = new ListenerRegistry();
     const placeholderRegistry = new PlaceholderRegistry();
+    const windowListenerRegistry = new WindowListenerRegistry();
 
     registryManager.addRegistry('pageRegistry', pageRegistry);
     registryManager.addRegistry('listenerRegistry', listenerRegistry);
     registryManager.addRegistry('placeholderRegistry', placeholderRegistry);
+    registryManager.addRegistry('windowListenerRegistry', windowListenerRegistry);
 
-    return { registryManager, pageRegistry, listenerRegistry, placeholderRegistry };
+    return { registryManager, pageRegistry, listenerRegistry, placeholderRegistry, windowListenerRegistry};
 }
 
 // Register pages in the PageRegistry
@@ -100,6 +103,7 @@ function initializeFactories() {
 // Register listeners using ListenerRegistry
 function registerListeners(
     listenerRegistry,
+    windowListenerRegistry,
     personalSettingsMenu,
     registryManager,
     pluginManager,
@@ -137,7 +141,18 @@ function registerListeners(
     listenerRegistry.registerListener('gearButton', 'click', () => {
         personalSettingsMenu.show();
     });
+
+    // Add refresh/back button warning
+    windowListenerRegistry.registerListener('beforeunload', (event) => {
+        // Custom message to warn the user
+        event.preventDefault();  // Standard method for preventing the action
+        event.returnValue = '';  // For older browsers to show a default confirmation dialog
+
+        // Custom logic: You could add more specific checks to ensure that the user is in a game before warning them
+        alert('You are about to leave the game. If you refresh or go back, you will be kicked out!');
+    });
 }
+
 
 // Main application initialization function
 function initializeApp() {
@@ -145,7 +160,7 @@ function initializeApp() {
     const { personalSettingsMenu } = initializePersonalSettings();
 
     // Registries and manager
-    const { registryManager, pageRegistry, listenerRegistry, placeholderRegistry } =
+    const { registryManager, pageRegistry, listenerRegistry, windowListenerRegistry, placeholderRegistry } =
         initializeRegistryManager();
 
     // Factories and manager
@@ -162,6 +177,7 @@ function initializeApp() {
     // Register listeners
     registerListeners(
         listenerRegistry,
+        windowListenerRegistry,
         personalSettingsMenu,
         registryManager,
         pluginManager,
