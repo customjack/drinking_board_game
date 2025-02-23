@@ -62,6 +62,7 @@
 
     /* Highlight */
     --highlight-glow: rgba(255, 255, 0, 0.8); /* Default yellow glow */
+    --highlight-glow-rgb: 255, 255, 0;
   }
   
 /* variables.css */
@@ -128,6 +129,7 @@
 
     /* Highlight */
     --highlight-glow: rgba(255, 255, 0, 0.8); /* Default yellow glow */
+    --highlight-glow-rgb: 255, 255, 0;
   }
   
 /* base.css */
@@ -411,6 +413,7 @@ p, div {
 
     /* Highlight */
     --highlight-glow: rgba(255, 255, 0, 0.8); /* Default yellow glow */
+    --highlight-glow-rgb: 255, 255, 0;
   }
   
 /* layout.css */
@@ -703,6 +706,7 @@ p, div {
 
     /* Highlight */
     --highlight-glow: rgba(255, 255, 0, 0.8); /* Default yellow glow */
+    --highlight-glow-rgb: 255, 255, 0;
   }
   
 /* components/button.css */
@@ -971,6 +975,7 @@ p, div {
 
     /* Highlight */
     --highlight-glow: rgba(255, 255, 0, 0.8); /* Default yellow glow */
+    --highlight-glow-rgb: 255, 255, 0;
   }
   
 /* components/form.css */
@@ -1098,6 +1103,7 @@ p, div {
 
     /* Highlight */
     --highlight-glow: rgba(255, 255, 0, 0.8); /* Default yellow glow */
+    --highlight-glow-rgb: 255, 255, 0;
   }
   
 /* components/input.css */
@@ -1261,6 +1267,7 @@ p, div {
 
     /* Highlight */
     --highlight-glow: rgba(255, 255, 0, 0.8); /* Default yellow glow */
+    --highlight-glow-rgb: 255, 255, 0;
   }
   
 /* Import variables */
@@ -1385,6 +1392,7 @@ S
 
     /* Highlight */
     --highlight-glow: rgba(255, 255, 0, 0.8); /* Default yellow glow */
+    --highlight-glow-rgb: 255, 255, 0;
   }
   
 /* components/modal.css */
@@ -1483,6 +1491,7 @@ S
 
     /* Highlight */
     --highlight-glow: rgba(255, 255, 0, 0.8); /* Default yellow glow */
+    --highlight-glow-rgb: 255, 255, 0;
   }
   
 /* components/navbar.css */
@@ -1629,6 +1638,16 @@ S
   box-sizing: border-box;
 }
 
+/* Highlighting the player on the current turn */
+.current-turn {
+  background-color: var(--background-modal); /* Base background color */
+  border: 1px solid var(--border-color); /* Keep the original border */
+  box-shadow: 0 0 10px 4px rgba(0, 0, 0, 0.2); /* Optional subtle shadow */
+  transition: box-shadow 0.3s ease;
+  animation: backgroundGlow 3s infinite ease-in-out; /* Slower, smoother glowing animation */
+}
+
+
 /* variables.css */
 
 /* Color Palette */
@@ -1693,6 +1712,7 @@ S
 
     /* Highlight */
     --highlight-glow: rgba(255, 255, 0, 0.8); /* Default yellow glow */
+    --highlight-glow-rgb: 255, 255, 0;
   }
   
 /* Import variables */
@@ -1807,6 +1827,7 @@ S
 
     /* Highlight */
     --highlight-glow: rgba(255, 255, 0, 0.8); /* Default yellow glow */
+    --highlight-glow-rgb: 255, 255, 0;
   }
   
 /* components/span.css */
@@ -1895,6 +1916,7 @@ S
 
     /* Highlight */
     --highlight-glow: rgba(255, 255, 0, 0.8); /* Default yellow glow */
+    --highlight-glow-rgb: 255, 255, 0;
   }
   
 /* components/toggle-switch.css */
@@ -2036,6 +2058,7 @@ S
 
     /* Highlight */
     --highlight-glow: rgba(255, 255, 0, 0.8); /* Default yellow glow */
+    --highlight-glow-rgb: 255, 255, 0;
   }
   
 /* animations.css */
@@ -2108,6 +2131,22 @@ S
   }
 }
 
+@keyframes backgroundGlow {
+  0% {
+    background-color: rgba(var(--highlight-glow-rgb), 0.5); /* 50% opacity */
+    box-shadow: 0 0 20px 8px rgba(var(--highlight-glow-rgb), 0.5); /* 50% opacity shadow */
+  }
+  50% {
+    background-color: var(--highlight-glow); /* Full intensity (100% opacity) */
+    box-shadow: 0 0 20px 8px var(--highlight-glow); /* Full intensity shadow */
+  }
+  100% {
+    background-color: rgba(var(--highlight-glow-rgb), 0.5); /* 50% opacity */
+    box-shadow: 0 0 20px 8px rgba(var(--highlight-glow-rgb), 0.5); /* 50% opacity shadow */
+  }
+}
+
+
 /* variables.css */
 
 /* Color Palette */
@@ -2172,6 +2211,7 @@ S
 
     /* Highlight */
     --highlight-glow: rgba(255, 255, 0, 0.8); /* Default yellow glow */
+    --highlight-glow-rgb: 255, 255, 0;
   }
   
 /* themes/light.css */
@@ -2244,6 +2284,7 @@ S
 
     /* Highlight */
     --highlight-glow: rgba(255, 255, 0, 0.8); /* Default yellow glow */
+    --highlight-glow-rgb: 255, 255, 0;
   }
   
 /* Import variables */
@@ -2286,6 +2327,7 @@ S
   --label-color: #a0a0a0;
 
   --highlight-glow: rgba(144, 238, 144, 0.8);
+  --highlight-glow-rgb: 144, 238, 144;
 }
 
 /* Additional styles for dark theme */
@@ -2368,6 +2410,7 @@ body {
 
     /* Highlight */
     --highlight-glow: rgba(255, 255, 0, 0.8); /* Default yellow glow */
+    --highlight-glow-rgb: 255, 255, 0;
   }
   
 /* Import variables */
@@ -2409,6 +2452,7 @@ body {
   --label-color: #5c5b5a;
 
   --highlight-glow: rgba(255, 0, 255, 0.8); /* Pink glow for retro theme */
+  --highlight-glow-rgb: 255, 0, 255;
 }
 
 /* Additional styles for retro theme */
