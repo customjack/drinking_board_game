@@ -166,3 +166,11 @@ export function processStringToEnum(str) {
         .replace(/\s+/g, '_') // Replace spaces with underscores
         .replace(/[^\w]/g, ''); // Remove any non-alphanumeric characters (except underscores)
 }
+
+/**
+ * Generates a random seed for use in applications.
+ * @returns {string} A randomly generated string to be used as a seed.
+ */
+export function generateRandomSeed() {
+    return Math.random().toString(36).slice(2, 11);
+}

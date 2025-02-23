@@ -4,21 +4,24 @@ import TurnPhases from '../enums/TurnPhases'; // Import TurnPhases enum
 import GamePhases from '../enums/GamePhases'; // Import GamePhases enum
 import GameEventState from '../enums/GameEventState.js'; // Import the new enum
 import Settings from './Settings'; // Import the Settings class
+import SharedRandomNumberGenerator from './SharedRandomNumberGenerator.js';
 
 export default class GameState {
-    constructor(board, factoryManager, players = [], settings = new Settings()) {
+    constructor(board, factoryManager, players = [], settings = new Settings(), randomGenerator = new SharedRandomNumberGenerator(Math.random().toString(36).slice(2, 11))) {
+        // Serialized Data
+        this.board = board;
+        this.factoryManager = factoryManager;
+        this.players = players;
+        this.remainingMoves = 0;
+        this.turnPhase = TurnPhases.BEGIN_TURN;
+        this.gamePhase = GamePhases.IN_LOBBY;
+        this.settings = settings;
 
-        //Serialized Data
-        this.board = board; // Game board
-        this.factoryManager = factoryManager; // Factory manager for creating game objects
-        this.players = players; // List of players
-        this.remainingMoves = 0; // Remaining moves for the current player
-        this.turnPhase = TurnPhases.BEGIN_TURN; // Start with the beginning turn phase
-        this.gamePhase = GamePhases.IN_LOBBY; // Set initial game phase to lobby
-        this.settings = settings; // Game settings
+        // Unserialized Data
+        this.triggeredEvents = [];
 
-        //Unserialized Data
-        this.triggeredEvents = []; //Events to be processed (with space data as well)
+        // Initialize the SharedRandomNumberGenerator with the seed
+        this.randomGenerator = randomGenerator;
     }
 
     // Start the game by setting the game phase to IN_GAME
@@ -235,27 +238,31 @@ export default class GameState {
         }
     }
 
-    // Serialize the game state to JSON (for sharing across clients)
+    // Serialize the game state to JSON (using the random generator's toJSON)
     toJSON() {
         return {
             board: this.board.toJSON(),
             players: this.players.map(player => player.toJSON()),
             remainingMoves: this.remainingMoves,
-            turnPhase: this.turnPhase, // Include the current turn phase
-            gamePhase: this.gamePhase,  // Include the current game phase
-            settings: this.settings.toJSON() // Include the game settings
+            turnPhase: this.turnPhase,
+            gamePhase: this.gamePhase,
+            settings: this.settings.toJSON(),
+            randomGenerator: this.randomGenerator.toJSON() // Serialize the random generator
         };
     }
 
-    // Deserialize the game state from JSON (for initializing or syncing with clients)
+    // Deserialize the game state from JSON (using the random generator's fromJSON)
     static fromJSON(json, factoryManager) {
         const board = Board.fromJSON(json.board);
         const players = json.players.map(playerData => Player.fromJSON(playerData, factoryManager));
-        const settings = Settings.fromJSON(json.settings); // Create settings from JSON
-        const gameState = new GameState(board, factoryManager, players, settings);
+        const settings = Settings.fromJSON(json.settings);
+        const randomGenerator = SharedRandomNumberGenerator.fromJSON(json.randomGenerator);
+        const gameState = new GameState(board, factoryManager, players, settings, randomGenerator); 
+
         gameState.remainingMoves = json.remainingMoves;
         gameState.turnPhase = json.turnPhase;
         gameState.gamePhase = json.gamePhase;
+        
         return gameState;
     }
 }
